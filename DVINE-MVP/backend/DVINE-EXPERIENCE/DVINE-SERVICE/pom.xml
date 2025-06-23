@@ -6,7 +6,6 @@
         <groupId>com</groupId>
         <artifactId>DVINE-EXPERIENCE</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>DVINE-SERVICE</artifactId>
     <version>0.0.1-SNAPSHOT</version>

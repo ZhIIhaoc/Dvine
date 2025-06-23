@@ -11,6 +11,8 @@
 	<groupId>com</groupId>
 	<artifactId>DVINE-EXPERIENCE</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
 	<name>DVINE-EXPERIENCE</name>
 	<description>DVINE-EXPERIENCE</description>
 	<url/>
