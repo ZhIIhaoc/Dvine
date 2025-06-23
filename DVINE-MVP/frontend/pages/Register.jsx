@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import SubmitRegistration from "../endpoints/SubmitRegistration.js";
 
 
 const Register = (props) => {
@@ -17,20 +18,7 @@ const Register = (props) => {
         if (password !== confirmPassword) {
             alert("Passwords do not match");
         } else {
-            const response = await fetch('/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: registerEmail,
-                    phone: phone,
-                    password: password,
-                    postcode: postcode,
-                    firstName: firstName,
-                    lastName: lastName,
-                })
-            });
+            const response = await SubmitRegistration(registerEmail, phone, password, postcode, firstName, lastName);
             const data = await response.json();
             if (data.error) {
                 alert("Email already registered");
