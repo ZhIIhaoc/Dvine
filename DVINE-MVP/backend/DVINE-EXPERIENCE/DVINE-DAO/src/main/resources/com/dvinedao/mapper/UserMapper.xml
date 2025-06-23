@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.UserMapper">
+
+    <insert id="insertUser">
+        INSERT INTO users (
+        password,
+        email,
+        phone,
+        postcode,
+        nick_name,
+        first_name,
+        last_name,
+        avatar,
+        permission
+        )
+        VALUES (
+        #{password},
+        #{email},
+        #{phone},
+        #{postcode},
+        #{nickName},
+        #{firstName},
+        #{lastName},
+        #{avatar},
+        #{permission}
+        )
+    </insert>
+</mapper>

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: DVINE-API
+  datasource:
+    url: jdbc:mysql://localhost:3306/dvine_db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true    # camel-case button, the sql col must named like "xxx_xxx"
