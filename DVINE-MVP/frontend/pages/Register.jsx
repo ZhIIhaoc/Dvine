@@ -12,7 +12,6 @@ const Register = (props) => {
     const [firstName, setFirstName] = React.useState('');
     const [lastName, setLastName] = React.useState('');
 
-
     const registerButton = async () => {
         alert("Register button clicked");
         if (password !== confirmPassword) {
@@ -28,13 +27,13 @@ const Register = (props) => {
                 localStorage.setItem('Email', registerEmail);
                 alert("Registration successful");
             }
-    };
-}
+        };
+    }
     return (
         <>
             <h1>Register</h1>
             Email <input id="emailRegister" type="text" onChange={(event) => setEmail(event.target.value)} value={registerEmail} /> <br />
-            phone <input id="phoneRegister" type="text" onChange={(event) => setPhone(event.target.value)} value={registerEmail} /> <br />
+            phone <input id="phoneRegister" type="text" onChange={(event) => setPhone(event.target.value)} value={phone} /> <br />
             postcode <input id="postcodeRegister" type="text" onChange={(event) => setPostcode(event.target.value)} value={postcode} /> <br />
             First Name <input id="firstNameRegister" type="text" onChange={(event) => setFirstName(event.target.value)} value={firstName} /> <br />
             Last Name <input id="lastNameRegister" type="text" onChange={(event) => setLastName(event.target.value)} value={lastName} /> <br />
