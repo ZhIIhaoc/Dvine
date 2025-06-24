@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import SubmitRegistration from "../endpoints/SubmitRegistration.js";
+import { useNavigate } from "react-router-dom";
 
 
 const Register = (props) => {
@@ -26,6 +27,7 @@ const Register = (props) => {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('Email', registerEmail);
                 alert("Registration successful");
+                navigate('/');
             }
         };
     }
