@@ -1,13 +1,10 @@
 package com.dvinedao.domain;
 
-import lombok.Data;
-
 
 /**
  * A utility class that represents the standardized return format for API responses.
  * Provides methods to create success and error responses.
  */
-@Data
 public class ReturnResult {
     private Integer code; // 1 is for success ，0 is for fail
     private String msg; // wrong message
@@ -50,5 +47,29 @@ public class ReturnResult {
         result.msg = msg;
         result.code = 0;
         return result;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }
