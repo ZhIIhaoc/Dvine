@@ -18,8 +18,8 @@ public class AuthController {
     @PostMapping("/register")
     public ReturnResult register(@RequestBody User user){
         log.info("user register: {}", user);
-        authService.register(user);
-        return ReturnResult.success();
+        String jwt = authService.register(user);
+        return ReturnResult.success(jwt);
     }
 
     @PostMapping("/login")

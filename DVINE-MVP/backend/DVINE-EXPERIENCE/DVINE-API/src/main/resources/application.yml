@@ -17,6 +17,6 @@ mybatis:
     map-underscore-to-camel-case: true    # camel-case button, the sql col must named like "xxx_xxx"
 
 jwt:
-  secret: test_secret_key
+  secret: KG0z7ycKfE7cHQJxPgW9WwO19o9I8y2tx7Gy3aJ9B4k=
   access-token-expiration: 3600 # 1 hour
   refresh-token-expiration: 604800 # 7 days
