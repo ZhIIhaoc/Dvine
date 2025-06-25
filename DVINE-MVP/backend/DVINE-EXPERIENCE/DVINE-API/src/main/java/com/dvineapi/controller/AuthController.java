@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ReturnResult login(@RequestBody User user){
-        // TODO: need to implement the login feature
+        log.info("user login: {}", user);
         return ReturnResult.success();
     }
 

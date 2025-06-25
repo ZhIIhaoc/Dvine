@@ -17,12 +17,14 @@ public class UserController {
     private UserService userService;
     @GetMapping("/profile")
     public ReturnResult getUserProfile(){
+        log.info("getUserProfile: {}", UserUtil.getCurrentUserId());
         UserQueryParam user = userService.getUserProfileById(UserUtil.getCurrentUserId());
         return ReturnResult.success(user);
     }
 
     @PutMapping("/profile")
     public ReturnResult updateUserProfile(@RequestBody User user){
+        log.info("updateUserProfile: {}", user);
         userService.updateUserProfile(user);
         return ReturnResult.success();
     }
