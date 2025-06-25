@@ -18,5 +18,5 @@ mybatis:
 
 jwt:
   secret: KG0z7ycKfE7cHQJxPgW9WwO19o9I8y2tx7Gy3aJ9B4k=
-  access-token-expiration: 3600 # 1 hour
-  refresh-token-expiration: 604800 # 7 days
+  access-token-expiration: 3600000 # 1 hour
+  refresh-token-expiration: 604800000 # 7 days
