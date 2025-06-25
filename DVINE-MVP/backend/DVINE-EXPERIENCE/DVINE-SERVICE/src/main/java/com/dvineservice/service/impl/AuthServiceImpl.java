@@ -16,7 +16,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String register(User user) {
         userMapper.insertUser(user);
-        String jwt = tokenUtil.generateToken(Long.valueOf(user.getUserId()));
+        String jwt = tokenUtil.generateToken(user.getUserId());
         return jwt;
+    }
+
+    @Override
+    public String login(User user) {
+        User u = userMapper.selectUserByIdAndPwd(user);
+        if(u != null){
+            String jwt = tokenUtil.generateToken(u.getUserId());
+            return jwt;
+        }
+        return null;
     }
 }

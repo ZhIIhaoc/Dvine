@@ -58,4 +58,11 @@
             permission
         FROM users WHERE user_id = #{userId}
     </select>
+
+    <select id="selectUserByIdAndPwd" resultType="com.dvinedao.domain.User">
+        SELECT
+            user_id AS userId,
+            permission
+        FROM users WHERE password = #{password} and email = #{email}
+    </select>
 </mapper>

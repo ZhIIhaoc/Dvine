@@ -4,4 +4,5 @@ import com.dvinedao.domain.User;
 
 public interface AuthService {
     String register(User user);
+    String login(User user);
 }

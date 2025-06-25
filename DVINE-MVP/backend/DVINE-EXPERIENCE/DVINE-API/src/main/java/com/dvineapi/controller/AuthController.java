@@ -25,7 +25,11 @@ public class AuthController {
     @PostMapping("/login")
     public ReturnResult login(@RequestBody User user){
         log.info("user login: {}", user);
-        return ReturnResult.success();
+        String jwt = authService.login(user);
+        if(jwt != null){
+            return ReturnResult.success(jwt);
+        }
+        return ReturnResult.error("Email or password is incorrect");
     }
 
     @PostMapping("/logout")
