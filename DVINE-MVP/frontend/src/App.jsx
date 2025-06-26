@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+// import { useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
 import './App.css'
 import { Route, Routes, Link, NavLink } from 'react-router-dom'
 import { Home } from '.././pages/Home.jsx'
 import Register from '.././pages/Register.jsx'
-import { Login } from '.././pages/Login.jsx'
+import Login from '.././pages/Login.jsx'
 import { UserDashboard } from '.././pages/UserDashboard.jsx'
 import { AdminDashboard } from '.././pages/AdminDashboard.jsx'
 import { Catalogue } from '.././pages/Catalogue.jsx'
@@ -19,7 +19,7 @@ function App() {
 
   return (
     <>
-      <nav>
+      {/* <nav>
         <ul>
           <li>
             <NavLink to="/">Home</NavLink>
@@ -43,7 +43,7 @@ function App() {
             <NavLink to="/dvine-moments">Dvine Moments</NavLink>
           </li>
         </ul>
-      </nav>
+      </nav> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />

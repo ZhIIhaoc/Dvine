@@ -12,6 +12,7 @@ const Register = (props) => {
     const [postcode, setPostcode] = React.useState('');
     const [firstName, setFirstName] = React.useState('');
     const [lastName, setLastName] = React.useState('');
+    const navigate = useNavigate();
 
     const registerButton = async () => {
         // alert("Register button clicked");
