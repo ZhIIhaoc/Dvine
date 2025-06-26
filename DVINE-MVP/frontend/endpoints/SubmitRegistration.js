@@ -1,5 +1,6 @@
 const SubmitRegistration = async (registerEmail, phone, password, postcode, firstName, lastName) => {
-    const response = await fetch('/auth/register', {
+    const localHost = "http://localhost:8080/"
+    const response = await fetch(`${localHost}/auth/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
