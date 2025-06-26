@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import SubmitRegistration from "../endpoints/SubmitRegistration.js";
 import { useNavigate } from "react-router-dom";
 
-const Register = (props) => {
+export const Register = (props) => {
     const [registerEmail, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -11,9 +11,10 @@ const Register = (props) => {
     const [postcode, setPostcode] = React.useState("");
     const [firstName, setFirstName] = React.useState("");
     const [lastName, setLastName] = React.useState("");
+    const navigate = useNavigate();
 
     const registerButton = async () => {
-        alert("Register button clicked");
+        // alert("Register button clicked");
         if (password !== confirmPassword) {
             alert("Passwords do not match");
         } else {
@@ -25,12 +26,13 @@ const Register = (props) => {
                 firstName,
                 lastName
             );
-            const data = await response.json();
-            if (data.error) {
+            const responseInfo = await response.json();
+            console.log(responseInfo);
+            if (responseInfo.code == 0) {
                 alert("Email already registered");
             } else {
-                props.setToken(data.token);
-                localStorage.setItem("token", data.token);
+                props.setToken(responseInfo.token);
+                localStorage.setItem("token", responseInfo.token);
                 localStorage.setItem("Email", registerEmail);
                 alert("Registration successful");
                 navigate("/");
@@ -102,8 +104,6 @@ const Register = (props) => {
         </>
     );
 };
-
-export default Register;
 
 Register.propTypes = {
     setToken: PropTypes.func,

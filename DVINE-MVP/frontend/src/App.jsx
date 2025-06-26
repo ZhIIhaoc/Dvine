@@ -1,10 +1,8 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import { Route, Routes, Link, NavLink } from "react-router-dom";
 import { Home } from "./pages/Home.jsx";
-import Register from "./pages/Register.jsx";
+import { Register } from "./pages/Register.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UserDashboard } from "./pages/UserDashboard.jsx";
 import { AdminDashboard } from "./pages/AdminDashboard.jsx";
