@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,9 @@ public class JwtFilter implements Filter {
 
     // List of URLs to exclude from JWT validation
     private final List<String> excludeUrls = List.of(
-            "/auth"
+            "/auth/login",
+            "/auth/register",
+            "/auth/refresh"
     );
 
     @Override
