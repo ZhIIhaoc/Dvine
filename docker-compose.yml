@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  # Database
+  db:
+    image: mysql:8.4
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: dvine_db
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # ← add this
   # Backend
   backend:
     build:
@@ -35,5 +46,6 @@ networks:
     driver: bridge
 
 volumes:
+  db-data:
   backend-data:
   frontend-data:
