@@ -10,6 +10,8 @@ import com.dvineservice.util.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -26,7 +28,7 @@ public class AuthController {
     private TokenUtil tokenUtil;
 
     @PostMapping("/register")
-    public ReturnResult register(@RequestBody User user){
+    public ResponseEntity<ReturnResult> register(@RequestBody User user){
         try {
             log.info("User registration: {}", user.getEmail());
             Map<String, String> tokens = authService.register(user);
@@ -43,13 +45,13 @@ public class AuthController {
             ReturnResult result = ReturnResult.success(tokenResponse);
             log.info("ReturnResult created: code={}, msg={}, data={}", 
                 result.getCode(), result.getMsg(), result.getData() != null ? "[PRESENT]" : "[NULL]");
-            return result;
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (IllegalArgumentException e) {
             log.info("Registration failed: {}", e.getMessage());
-            return ReturnResult.error(e.getMessage());
+            return ResponseEntity.badRequest().body(ReturnResult.error(e.getMessage()));
         } catch (Exception e) {
             log.error("Registration failed with exception: ", e);
-            return ReturnResult.error("Registration failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ReturnResult.error("Registration failed"));
         }
     }
 
