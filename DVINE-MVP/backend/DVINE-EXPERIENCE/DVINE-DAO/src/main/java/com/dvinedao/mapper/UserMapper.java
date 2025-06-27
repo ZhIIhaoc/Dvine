@@ -11,4 +11,5 @@ public interface UserMapper {
     UserQueryParam findUserById(Long userId);
     void updateUser(User user);
     User selectUserByIdAndPwd(User user);
+    User selectUserByEmail(String email);
 }

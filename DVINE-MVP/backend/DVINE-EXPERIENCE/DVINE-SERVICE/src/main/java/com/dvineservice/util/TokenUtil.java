@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -31,9 +31,10 @@ public class TokenUtil {
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token";
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     public String generateToken(Long userId) {
+
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("type", "access")
@@ -54,7 +55,7 @@ public class TokenUtil {
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
 
-        redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + userId, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        stringRedisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + userId, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         return refreshToken;
     }
 
@@ -91,7 +92,7 @@ public class TokenUtil {
 
             // Verify the refresh token against Redis
             String redisKey = REFRESH_TOKEN_PREFIX + userId;
-            String storedToken = (String) redisTemplate.opsForValue().get(redisKey);
+            String storedToken = stringRedisTemplate.opsForValue().get(redisKey);
 
             return refreshToken.equals(storedToken);
         } catch (ExpiredJwtException e) {

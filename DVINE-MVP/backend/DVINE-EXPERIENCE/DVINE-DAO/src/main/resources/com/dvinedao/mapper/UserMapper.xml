@@ -41,13 +41,13 @@
             <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
             <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
         </set>
-        WHERE user_id = #{userId}
+        WHERE userId = #{userId}
     </update>
 
 
     <select id="findUserById" resultType="com.dvinedao.domain.UserQueryParam">
         SELECT
-            user_id AS userId,
+            userId,
             email,
             phone,
             postcode,
@@ -56,13 +56,18 @@
             last_name AS lastName,
             avatar,
             permission
-        FROM users WHERE user_id = #{userId}
+        FROM users WHERE userId = #{userId}
     </select>
 
     <select id="selectUserByIdAndPwd" resultType="com.dvinedao.domain.User">
         SELECT
-            user_id AS userId,
-            permission
-        FROM users WHERE password = #{password} and email = #{email}
+            *
+        FROM users WHERE userId = #{userId} AND password = #{password}
+    </select>
+
+    <select id="selectUserByEmail" resultType="com.dvinedao.domain.User">
+        SELECT
+            *
+        FROM users WHERE email = #{email}
     </select>
 </mapper>
