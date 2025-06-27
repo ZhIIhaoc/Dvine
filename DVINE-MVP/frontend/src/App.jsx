@@ -14,7 +14,7 @@ import "./components/RouterDomColour.css";
 function App() {
     return (
         <>
-            <nav>
+            {/* <nav>
                 <ul>
                     <li>
                         <NavLink to="/">Home</NavLink>
@@ -38,7 +38,7 @@ function App() {
                         <NavLink to="/dvine-moments">Dvine Moments</NavLink>
                     </li>
                 </ul>
-            </nav>
+            </nav> */}
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/register" element={<Register />} />

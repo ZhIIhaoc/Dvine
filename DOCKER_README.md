@@ -1,12 +1,17 @@
 # DVINE Project Docker Quick Start Guide
 
-Launch both frontend and backend services with one command.
+Launch both frontend, backend and database services with one command.
 
 ## Prerequisites
 
 - Docker
 - Docker Compose
-- MySQL database (running on your machine at port 3306)
+
+## Port
+
+- Backend: 8080
+- Frontend: 5173
+- Database: 3306
 
 ## Quick Start
 

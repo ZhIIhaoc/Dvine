@@ -18,17 +18,27 @@ export const Register = (props) => {
         if (password !== confirmPassword) {
             alert("Passwords do not match");
         } else {
-            const response = await SubmitRegistration(
-                registerEmail,
-                phone,
-                password,
-                postcode,
-                firstName,
-                lastName
+            // alert("???");
+            const response = await fetch(
+                `http://localhost:8080/auth/register`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: registerEmail,
+                        phone: phone,
+                        password: password,
+                        postcode: postcode,
+                        firstName: firstName,
+                        lastName: lastName,
+                    }),
+                }
             );
             const responseInfo = await response.json();
             console.log(responseInfo);
-            if (responseInfo.code == 0) {
+            if (responseInfo.code === 0) {
                 alert("Email already registered");
             } else {
                 props.setToken(responseInfo.token);
