@@ -1,5 +1,6 @@
 package com.dvineservice.util;
 
+import com.dvinedao.domain.TokenResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,6 +14,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -133,5 +136,18 @@ public class TokenUtil {
             throw new IllegalArgumentException("Invalid refresh token");
         }
         return generateToken(userId);
+    }
+
+    public TokenResponse generateDoubleToken(Long userId) {
+        Map<String, String> tokens = new HashMap<>();
+        String accessToken = generateToken(userId);
+        String refreshToken = generateRefreshToken(userId);
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+
+        return new TokenResponse(
+                tokens.get("accessToken"),
+                tokens.get("refreshToken")
+        );
     }
 }

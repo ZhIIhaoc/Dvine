@@ -1,5 +1,7 @@
 package com.dvineservice.service.impl;
 
+import com.dvinedao.domain.TokenRefreshRequest;
+import com.dvinedao.domain.TokenResponse;
 import com.dvinedao.domain.User;
 import com.dvinedao.mapper.UserMapper;
 import com.dvineservice.service.AuthService;
@@ -11,9 +13,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -30,95 +29,47 @@ public class AuthServiceImpl implements AuthService {
     private BCryptPasswordEncoder passwordEncoder;
     
     @Override
-    public Map<String, String> register(User user) {
-        // Validate required fields
-        if (!StringUtils.hasText(user.getEmail()) || !StringUtils.hasText(user.getPassword())) {
-            throw new IllegalArgumentException("Email and password are required");
-        }
-        
-        // Check if user already exists
-        User existingUser = new User();
-        existingUser.setEmail(user.getEmail());
-        User existing = userMapper.selectUserByEmail(existingUser.getEmail());
-        if (existing != null) {
-            throw new IllegalArgumentException("User with this email already exists");
-        }
-        
+    public TokenResponse register(User user) {
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
         // Insert user
         userMapper.insertUser(user);
-        
-        // Debug: Check if userId is set after insert
-        log.info("User ID after insert: {}", user.getUserId());
-        
-        if (user.getUserId() == null) {
-            log.error("User ID is null after insert, cannot generate tokens");
-            throw new RuntimeException("Failed to get user ID after registration");
-        }
-        
-        // Generate tokens
-        log.info("About to generate tokens for userId: {}", user.getUserId());
-        String accessToken = tokenUtil.generateToken(user.getUserId());
-        log.info("Access token generated successfully");
-        String refreshToken = tokenUtil.generateRefreshToken(user.getUserId());
-        log.info("Refresh token generated successfully");
-        
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-        
-        log.info("User registered successfully with email: {}, returning tokens", user.getEmail());
+        // Generate double tokens
+        TokenResponse tokens = tokenUtil.generateDoubleToken(user.getUserId());
         return tokens;
     }
 
     @Override
-    public Map<String, String> login(User user) {
-        // Validate required fields
-        if (!StringUtils.hasText(user.getEmail()) || !StringUtils.hasText(user.getPassword())) {
-            throw new IllegalArgumentException("Email and password are required");
-        }
-        
+    public TokenResponse login(User loginInfo) {
         // Find user by email
-        User existingUser = userMapper.selectUserByEmail(user.getEmail());
-        if (existingUser == null) {
+        User userData = userMapper.selectUserByEmail(loginInfo.getEmail());
+        if (userData == null) {
             return null;
         }
-        
         // Verify password
-        if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+        if (!passwordEncoder.matches(loginInfo.getPassword(), userData.getPassword())) {
             return null;
         }
-        
         // Generate tokens
-        String accessToken = tokenUtil.generateToken(existingUser.getUserId());
-        String refreshToken = tokenUtil.generateRefreshToken(existingUser.getUserId());
-        
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-        
-        log.info("User logged in successfully with email: {}", user.getEmail());
+        TokenResponse tokens = tokenUtil.generateDoubleToken(userData.getUserId());
         return tokens;
     }
     
     @Override
     public String logout(Long userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("User ID is required");
-        }
-        
         // Remove refresh token from Redis
         String redisKey = REFRESH_TOKEN_PREFIX + userId;
         stringRedisTemplate.delete(redisKey);
-        
+
         log.info("User logged out successfully with ID: {}", userId);
         return "Logout successful";
     }
     
     @Override
-    public Map<String, String> refreshToken(String refreshToken, Long userId) {
+    public TokenResponse refreshToken(TokenRefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
+        Long userId = tokenUtil.getUserIdFromToken(refreshToken);
+
         if (!StringUtils.hasText(refreshToken) || userId == null) {
             throw new IllegalArgumentException("Refresh token and user ID are required");
         }
@@ -127,15 +78,9 @@ public class AuthServiceImpl implements AuthService {
         if (!tokenUtil.verifyRefreshToken(refreshToken, userId)) {
             throw new IllegalArgumentException("Invalid refresh token");
         }
-        
         // Generate new tokens
-        String newAccessToken = tokenUtil.generateToken(userId);
-        String newRefreshToken = tokenUtil.generateRefreshToken(userId);
-        
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", newAccessToken);
-        tokens.put("refreshToken", newRefreshToken);
-        
+        TokenResponse tokens = tokenUtil.generateDoubleToken(userId);
+
         log.info("Tokens refreshed successfully for user ID: {}", userId);
         return tokens;
     }
