@@ -5,15 +5,15 @@
 <mapper namespace="com.dvinedao.mapper.UserMapper">
 
     <insert id="insertUser" parameterType="com.dvinedao.domain.User"
-            useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
+            useGeneratedKeys="true" keyProperty="userId" keyColumn="userId">
         INSERT INTO users (
         password,
         email,
         phone,
         postcode,
-        nick_name,
-        first_name,
-        last_name,
+        nickName,
+        firstName,
+        lastName,
         avatar,
         permission
         )
@@ -36,9 +36,9 @@
             <if test="email != null and email != ''">email = #{email},</if>
             <if test="phone != null and phone != ''">phone = #{phone},</if>
             <if test="postcode != null and postcode != ''">postcode = #{postcode},</if>
-            <if test="firstName != null and firstName != ''">first_name = #{firstName},</if>
-            <if test="lastName != null and lastName != ''">last_name = #{lastName},</if>
-            <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+            <if test="firstName != null and firstName != ''">firstName = #{firstName},</if>
+            <if test="lastName != null and lastName != ''">lastName = #{lastName},</if>
+            <if test="nickName != null and nickName != ''">nickName = #{nickName},</if>
             <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
         </set>
         WHERE userId = #{userId}
@@ -47,15 +47,7 @@
 
     <select id="findUserById" resultType="com.dvinedao.domain.UserQueryParam">
         SELECT
-            userId,
-            email,
-            phone,
-            postcode,
-            nick_name AS nickName,
-            first_name AS firstName,
-            last_name AS lastName,
-            avatar,
-            permission
+            *
         FROM users WHERE userId = #{userId}
     </select>
 

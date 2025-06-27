@@ -30,15 +30,25 @@ public class AuthController {
         try {
             log.info("User registration: {}", user.getEmail());
             Map<String, String> tokens = authService.register(user);
+            log.info("Tokens received from service: accessToken={}, refreshToken={}", 
+                tokens.get("accessToken") != null ? "[PRESENT]" : "[NULL]", 
+                tokens.get("refreshToken") != null ? "[PRESENT]" : "[NULL]");
             TokenResponse tokenResponse = new TokenResponse(
                 tokens.get("accessToken"), 
                 tokens.get("refreshToken")
             );
-            return ReturnResult.success(tokenResponse);
+            log.info("TokenResponse created: accessToken={}, refreshToken={}", 
+                tokenResponse.getAccessToken() != null ? "[PRESENT]" : "[NULL]", 
+                tokenResponse.getRefreshToken() != null ? "[PRESENT]" : "[NULL]");
+            ReturnResult result = ReturnResult.success(tokenResponse);
+            log.info("ReturnResult created: code={}, msg={}, data={}", 
+                result.getCode(), result.getMsg(), result.getData() != null ? "[PRESENT]" : "[NULL]");
+            return result;
         } catch (IllegalArgumentException e) {
             log.info("Registration failed: {}", e.getMessage());
             return ReturnResult.error(e.getMessage());
         } catch (Exception e) {
+            log.error("Registration failed with exception: ", e);
             return ReturnResult.error("Registration failed");
         }
     }

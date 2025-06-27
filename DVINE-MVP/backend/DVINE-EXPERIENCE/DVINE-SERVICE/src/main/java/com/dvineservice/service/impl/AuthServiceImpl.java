@@ -50,15 +50,26 @@ public class AuthServiceImpl implements AuthService {
         // Insert user
         userMapper.insertUser(user);
         
+        // Debug: Check if userId is set after insert
+        log.info("User ID after insert: {}", user.getUserId());
+        
+        if (user.getUserId() == null) {
+            log.error("User ID is null after insert, cannot generate tokens");
+            throw new RuntimeException("Failed to get user ID after registration");
+        }
+        
         // Generate tokens
+        log.info("About to generate tokens for userId: {}", user.getUserId());
         String accessToken = tokenUtil.generateToken(user.getUserId());
+        log.info("Access token generated successfully");
         String refreshToken = tokenUtil.generateRefreshToken(user.getUserId());
+        log.info("Refresh token generated successfully");
         
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);
         
-        log.info("User registered successfully with email: {}", user.getEmail());
+        log.info("User registered successfully with email: {}, returning tokens", user.getEmail());
         return tokens;
     }
 

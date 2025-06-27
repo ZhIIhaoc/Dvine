@@ -46,6 +46,7 @@ public class TokenUtil {
     }
 
     public String generateRefreshToken(Long userId) {
+        log.info("Starting to generate refresh token for userId: {}", userId);
         String refreshToken = Jwts.builder()
                 .claim("userId", userId)
                 .claim("type", "refresh")
@@ -54,8 +55,15 @@ public class TokenUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
-
-        stringRedisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + userId, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        
+        log.info("Refresh token JWT created, now storing in Redis");
+        try {
+            stringRedisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + userId, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+            log.info("Refresh token stored in Redis successfully");
+        } catch (Exception e) {
+            log.error("Failed to store refresh token in Redis: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to store refresh token", e);
+        }
         return refreshToken;
     }
 
