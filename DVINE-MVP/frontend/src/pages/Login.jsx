@@ -118,6 +118,7 @@ export const Login = (props) => {
                         <Link
                             underline="hover"
                             color="secondary"
+                            sx={{ cursor: "pointer" }}
                             onClick={() => navigate("/register")}
                         >
                             Sign up
