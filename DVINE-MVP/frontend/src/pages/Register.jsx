@@ -2,20 +2,60 @@ import React from "react";
 import PropTypes from "prop-types";
 import SubmitRegistration from "../endpoints/SubmitRegistration.js";
 import { useNavigate } from "react-router-dom";
+import { Grid, Box } from "@mui/material";
+import Logo from "../components/Logo.jsx";
+import SignUpStepOne from "../components/SignUpStepOne.jsx";
+import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 
 export const Register = (props) => {
-    const [registerEmail, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [confirmPassword, setConfirmPassword] = React.useState("");
-    const [phone, setPhone] = React.useState("");
-    const [postcode, setPostcode] = React.useState("");
-    const [firstName, setFirstName] = React.useState("");
-    const [lastName, setLastName] = React.useState("");
+    const [page, setPage] = React.useState(0);
+    const [windowSize, setWindowSize] = React.useState(getWindowSize());
+    const [userInfo, setUsersInfo] = React.useState({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+        postcode: "",
+        firstName: "",
+        lastName: ""
+    });
     const navigate = useNavigate();
+    React.useEffect(() => {
+        function handleWindowResize() {
+            // console.log(getWindowSize());
+            setWindowSize(getWindowSize());
+        }
+
+        window.addEventListener("resize", handleWindowResize);
+
+        return () => {
+            window.removeEventListener("resize", handleWindowResize);
+        };
+    }, []);
+
+    function getWindowSize() {
+        const { innerWidth, innerHeight } = window;
+        return { innerWidth, innerHeight };
+    }
+
+
+    // this tracks what process of the register process the user is on
+    const pageNext = () => setPage(1);
+    const pageBack = () => setPage(0);
+    const changeState = (value) => (event) => {
+        setUsersInfo({
+            ...userInfo,
+            [value]: event.target.value,
+        });
+    }
+
+
+
+
 
     const registerButton = async () => {
-        // alert("Register button clicked");
-        if (password !== confirmPassword) {
+        alert("Register button clicked");
+        if (userInfo.password !== userInfo.confirmPassword) {
             alert("Passwords do not match");
         } else {
             // alert("???");
@@ -27,12 +67,12 @@ export const Register = (props) => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        email: registerEmail,
-                        phone: phone,
-                        password: password,
-                        postcode: postcode,
-                        firstName: firstName,
-                        lastName: lastName,
+                        email: userInfo.email,
+                        phone: userInfo.phone,
+                        password: userInfo.password,
+                        postcode: userInfo.postcode,
+                        firstName: userInfo.firstName,
+                        lastName: userInfo.lastName,
                     }),
                 }
             );
@@ -43,75 +83,55 @@ export const Register = (props) => {
             } else {
                 props.setToken(responseInfo.token);
                 localStorage.setItem("token", responseInfo.token);
-                localStorage.setItem("Email", registerEmail);
+                localStorage.setItem("Email", userInfo.email);
                 alert("Registration successful");
                 navigate("/");
             }
         }
     };
     return (
-        <>
-            <h1>Register</h1>
-            Email{" "}
-            <input
-                id="emailRegister"
-                type="text"
-                onChange={(event) => setEmail(event.target.value)}
-                value={registerEmail}
-            />{" "}
-            <br />
-            phone{" "}
-            <input
-                id="phoneRegister"
-                type="text"
-                onChange={(event) => setPhone(event.target.value)}
-                value={phone}
-            />{" "}
-            <br />
-            postcode{" "}
-            <input
-                id="postcodeRegister"
-                type="text"
-                onChange={(event) => setPostcode(event.target.value)}
-                value={postcode}
-            />{" "}
-            <br />
-            First Name{" "}
-            <input
-                id="firstNameRegister"
-                type="text"
-                onChange={(event) => setFirstName(event.target.value)}
-                value={firstName}
-            />{" "}
-            <br />
-            Last Name{" "}
-            <input
-                id="lastNameRegister"
-                type="text"
-                onChange={(event) => setLastName(event.target.value)}
-                value={lastName}
-            />{" "}
-            <br />
-            Password{" "}
-            <input
-                id="passwordRegister"
-                type="password"
-                onChange={(event) => setPassword(event.target.value)}
-                value={password}
-            />{" "}
-            <br />
-            Confirm Password{" "}
-            <input
-                id="confirmPasswordRegister"
-                type="password"
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                value={confirmPassword}
-            />
-            <br />
-            <button id="registerButton" onClick={registerButton}>
-                Register
-            </button>
-        </>
+
+        <Grid container sx={{ height: "100vh" }}>
+            <Grid size={windowSize.innerWidth < 500 ? 12 : 6}>
+                <Logo />
+                <Box
+                    sx={{
+                        width: "96%",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                        padding: 1,
+                    }}
+                >
+                    {page === 0 ? (
+                        <SignUpStepOne
+                            changeState={changeState}
+                            userInfo={userInfo}
+                            pageNext={pageNext}
+                        />
+                    ) : (
+                        <SignUpStepTwo
+                            changeState={changeState}
+                            userInfo={userInfo}
+                            pageBack={pageBack}
+                            pageNext={registerButton}
+                        />
+                    )}
+                </Box>
+            </Grid>
+            {windowSize.innerWidth >= 500 && (
+                <Grid size={6}>
+                    <img
+                        src="../src/assets/background.jpg"
+                        style={{ width: "100%", height: "100%" }}
+                    />
+                </Grid>
+            )}
+
+
+        </Grid>
     );
 };
 
