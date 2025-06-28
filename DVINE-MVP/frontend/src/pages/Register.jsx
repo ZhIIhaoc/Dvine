@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import { Grid, Box, Typography, TextField, Button, Link } from "@mui/material";
 import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
-import { Grid, Box } from "@mui/material";
-import Logo from "../components/Logo.jsx";
 import SignUpStepOne from "../components/SignUpStepOne.jsx";
 import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
@@ -21,11 +19,16 @@ export const Register = (props) => {
         firstName: "",
         lastName: ""
     });
-    const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState("");
     const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
     const navigate = useNavigate();
+
+    function getWindowSize() {
+        const { innerWidth, innerHeight } = window;
+        return { innerWidth, innerHeight };
+    }
+
     React.useEffect(() => {
         function handleWindowResize() {
             // console.log(getWindowSize());
@@ -39,11 +42,11 @@ export const Register = (props) => {
         };
     }, []);
 
-    function getWindowSize() {
-        const { innerWidth, innerHeight } = window;
-        return { innerWidth, innerHeight };
-    }
-
+    const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
 
     // this tracks what process of the register process the user is on
     const pageNext = () => setPage(1);
@@ -55,63 +58,45 @@ export const Register = (props) => {
         });
     }
 
-
-
-
-
-    function getWindowSize() {
-        const { innerWidth, innerHeight } = window;
-        return { innerWidth, innerHeight };
-    }
-
-    React.useEffect(() => {
-        function handleWindowResize() {
-            setWindowSize(getWindowSize());
-        }
-        window.addEventListener("resize", handleWindowResize);
-        return () => {
-            window.removeEventListener("resize", handleWindowResize);
-        };
-    }, []);
-
-    const showSnackbar = (message, severity) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(severity);
-        setSnackbarOpen(true);
-    };
-
     const registerButton = async () => {
-        alert("Register button clicked");
+        if (userInfo.email === "" || userInfo.password === "" || userInfo.confirmPassword === "" ) {
+            showSnackbar("Please fill in all fields", "warning");
+            return;
+        }
         if (userInfo.password !== userInfo.confirmPassword) {
-            alert("Passwords do not match");
+            showSnackbar("Passwords do not match", "error");
+            return;
+        }
+        const response = await fetch(
+            `http://localhost:8080/auth/register`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: userInfo.email,
+                    phone: userInfo.phone,
+                    password: userInfo.password,
+                    postcode: userInfo.postcode,
+                    firstName: userInfo.firstName,
+                    lastName: userInfo.lastName,
+                }),
+            }
+        );
+        const responseInfo = await response.json();
+        console.log(responseInfo);
+        if (responseInfo.code === 0) {
+            showSnackbar("Email already registered", "error");
         } else {
-            // alert("???");
-            const response = await fetch(
-                `http://localhost:8080/auth/register`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        email: userInfo.email,
-                        phone: userInfo.phone,
-                        password: userInfo.password,
-                        postcode: userInfo.postcode,
-                        firstName: userInfo.firstName,
-                        lastName: userInfo.lastName,
-                    }),
-                }
-            );
-            const responseInfo = await response.json();
-            console.log(responseInfo);
-            if (responseInfo.code === 0) {
-                alert("Email already registered");
-            } else {
-                props.setToken(responseInfo.token);
-                localStorage.setItem("token", responseInfo.token);
+            // 解析 accessToken 和 refreshToken
+            const { accessToken, refreshToken } = responseInfo.data || {};
+            if (accessToken && refreshToken) {
+                localStorage.setItem("accessToken", accessToken);
+                localStorage.setItem("refreshToken", refreshToken);
                 localStorage.setItem("Email", userInfo.email);
-                alert("Registration successful");
+                props.setToken(accessToken);
+                showSnackbar("Registration successful", "success");
                 navigate("/");
             } else {
                 showSnackbar("Registration response error: token missing", "error");
@@ -143,52 +128,52 @@ export const Register = (props) => {
                         placeholder="example@gmail.com"
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={registerEmail}
-                        onChange={(event) => setEmail(event.target.value)}
+                        value={userInfo.email}
+                        onChange={changeState("email")}
                     />
                     <TextField
                         label="Phone"
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={phone}
-                        onChange={(event) => setPhone(event.target.value)}
+                        value={userInfo.phone}
+                        onChange={changeState("phone")}
                     />
                     <TextField
                         label="Postcode"
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={postcode}
-                        onChange={(event) => setPostcode(event.target.value)}
+                        value={userInfo.postcode}
+                        onChange={changeState("postcode")}
                     />
                     <TextField
                         label="First Name"
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={firstName}
-                        onChange={(event) => setFirstName(event.target.value)}
+                        value={userInfo.firstName}
+                        onChange={changeState("firstName")}
                     />
                     <TextField
                         label="Last Name"
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={lastName}
-                        onChange={(event) => setLastName(event.target.value)}
+                        value={userInfo.lastName}
+                        onChange={changeState("lastName")}
                     />
                     <TextField
                         label="Password"
                         type="password"
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
+                        value={userInfo.password}
+                        onChange={changeState("password")}
                     />
                     <TextField
                         label="Confirm Password"
                         type="password"
                         fullWidth
                         sx={{ mb: 3 }}
-                        value={confirmPassword}
-                        onChange={(event) => setConfirmPassword(event.target.value)}
+                        value={userInfo.confirmPassword}
+                        onChange={changeState("confirmPassword")}
                     />
                     <Button
                         variant="contained"
