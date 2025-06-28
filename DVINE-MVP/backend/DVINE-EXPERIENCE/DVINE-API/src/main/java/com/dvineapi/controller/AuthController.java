@@ -21,34 +21,33 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public ResponseEntity<ReturnResult> register(@RequestBody User user){
+    public ReturnResult register(@RequestBody User user){
         log.info("User Register:{}", user);
         TokenResponse tokens = authService.register(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ReturnResult.success(tokens));
+        return ReturnResult.success(tokens);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public ReturnResult login(@RequestBody User user){
         log.info("User login: {}", user.getEmail());
         TokenResponse tokens = authService.login(user);
-        if(tokens != null){
-            return ReturnResult.success(tokens);
-        }
-        return ReturnResult.error("Email or password is incorrect");
+        return ReturnResult.success(tokens);
+
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/logout")
     public ReturnResult logout(){
         Long userId = UserUtil.getCurrentUserId();
         log.info("User logout: {}", userId);
-        if (userId == null) {
-            return ReturnResult.error("User not logged in");
-        }
-        String result = authService.logout(userId);
-        return ReturnResult.success(result);
+        authService.logout(userId);
+        return ReturnResult.success();
     }
-    
+
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/refresh")
     public ReturnResult refreshToken(@RequestBody TokenRefreshRequest request){
         log.info("Refresh Token:{}", request);

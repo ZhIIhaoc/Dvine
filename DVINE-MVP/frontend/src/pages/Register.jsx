@@ -3,21 +3,61 @@ import PropTypes from "prop-types";
 import { Grid, Box, Typography, TextField, Button, Link } from "@mui/material";
 import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
+import { Grid, Box } from "@mui/material";
+import Logo from "../components/Logo.jsx";
+import SignUpStepOne from "../components/SignUpStepOne.jsx";
+import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
 
 export const Register = (props) => {
-    const [registerEmail, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [confirmPassword, setConfirmPassword] = React.useState("");
-    const [phone, setPhone] = React.useState("");
-    const [postcode, setPostcode] = React.useState("");
-    const [firstName, setFirstName] = React.useState("");
-    const [lastName, setLastName] = React.useState("");
+    const [page, setPage] = React.useState(0);
+    const [windowSize, setWindowSize] = React.useState(getWindowSize());
+    const [userInfo, setUsersInfo] = React.useState({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+        postcode: "",
+        firstName: "",
+        lastName: ""
+    });
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState("");
     const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
     const navigate = useNavigate();
+    React.useEffect(() => {
+        function handleWindowResize() {
+            // console.log(getWindowSize());
+            setWindowSize(getWindowSize());
+        }
+
+        window.addEventListener("resize", handleWindowResize);
+
+        return () => {
+            window.removeEventListener("resize", handleWindowResize);
+        };
+    }, []);
+
+    function getWindowSize() {
+        const { innerWidth, innerHeight } = window;
+        return { innerWidth, innerHeight };
+    }
+
+
+    // this tracks what process of the register process the user is on
+    const pageNext = () => setPage(1);
+    const pageBack = () => setPage(0);
+    const changeState = (value) => (event) => {
+        setUsersInfo({
+            ...userInfo,
+            [value]: event.target.value,
+        });
+    }
+
+
+
+
 
     function getWindowSize() {
         const { innerWidth, innerHeight } = window;
@@ -41,44 +81,37 @@ export const Register = (props) => {
     };
 
     const registerButton = async () => {
-        if (registerEmail === "" || password === "" || confirmPassword === "" || phone === "" || postcode === "" || firstName === "" || lastName === "") {
-            showSnackbar("Please fill in all fields", "warning");
-            return;
-        }
-        if (password !== confirmPassword) {
-            showSnackbar("Passwords do not match", "error");
-            return;
-        }
-        const response = await fetch(
-            `http://localhost:8080/auth/register`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: registerEmail,
-                    phone: phone,
-                    password: password,
-                    postcode: postcode,
-                    firstName: firstName,
-                    lastName: lastName,
-                }),
-            }
-        );
-        const responseInfo = await response.json();
-        console.log(responseInfo);
-        if (responseInfo.code === 0) {
-            showSnackbar("Email already registered", "error");
+        alert("Register button clicked");
+        if (userInfo.password !== userInfo.confirmPassword) {
+            alert("Passwords do not match");
         } else {
-            // 解析 accessToken 和 refreshToken
-            const { accessToken, refreshToken } = responseInfo.data || {};
-            if (accessToken && refreshToken) {
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("refreshToken", refreshToken);
-                localStorage.setItem("Email", registerEmail);
-                props.setToken(accessToken);
-                showSnackbar("Registration successful", "success");
+            // alert("???");
+            const response = await fetch(
+                `http://localhost:8080/auth/register`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: userInfo.email,
+                        phone: userInfo.phone,
+                        password: userInfo.password,
+                        postcode: userInfo.postcode,
+                        firstName: userInfo.firstName,
+                        lastName: userInfo.lastName,
+                    }),
+                }
+            );
+            const responseInfo = await response.json();
+            console.log(responseInfo);
+            if (responseInfo.code === 0) {
+                alert("Email already registered");
+            } else {
+                props.setToken(responseInfo.token);
+                localStorage.setItem("token", responseInfo.token);
+                localStorage.setItem("Email", userInfo.email);
+                alert("Registration successful");
                 navigate("/");
             } else {
                 showSnackbar("Registration response error: token missing", "error");
