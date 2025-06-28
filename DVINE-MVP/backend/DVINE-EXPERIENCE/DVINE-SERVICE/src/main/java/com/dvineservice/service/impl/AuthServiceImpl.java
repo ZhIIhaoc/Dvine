@@ -4,6 +4,8 @@ import com.dvinedao.domain.TokenRefreshRequest;
 import com.dvinedao.domain.TokenResponse;
 import com.dvinedao.domain.User;
 import com.dvinedao.mapper.UserMapper;
+import com.dvineservice.exception.InvalidTokenException;
+import com.dvineservice.exception.LoginCredentialIncorrectException;
 import com.dvineservice.service.AuthService;
 import com.dvineservice.util.TokenUtil;
 import org.slf4j.Logger;
@@ -44,11 +46,11 @@ public class AuthServiceImpl implements AuthService {
         // Find user by email
         User userData = userMapper.selectUserByEmail(loginInfo.getEmail());
         if (userData == null) {
-            return null;
+            throw new LoginCredentialIncorrectException("Invalid email or password");
         }
         // Verify password
         if (!passwordEncoder.matches(loginInfo.getPassword(), userData.getPassword())) {
-            return null;
+            throw new LoginCredentialIncorrectException("Invalid email or password");
         }
         // Generate tokens
         TokenResponse tokens = tokenUtil.generateDoubleToken(userData.getUserId());
@@ -56,13 +58,11 @@ public class AuthServiceImpl implements AuthService {
     }
     
     @Override
-    public String logout(Long userId) {
+    public void logout(Long userId) {
         // Remove refresh token from Redis
         String redisKey = REFRESH_TOKEN_PREFIX + userId;
         stringRedisTemplate.delete(redisKey);
-
         log.info("User logged out successfully with ID: {}", userId);
-        return "Logout successful";
     }
     
     @Override
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
         
         // Verify refresh token
         if (!tokenUtil.verifyRefreshToken(refreshToken, userId)) {
-            throw new IllegalArgumentException("Invalid refresh token");
+            throw new InvalidTokenException("Invalid refresh token");
         }
         // Generate new tokens
         TokenResponse tokens = tokenUtil.generateDoubleToken(userId);

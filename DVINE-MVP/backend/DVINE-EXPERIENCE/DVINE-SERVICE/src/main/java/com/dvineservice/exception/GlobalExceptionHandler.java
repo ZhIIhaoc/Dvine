@@ -4,7 +4,9 @@ import com.dvinedao.domain.ReturnResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.regex.Matcher;
@@ -44,6 +46,7 @@ public class GlobalExceptionHandler {
      * @param e The database constraint violation exception
      * @return A standardized error response
      */
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler
     public ReturnResult handleDuplicateKeyException(DuplicateKeyException e) {
         // full JDBC message
@@ -61,9 +64,24 @@ public class GlobalExceptionHandler {
         return ReturnResult.error("The " + key + " already exists");
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public ReturnResult handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("An error occurred:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler
+    public ReturnResult handleTokenIsInvalid(InvalidTokenException e) {
+        log.error("Invalid Token:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ReturnResult handleWrongCredentialsException(LoginCredentialIncorrectException e) {
+        log.error("Wrong credentials error:", e);
         return ReturnResult.error(e.getMessage());
     }
 }
