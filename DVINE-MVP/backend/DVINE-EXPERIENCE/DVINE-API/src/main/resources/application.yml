@@ -14,7 +14,7 @@ spring:
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true    # camel-case button, the sql col must named like "xxx_xxx"
+#    map-underscore-to-camel-case: true    # camel-case button, the sql col must named like "xxx_xxx"
 
 jwt:
   secret: KG0z7ycKfE7cHQJxPgW9WwO19o9I8y2tx7Gy3aJ9B4k=

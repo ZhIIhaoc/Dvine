@@ -1,7 +1,12 @@
 package com.dvineservice.service;
 
+import com.dvinedao.domain.TokenRefreshRequest;
+import com.dvinedao.domain.TokenResponse;
 import com.dvinedao.domain.User;
 
 public interface AuthService {
-    String register(User user);
+    TokenResponse register(User user);
+    TokenResponse login(User user);
+    void logout(Long userId);
+    TokenResponse refreshToken(TokenRefreshRequest request);
 }
