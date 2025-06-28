@@ -73,6 +73,13 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler
+    public ReturnResult handleMissingTokenException(MissingTokenException e) {
+        log.error("Missing Token:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler
     public ReturnResult handleTokenIsInvalid(InvalidTokenException e) {
         log.error("Invalid Token:", e);
         return ReturnResult.error(e.getMessage());

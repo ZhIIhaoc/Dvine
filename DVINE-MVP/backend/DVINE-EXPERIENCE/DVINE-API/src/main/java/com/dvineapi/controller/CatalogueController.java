@@ -24,9 +24,9 @@ public class CatalogueController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{catalogueId}")
-    public ReturnResult getCatalogueById(@PathVariable String catalogueId){
-        // TODO: Implement the logic to retrieve a catalogue by its ID
-        return ReturnResult.success("Catalogue INFO");
+    public ReturnResult getCatalogueById(@PathVariable Long catalogueId){
+        Catalogue catalogue = catalogueService.findCatalogueById(catalogueId);
+        return ReturnResult.success(catalogue);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
