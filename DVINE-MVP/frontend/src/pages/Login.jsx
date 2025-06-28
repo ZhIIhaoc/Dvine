@@ -67,20 +67,18 @@ export const Login = (props) => {
         //     Password <input id="passwordLogin" type="password" onChange={(event) => setLoginPassword(event.target.value)} value={loginPassword} /> <br />
         //     <button id="loginButton" onClick={loginButton}>Login</button>
         // </>
-        <Grid container sx={{ height: "100vh" }}>
+        <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
             {/*left side of the page*/}
-            <Grid size={windowSize.innerWidth < 500 ? 12 : 6}>
+            <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
                 <Logo />
 
                 <Box
                     sx={{
-                        width: "96%",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
                         height: "100%",
-                        padding: 1,
                     }}
                 >
                     <Typography variant="h4" sx={{ mb: 6 }}>
@@ -90,7 +88,6 @@ export const Login = (props) => {
                     <TextField
                         label="Email"
                         placeholder="example@gmail.com"
-                        fullWidth
                         sx={{ mb: 4, width: "70%" }}
                         value={loginEmail}
                         onChange={(event) => setLoginEmail(event.target.value)}
@@ -99,15 +96,19 @@ export const Login = (props) => {
                         label="Password"
                         type="password"
                         fullWidth
-                        sx={{ mb: 4, width: "70%" }}
+                        sx={{ mb: 6, width: "70%" }}
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                     />
 
                     <Button
                         variant="contained"
-                        fullWidth
-                        sx={{ bgcolor: "primary", mb: 2, width: "70%" }}
+                        sx={{
+                            bgcolor: "primary",
+                            mb: 4,
+                            width: "70%",
+                            height: "56px",
+                        }}
                         onClick={loginButton}
                     >
                         Log in
@@ -118,6 +119,7 @@ export const Login = (props) => {
                         <Link
                             underline="hover"
                             color="secondary"
+                            sx={{ cursor: "pointer", ml: 2 }}
                             onClick={() => navigate("/register")}
                         >
                             Sign up
@@ -125,11 +127,15 @@ export const Login = (props) => {
                     </Typography>
                 </Box>
             </Grid>
-            {windowSize.innerWidth >= 500 && (
+            {windowSize.innerWidth >= 900 && (
                 <Grid size={6}>
                     <img
                         src="../src/assets/background.png"
-                        style={{ width: "100%", height: "100%" }}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                        }}
                     />
                 </Grid>
             )}
