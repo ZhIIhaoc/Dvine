@@ -29,7 +29,8 @@ public class JwtFilter implements Filter {
     private final List<String> excludeUrls = List.of(
             "/auth/login",
             "/auth/register",
-            "/auth/refresh"
+            "/auth/refresh",
+            "/catalogues/list"
     );
 
     @Override

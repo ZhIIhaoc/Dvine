@@ -62,4 +62,9 @@
             *
         FROM users WHERE email = #{email}
     </select>
+    <select id="findPermissionById" resultType="java.lang.Integer">
+        SELECT
+            permission
+        FROM users WHERE userId = #{userId}
+    </select>
 </mapper>

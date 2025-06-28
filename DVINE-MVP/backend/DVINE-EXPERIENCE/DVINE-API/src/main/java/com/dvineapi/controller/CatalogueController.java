@@ -2,18 +2,24 @@ package com.dvineapi.controller;
 
 import com.dvinedao.domain.Catalogue;
 import com.dvinedao.domain.ReturnResult;
+import com.dvineservice.service.CatalogueService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/catalogues")
 public class CatalogueController {
+    @Autowired
+    private CatalogueService catalogueService;
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/list")
     public ReturnResult list(){
-        // TODO: Implement the logic to retrieve the catalogue list
-        return ReturnResult.success("Catalogue List");
+        List<Catalogue> catalogues = catalogueService.findAllCatalogues();
+        return ReturnResult.success(catalogues);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -24,21 +30,21 @@ public class CatalogueController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping()
+    @PostMapping
     public ReturnResult createCatalogue(@RequestBody Catalogue catalogueData){
-        // TODO: Implement the logic to create a new catalogue
+        catalogueService.createCatalogue(catalogueData);
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping()
+    @PutMapping
     public ReturnResult updateCatalogue(@RequestBody Catalogue catalogueData){
         // TODO: Implement the logic to update an existing catalogue
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping()
+    @DeleteMapping
     public ReturnResult deleteCatalogue(@RequestParam Long catalogueId) {
         // TODO: Implement the logic to delete a catalogue by its ID
         return ReturnResult.success();

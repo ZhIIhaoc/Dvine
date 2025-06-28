@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.CatalogueMapper">
+    <insert id="createCatalogue">
+        INSERT INTO catalogues (title, description, type, creatorId, coverImage)
+        VALUES (#{title}, #{description}, #{type}, #{creatorId}, #{coverImage})
+    </insert>
+
+
+    <select id="findAllCatalogues" resultType="com.dvinedao.domain.Catalogue">
+        SELECT
+            c.catalogueId,
+            c.title,
+            c.description,
+            c.type,
+            c.creatorId,
+            u.nickName as creatorNickName,
+            c.coverImage
+        FROM
+            catalogues c
+        JOIN
+            users u ON c.creatorId = u.userId
+        ORDER BY
+            c.updateTime DESC
+    </select>
+</mapper>

@@ -78,10 +78,17 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler
     public ReturnResult handleWrongCredentialsException(LoginCredentialIncorrectException e) {
         log.error("Wrong credentials error:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler
+    public ReturnResult handlePermissionDeniedException(PermissionDeniedException e) {
+        log.error("Permission denied error:", e);
         return ReturnResult.error(e.getMessage());
     }
 }

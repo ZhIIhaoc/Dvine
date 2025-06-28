@@ -12,5 +12,7 @@ public class Catalogue {
     private String title; // Catalogue title
     private Integer type; // Catalogue type (e.g., 0 for official catalogue, 1 for partner catalogue)
     private String description; // Catalogue description
+    private String coverImage; // Catalogue cover image URL
     private Long creatorId; // ID of the user who created the catalogue
+    private String creatorNickName; // Name of the user who created the catalogue
 }
