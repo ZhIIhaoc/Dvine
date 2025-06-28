@@ -44,5 +44,4 @@ public class CatalogueController {
         return ReturnResult.success();
     }
 
-
 }
