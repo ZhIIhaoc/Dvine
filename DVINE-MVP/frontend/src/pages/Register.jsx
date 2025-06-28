@@ -78,7 +78,7 @@ export const Register = (props) => {
             );
             const responseInfo = await response.json();
             console.log(responseInfo);
-            if (responseInfo.code === 0) {
+            if (responseInfo.code === 1) {
                 alert("Email already registered");
             } else {
                 props.setToken(responseInfo.token);
@@ -116,7 +116,7 @@ export const Register = (props) => {
                             changeState={changeState}
                             userInfo={userInfo}
                             pageBack={pageBack}
-                            pageNext={registerButton}
+                            registerButton={registerButton}
                         />
                     )}
                 </Box>
