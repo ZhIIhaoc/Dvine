@@ -12,6 +12,16 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # ← add this
+    networks:
+      - dvine-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - dvine-network
   # Backend
   backend:
     build:
@@ -24,6 +34,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/dvine_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     networks:
       - dvine-network
 

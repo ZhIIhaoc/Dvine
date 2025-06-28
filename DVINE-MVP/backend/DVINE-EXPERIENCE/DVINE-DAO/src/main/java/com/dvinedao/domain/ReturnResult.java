@@ -6,7 +6,7 @@ package com.dvinedao.domain;
  * Provides methods to create success and error responses.
  */
 public class ReturnResult {
-    private Integer code; // 1 is for success ，0 is for fail
+    private Integer code; // 0 is for success ，1 is for fail
     private String msg; // wrong message
     private Object data; // return data
 
@@ -17,7 +17,7 @@ public class ReturnResult {
      */
     public static ReturnResult success() {
         ReturnResult result = new ReturnResult();
-        result.code = 1;
+        result.code = 0;
         result.msg = "success";
         return result;
     }
@@ -31,7 +31,7 @@ public class ReturnResult {
     public static ReturnResult success(Object object) {
         ReturnResult result = new ReturnResult();
         result.data = object;
-        result.code = 1;
+        result.code = 0;
         result.msg = "success";
         return result;
     }
@@ -45,7 +45,7 @@ public class ReturnResult {
     public static ReturnResult error(String msg) {
         ReturnResult result = new ReturnResult();
         result.msg = msg;
-        result.code = 0;
+        result.code = 1;
         return result;
     }
 
