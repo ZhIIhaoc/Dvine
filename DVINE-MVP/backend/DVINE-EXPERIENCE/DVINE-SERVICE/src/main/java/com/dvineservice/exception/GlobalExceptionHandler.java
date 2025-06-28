@@ -91,4 +91,11 @@ public class GlobalExceptionHandler {
         log.error("Permission denied error:", e);
         return ReturnResult.error(e.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler
+    public ReturnResult handleNotFoundException(NotFoundException e) {
+        log.error("Resource not found error:", e);
+        return ReturnResult.error(e.getMessage());
+    }
 }

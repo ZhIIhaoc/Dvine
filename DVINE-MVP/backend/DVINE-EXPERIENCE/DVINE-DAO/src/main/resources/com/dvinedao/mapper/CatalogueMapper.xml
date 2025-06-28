@@ -25,4 +25,20 @@
         ORDER BY
             c.updateTime DESC
     </select>
+    <select id="findCatalogueById" resultType="com.dvinedao.domain.Catalogue">
+        SELECT
+            c.catalogueId,
+            c.title,
+            c.description,
+            c.type,
+            c.creatorId,
+            u.nickName as creatorNickName,
+            c.coverImage
+        FROM
+            catalogues c
+        JOIN
+            users u ON c.creatorId = u.userId
+        WHERE
+            c.catalogueId = #{catalogueId}
+    </select>
 </mapper>

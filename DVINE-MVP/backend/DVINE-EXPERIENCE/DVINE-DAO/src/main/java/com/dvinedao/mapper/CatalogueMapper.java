@@ -9,4 +9,5 @@ import java.util.List;
 public interface CatalogueMapper {
     List<Catalogue> findAllCatalogues();
     void createCatalogue(Catalogue catalogue);
+    Catalogue findCatalogueById(Long id);
 }
