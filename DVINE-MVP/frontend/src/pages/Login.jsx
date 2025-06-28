@@ -83,7 +83,7 @@ export const Login = (props) => {
                         padding: 1,
                     }}
                 >
-                    <Typography variant="h4" sx={{ mb: 2 }}>
+                    <Typography variant="h4" sx={{ mb: 6 }}>
                         Welcome Back!
                     </Typography>
 
@@ -91,7 +91,7 @@ export const Login = (props) => {
                         label="Email"
                         placeholder="example@gmail.com"
                         fullWidth
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 4, width: "70%" }}
                         value={loginEmail}
                         onChange={(event) => setLoginEmail(event.target.value)}
                     />
@@ -99,7 +99,7 @@ export const Login = (props) => {
                         label="Password"
                         type="password"
                         fullWidth
-                        sx={{ mb: 3 }}
+                        sx={{ mb: 4, width: "70%" }}
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                     />
@@ -107,7 +107,7 @@ export const Login = (props) => {
                     <Button
                         variant="contained"
                         fullWidth
-                        sx={{ bgcolor: "#800080", mb: 2 }}
+                        sx={{ bgcolor: "primary", mb: 2, width: "70%" }}
                         onClick={loginButton}
                     >
                         Log in
@@ -128,7 +128,7 @@ export const Login = (props) => {
             {windowSize.innerWidth >= 500 && (
                 <Grid size={6}>
                     <img
-                        src="../src/assets/background.jpg"
+                        src="../src/assets/background.png"
                         style={{ width: "100%", height: "100%" }}
                     />
                 </Grid>
