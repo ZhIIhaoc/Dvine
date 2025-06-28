@@ -9,6 +9,7 @@ import { AdminDashboard } from "./pages/AdminDashboard.jsx";
 import { Catalogue } from "./pages/Catalogue.jsx";
 import { DvineMoments } from "./pages/DvineMoments.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
+import TestUserProfile from "./pages/TestUserProfile.jsx";
 import "./components/RouterDomColour.css";
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
                 <Route path="/login" element={<Login setToken={setToken} />} />
                 <Route path="/user-dashboard" element={<UserDashboard setToken={setToken} />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard setToken={setToken} />} />
+                <Route path="/test-user-profile" element={<TestUserProfile setToken={setToken} />} />
                 <Route path="/catalogue" element={<Catalogue />} />
                 <Route path="/dvine-moments" element={<DvineMoments />} />
                 <Route path="*" element={<NotFound />} />

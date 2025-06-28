@@ -14,10 +14,8 @@ const SubmitRegistration = async (registerEmail, phone, password, postcode, firs
             lastName: lastName,
         })
     });
-    alert("???");
     return response;
 }
-
 
 export default SubmitRegistration;
 
