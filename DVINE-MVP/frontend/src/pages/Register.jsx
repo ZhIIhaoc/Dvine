@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SignUpStepOne from "../components/SignUpStepOne.jsx";
 import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
+import SubmitRegistration from "../endpoints/SubmitRegistration.js";
 
 export const Register = (props) => {
     const [page, setPage] = React.useState(0);
@@ -67,40 +68,39 @@ export const Register = (props) => {
             showSnackbar("Passwords do not match", "error");
             return;
         }
-        const response = await fetch(
-            `http://localhost:8080/auth/register`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: userInfo.email,
-                    phone: userInfo.phone,
-                    password: userInfo.password,
-                    postcode: userInfo.postcode,
-                    firstName: userInfo.firstName,
-                    lastName: userInfo.lastName,
-                }),
-            }
-        );
-        const responseInfo = await response.json();
-        console.log(responseInfo);
-        if (responseInfo.code === 0) {
-            showSnackbar("Email already registered", "error");
-        } else {
-            // 解析 accessToken 和 refreshToken
-            const { accessToken, refreshToken } = responseInfo.data || {};
-            if (accessToken && refreshToken) {
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("refreshToken", refreshToken);
-                localStorage.setItem("Email", userInfo.email);
-                props.setToken(accessToken);
-                showSnackbar("Registration successful", "success");
-                navigate("/");
+        
+        try {
+            const response = await SubmitRegistration(
+                userInfo.email,
+                userInfo.phone,
+                userInfo.password,
+                userInfo.postcode,
+                userInfo.firstName,
+                userInfo.lastName
+            );
+            const responseInfo = await response.json();
+            console.log(responseInfo);
+            
+            if (responseInfo.code === 0) {
+                // Success case
+                const { accessToken, refreshToken } = responseInfo.data || {};
+                if (accessToken && refreshToken) {
+                    localStorage.setItem("accessToken", accessToken);
+                    localStorage.setItem("refreshToken", refreshToken);
+                    localStorage.setItem("Email", userInfo.email);
+                    props.setToken(accessToken);
+                    showSnackbar("Registration successful", "success");
+                    navigate("/");
+                } else {
+                    showSnackbar("Registration response error: token missing", "error");
+                }
             } else {
-                showSnackbar("Registration response error: token missing", "error");
+                // Error case
+                showSnackbar(responseInfo.msg || "Registration failed", "error");
             }
+        } catch (error) {
+            console.error("Registration error:", error);
+            showSnackbar("Network error. Please try again.", "error");
         }
     };
 
@@ -120,6 +120,24 @@ export const Register = (props) => {
                         padding: 1,
                     }}
                 >
+                    {/* Multi-step registration implementation */}
+                    {page === 0 ? (
+                        <SignUpStepOne
+                            userInfo={userInfo}
+                            changeState={changeState}
+                            pageNext={pageNext}
+                        />
+                    ) : (
+                        <SignUpStepTwo
+                            userInfo={userInfo}
+                            changeState={changeState}
+                            pageBack={pageBack}
+                            registerButton={registerButton}
+                        />
+                    )}
+
+                    {/* Single Page Register Code (Commented) */}
+                    {/*
                     <Typography variant="h4" sx={{ mb: 2 }}>
                         Create Account
                     </Typography>
@@ -193,12 +211,13 @@ export const Register = (props) => {
                             Log in
                         </Link>
                     </Typography>
+                    */}
                 </Box>
             </Grid>
             {windowSize.innerWidth >= 500 && (
                 <Grid size={6}>
                     <img
-                        src="../src/assets/background.jpg"
+                        src="../src/assets/background.png"
                         style={{ width: "100%", height: "100%" }}
                     />
                 </Grid>
