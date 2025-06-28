@@ -1,11 +1,11 @@
 package com.dvineservice.service.impl;
 
+import com.dvinedao.annotation.AdminPermissionCheck;
 import com.dvinedao.domain.Catalogue;
 import com.dvinedao.domain.CatalogueType;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.mapper.CatalogueMapper;
 import com.dvinedao.mapper.UserMapper;
-import com.dvineservice.exception.PermissionDeniedException;
 import com.dvineservice.service.CatalogueService;
 import com.dvineservice.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +25,12 @@ public class CatalogueServiceImpl implements CatalogueService {
         return catalogueMapper.findAllCatalogues();
     }
 
+    @AdminPermissionCheck
     @Override
     public void createCatalogue(Catalogue catalogue) {
         Long currentUserId = UserUtil.getCurrentUserId();
         catalogue.setCreatorId(currentUserId);
         Integer permission = userMapper.findPermissionById(currentUserId);
-        if (!PermissionLevel.isAdmin(permission)) {
-            throw new PermissionDeniedException("You do not have permission to create a catalogue");
-        }
         if (PermissionLevel.isManager(permission) || PermissionLevel.isOwner(permission)) {
             catalogue.setType(CatalogueType.OFFICIAL_CATALOGUE);
         } else  {
