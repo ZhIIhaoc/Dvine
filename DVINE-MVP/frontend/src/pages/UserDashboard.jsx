@@ -4,9 +4,8 @@ import axios from "axios";
 import  { Header } from "../components/Header";
 
 export function UserDashboard(props) {
-    const tokenValue = localStorage.getItem("token");
+    const { token } = props;
     const [userInfo, setUserInfo] = useState(null);
-    const token = props.token;
      const fetchUserInfo = async () => {
         try { 
             const response = await axios.get('/users/profile', {

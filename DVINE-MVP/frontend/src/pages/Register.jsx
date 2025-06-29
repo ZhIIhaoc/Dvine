@@ -56,7 +56,7 @@ export const Register = (props) => {
     const registerButton = async () => {
         alert("Register button clicked");
         if (userInfo.password !== userInfo.confirmPassword) {
-            alert("Passwords do not match");
+            // alert("Passwords do not match");
         } else {
             // alert("???");
             const response = await fetch(
@@ -79,12 +79,12 @@ export const Register = (props) => {
             const responseInfo = await response.json();
             console.log(responseInfo);
             if (responseInfo.code === 1) {
-                alert("Email already registered");
+                // alert("Email already registered");
             } else {
                 props.setToken(responseInfo.token);
                 localStorage.setItem("token", responseInfo.token);
                 localStorage.setItem("Email", userInfo.email);
-                alert("Registration successful");
+                // alert("Registration successful");
                 navigate("/");
             }
         }
