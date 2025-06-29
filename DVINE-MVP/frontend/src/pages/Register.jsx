@@ -7,7 +7,7 @@ import Logo from "../components/Logo.jsx";
 import SignUpStepOne from "../components/SignUpStepOne.jsx";
 import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 
-export const Register = (props) => {
+export const Register = () => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const [userInfo, setUsersInfo] = React.useState({
@@ -19,6 +19,7 @@ export const Register = (props) => {
         firstName: "",
         lastName: ""
     });
+    //const { setToken } = useContext(AuthContext);
     const navigate = useNavigate();
     React.useEffect(() => {
         function handleWindowResize() {
@@ -81,8 +82,8 @@ export const Register = (props) => {
             if (responseInfo.code === 1) {
                 // alert("Email already registered");
             } else {
-                props.setToken(responseInfo.token);
-                localStorage.setItem("token", responseInfo.token);
+                //setToken(responseInfo.data.accessToken);
+                localStorage.setItem("token", responseInfo.data.accessToken);
                 localStorage.setItem("Email", userInfo.email);
                 // alert("Registration successful");
                 navigate("/");
@@ -124,7 +125,7 @@ export const Register = (props) => {
             {windowSize.innerWidth >= 500 && (
                 <Grid size={6}>
                     <img
-                        src="../src/assets/background.jpg"
+                        src="../src/assets/background.png"
                         style={{ width: "100%", height: "100%" }}
                     />
                 </Grid>
@@ -135,6 +136,3 @@ export const Register = (props) => {
     );
 };
 
-Register.propTypes = {
-    setToken: PropTypes.func,
-};

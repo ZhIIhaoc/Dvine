@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import "./App.css";
 import { Route, Routes, Link, NavLink } from "react-router-dom";
 import { Home } from "./pages/Home.jsx";
@@ -12,14 +11,6 @@ import { NotFound } from "./pages/NotFound.jsx";
 import "./components/RouterDomColour.css";
 
 function App() {
-    const [token, setToken] = useState(null);
-    
-    useEffect(() => {
-        const storedToken = localStorage.getItem("token"); 
-        if (storedToken) {
-            setToken(storedToken);
-        }
-    }, []);
 
     return (
         <>
@@ -50,12 +41,12 @@ function App() {
             </nav> */}
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/register" element={<Register setToken={setToken}/>} />
-                <Route path="/login" element={<Login setToken={setToken}/>} />
-                <Route path="/user-dashboard" element={<UserDashboard token={token}/>} />
-                <Route path="/admin-dashboard" element={<AdminDashboard token={token}/>} />
-                <Route path="/catalogue" element={<Catalogue />} token={token}/>
-                <Route path="/dvine-moments" element={<DvineMoments token={token}/>} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/user-dashboard" element={<UserDashboard />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard/>} />
+                <Route path="/catalogue" element={<Catalogue />} />
+                <Route path="/dvine-moments" element={<DvineMoments />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>
