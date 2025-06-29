@@ -37,7 +37,7 @@ export function AdminDashboard() {
     };
     useEffect(() => {
         fetchUserInfo();
-        console.log("im running");
+        // console.log("im running");
     }, []);
 
 

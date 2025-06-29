@@ -1,6 +1,6 @@
 const CreateTours = async (tourTitle, tourDescription, tourImage) => {
     const localHost = "http://localhost:8080";
-    const response = await fetch(`${localHost}/auth/login`, {
+    const response = await fetch(`${localHost}/catalogues`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
