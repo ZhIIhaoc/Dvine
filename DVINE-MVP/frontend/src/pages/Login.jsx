@@ -6,7 +6,7 @@ import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
 import MessageAlert from "../components/MessageAlert.jsx";
 
-export const Login = (props) => {
+export const Login = () => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
     // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
