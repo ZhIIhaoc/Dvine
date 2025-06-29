@@ -8,6 +8,7 @@ import com.dvineservice.util.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +18,8 @@ public class UserController {
     
     @Autowired
     private UserService userService;
+
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/profile")
     public ReturnResult getUserProfile(){
         log.info("getUserProfile: {}", UserUtil.getCurrentUserId());
@@ -24,6 +27,7 @@ public class UserController {
         return ReturnResult.success(user);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/profile")
     public ReturnResult updateUserProfile(@RequestBody User user){
         log.info("updateUserProfile: {}", user);

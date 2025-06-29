@@ -1,5 +1,7 @@
 package com.dvinedao.domain;
 
+import java.util.stream.Stream;
+
 public class User {
     private Long userId;
     private String password;
@@ -10,7 +12,13 @@ public class User {
     private String firstName;
     private String lastName;
     private String avatar;
-    private Integer permission;
+    private Integer permission; // only admin to this
+
+    public boolean isEmptyPatch() {
+        return Stream.of(email, phone, postcode,
+                        nickName, firstName, lastName, avatar)
+                .allMatch(v -> v == null || v.isBlank());
+    }
 
     public Long getUserId() {
         return userId;

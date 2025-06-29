@@ -7,6 +7,6 @@ import com.dvinedao.domain.User;
 public interface AuthService {
     TokenResponse register(User user);
     TokenResponse login(User user);
-    String logout(Long userId);
+    void logout(Long userId);
     TokenResponse refreshToken(TokenRefreshRequest request);
 }

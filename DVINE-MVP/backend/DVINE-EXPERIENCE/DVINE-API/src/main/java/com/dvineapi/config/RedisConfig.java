@@ -1,4 +1,4 @@
-package com.dvineservice.config;
+package com.dvineapi.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
