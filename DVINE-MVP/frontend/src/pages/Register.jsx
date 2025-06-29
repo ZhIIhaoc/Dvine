@@ -17,7 +17,7 @@ export const Register = (props) => {
         phone: "",
         postcode: "",
         firstName: "",
-        lastName: ""
+        lastName: "",
     });
     const navigate = useNavigate();
     React.useEffect(() => {
@@ -38,7 +38,6 @@ export const Register = (props) => {
         return { innerWidth, innerHeight };
     }
 
-
     // this tracks what process of the register process the user is on
     const pageNext = () => setPage(1);
     const pageBack = () => setPage(0);
@@ -47,11 +46,7 @@ export const Register = (props) => {
             ...userInfo,
             [value]: event.target.value,
         });
-    }
-
-
-
-
+    };
 
     const registerButton = async () => {
         alert("Register button clicked");
@@ -90,9 +85,8 @@ export const Register = (props) => {
         }
     };
     return (
-
-        <Grid container sx={{ height: "100vh" }}>
-            <Grid size={windowSize.innerWidth < 500 ? 12 : 6}>
+        <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
+            <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
                 <Logo />
                 <Box
                     sx={{
@@ -121,16 +115,18 @@ export const Register = (props) => {
                     )}
                 </Box>
             </Grid>
-            {windowSize.innerWidth >= 500 && (
+            {windowSize.innerWidth >= 900 && (
                 <Grid size={6}>
                     <img
-                        src="../src/assets/background.jpg"
-                        style={{ width: "100%", height: "100%" }}
+                        src="../src/assets/background.png"
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                        }}
                     />
                 </Grid>
             )}
-
-
         </Grid>
     );
 };
