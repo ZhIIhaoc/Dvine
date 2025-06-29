@@ -90,13 +90,10 @@ export const Register = (props) => {
                 <Logo />
                 <Box
                     sx={{
-                        width: "96%",
-                        display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
                         height: "100%",
-                        padding: 1,
                     }}
                 >
                     {page === 0 ? (

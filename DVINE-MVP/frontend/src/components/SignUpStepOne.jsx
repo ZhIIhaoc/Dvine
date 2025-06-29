@@ -1,24 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Box, Typography, TextField, Button, Link, Step, StepLabel, Stepper } from "@mui/material";
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Link,
+    Step,
+    StepLabel,
+    Stepper,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const SignUpStepOne = (props) => {
     const navigate = useNavigate();
     return (
-        <Box>
-            <Typography variant="h4" gutterBottom align="center" sx={{ mb: 2 }}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+            }}
+        >
+            <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4 }}>
                 Create an account
             </Typography>
             <Stepper activeStep={0}>
-                <Step><StepLabel /> </Step>
-                <Step><StepLabel /> </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
             </Stepper>
             <TextField
                 label="Email"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ my: 4, width: "70%" }}
                 value={props.userInfo.email}
                 onChange={props.changeState("email")}
             />
@@ -27,7 +48,7 @@ const SignUpStepOne = (props) => {
                 type="password"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.password}
                 onChange={props.changeState("password")}
             />
@@ -36,11 +57,20 @@ const SignUpStepOne = (props) => {
                 type="password"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ mb: 6, width: "70%" }}
                 value={props.userInfo.confirmPassword}
                 onChange={props.changeState("confirmPassword")}
             />
-            <Button fullWidth variant="contained" sx={{ bgcolor: "#800080", mb: 2 }} onClick={props.pageNext}>
+            <Button
+                variant="contained"
+                sx={{
+                    bgcolor: "primary",
+                    mb: 4,
+                    width: "70%",
+                    height: "56px",
+                }}
+                onClick={props.pageNext}
+            >
                 Next
             </Button>
             <Typography variant="body2" align="center">
@@ -48,13 +78,12 @@ const SignUpStepOne = (props) => {
                 <Link
                     underline="hover"
                     color="secondary"
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", ml: 2 }}
                     onClick={() => navigate("/login")}
                 >
                     Log in
                 </Link>
             </Typography>
-
         </Box>
     );
 };
