@@ -16,7 +16,7 @@ INSERT INTO users
  permission)
 VALUES
 /* 0 – regular member */
-    ('1234',
+    ('$2a$10$WraUHTgrwgHsjS6Oc01JbeyLjiTqS4egE5nOy4I0Q7IgJl9qHQw5.',
      'i_am_regular@example.com',
      '0400000000',
      '2000',
@@ -27,7 +27,7 @@ VALUES
      0),
 
 /* 1 – premium member */
-    ('1234',
+    ('$2a$10$WraUHTgrwgHsjS6Oc01JbeyLjiTqS4egE5nOy4I0Q7IgJl9qHQw5.',
      'i_am_premium@example.com',
      '0400000001',
      '2001',
@@ -38,7 +38,7 @@ VALUES
      1),
 
 /* 2 – partner (lowest admin) */
-    ('1234',
+    ('$2a$10$WraUHTgrwgHsjS6Oc01JbeyLjiTqS4egE5nOy4I0Q7IgJl9qHQw5.',
      'i_am_partner@example.com',
      '0400000002',
      '2002',
@@ -49,7 +49,7 @@ VALUES
      2),
 
 /* 3 – manager */
-    ('1234',
+    ('$2a$10$WraUHTgrwgHsjS6Oc01JbeyLjiTqS4egE5nOy4I0Q7IgJl9qHQw5.',
      'i_am_manager@example.com',
      '0400000003',
      '2003',
@@ -60,7 +60,7 @@ VALUES
      3),
 
 /* 4 – owner */
-    ('1234',
+    ('$2a$10$WraUHTgrwgHsjS6Oc01JbeyLjiTqS4egE5nOy4I0Q7IgJl9qHQw5.',
      'i_am_owner@example.com',
      '0400000004',
      '2004',
