@@ -49,11 +49,11 @@ export const Login = (props) => {
         const response = await SubmitLogin(loginEmail, loginPassword);
         const responseInfo = await response.json();
         console.log(responseInfo);
-        if (responseInfo.code === 0) {
+        if (responseInfo.code === 1) {
             showSnackbar("Invalid email or password", "error");
         } else {
-            props.setToken(responseInfo.token);
-            localStorage.setItem("token", responseInfo.token);
+            // props.setToken(responseInfo.token);
+            localStorage.setItem("token", responseInfo.data.accessToken);
             localStorage.setItem("Email", loginEmail);
             showSnackbar("Login successful!", "success");
             navigate("/");
