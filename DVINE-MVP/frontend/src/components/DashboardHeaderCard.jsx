@@ -20,7 +20,7 @@ export function DashboardHeaderCard() {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-        <Button onClick={() => navigate("/upcomming-tours")}>Future Tours</Button>
+        <Button onClick={() => navigate("/upcoming-tours")}>Future Tours</Button>
         <Button onClick={() => navigate("/tours-history")}>Tour History</Button>
         <Button onClick={() => navigate("/purchase-history")}>Purchases</Button>
         <Button onClick={() => navigate("/support")}>Support</Button>

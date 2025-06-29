@@ -86,7 +86,7 @@ export function UserDashboard() {
                                 }}
                             >
                                 <Typography fontWeight="bold">Profile</Typography>
-                                <Button fullWidth><Typography color="text.secondary">+ Introduce your self</Typography></Button>
+                                <Button fullWidth><Typography color="text.secondary">+ Introduce yourself</Typography></Button>
                                 <Button fullWidth><Typography color="text.secondary">+ Add a trip</Typography></Button>
                                 <Button fullWidth><Typography color="text.secondary">+ Make a review</Typography></Button>
                             </Box>
@@ -106,8 +106,8 @@ export function UserDashboard() {
                                     Your Next Tour
                                 </Typography>
                                 {/* Placeholder image or details */}
-                                <Typography color="text.secondary">Tour Date: December 24, 2025</Typography>
-                                <Typography color="text.secondary">Beach</Typography>
+                                <Typography color="text.secondary">Date: </Typography>
+                                <Typography color="text.secondary">Beach: </Typography>
                                 <img
                                     src="../src/assets/background.png"
                                     style={{
