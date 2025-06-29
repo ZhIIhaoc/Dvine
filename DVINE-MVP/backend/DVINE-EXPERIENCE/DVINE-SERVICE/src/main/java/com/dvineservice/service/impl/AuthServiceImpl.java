@@ -1,5 +1,6 @@
 package com.dvineservice.service.impl;
 
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.TokenRefreshRequest;
 import com.dvinedao.domain.TokenResponse;
 import com.dvinedao.domain.User;
@@ -34,6 +35,8 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse register(User user) {
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // set default permission level
+        user.setPermission(PermissionLevel.REGULAR);
         // Insert user
         userMapper.insertUser(user);
         // Generate double tokens
