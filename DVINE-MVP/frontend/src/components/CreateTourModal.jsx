@@ -73,7 +73,7 @@ export function CreateTourModal({ open, onClose }) {
                     />
                     <TextField
                         label="Tour Description"
-                        type="Tour Description"
+                        placeHolder="Tour Description"
                         fullWidth
                         sx={{ mb: 6, width: "100%" }}
                         value={tourDescription}
