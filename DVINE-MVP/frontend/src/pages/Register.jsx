@@ -8,7 +8,7 @@ import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
 import SubmitRegistration from "../endpoints/SubmitRegistration.js";
 
-export const Register = (props) => {
+export const Register = () => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const [userInfo, setUsersInfo] = React.useState({
@@ -88,7 +88,7 @@ export const Register = (props) => {
                     localStorage.setItem("accessToken", accessToken);
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", userInfo.email);
-                    props.setToken(accessToken);
+                    // props.setToken(accessToken);
                     showSnackbar("Registration successful", "success");
                     navigate("/");
                 } else {
@@ -233,6 +233,3 @@ export const Register = (props) => {
     );
 };
 
-Register.propTypes = {
-    setToken: PropTypes.func,
-};
