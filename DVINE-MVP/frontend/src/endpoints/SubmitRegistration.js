@@ -1,5 +1,5 @@
 const SubmitRegistration = async (registerEmail, phone, password, postcode, firstName, lastName) => {
-    const localHost = "http://localhost:8080/"
+    const localHost = "http://localhost:8080"
     const response = await fetch(`${localHost}/auth/register`, {
         method: 'POST',
         headers: {
@@ -14,10 +14,8 @@ const SubmitRegistration = async (registerEmail, phone, password, postcode, firs
             lastName: lastName,
         })
     });
-    alert("???");
     return response;
 }
-
 
 export default SubmitRegistration;
 
