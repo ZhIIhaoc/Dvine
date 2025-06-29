@@ -10,4 +10,53 @@
         VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price})
     </insert>
 
+    <select id="search" resultType="com.dvinedao.domain.Tour">
+        SELECT
+            t.tourId,
+            t.title,
+            t.destination,
+            t.description,
+            t.price,
+            (SELECT i.imageUrl
+             FROM images i
+             WHERE i.tourId = t.tourId AND i.isPrimary = TRUE
+             LIMIT 1) as primaryImageUrl
+        FROM
+            tours t
+        <where>
+            <if test="tourId != null">
+                AND t.tourId = #{tourId}
+            </if>
+            <if test="catalogueId != null">
+                AND t.catalogueId = #{catalogueId}
+            </if>
+            <if test="title != null and title != ''">
+                AND t.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="destination != null and destination != ''">
+                AND t.destination LIKE CONCAT('%', #{destination}, '%')
+            </if>
+            <if test="minPrice != null">
+                AND t.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND t.price &lt;= #{maxPrice}
+            </if>
+        </where>
+        ORDER BY t.updateTime
+    </select>
+    <select id="findById" resultType="com.dvinedao.domain.Tour">
+        SELECT
+            t.tourId,
+            t.catalogueId,
+            t.title,
+            t.destination,
+            t.description,
+            t.price
+        FROM
+            tours t
+        WHERE
+            t.tourId = #{tourId}
+    </select>
+
 </mapper>

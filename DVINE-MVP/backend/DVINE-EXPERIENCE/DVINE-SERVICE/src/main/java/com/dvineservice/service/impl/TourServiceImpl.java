@@ -4,8 +4,10 @@ import com.dvinedao.annotation.AdminPermissionCheck;
 import com.dvinedao.annotation.CatalogueOwnerCheck;
 import com.dvinedao.domain.Image;
 import com.dvinedao.domain.Tour;
+import com.dvinedao.domain.TourQueryParam;
 import com.dvinedao.mapper.ImageMapper;
 import com.dvinedao.mapper.TourMapper;
+import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,5 +49,26 @@ public class TourServiceImpl implements TourService {
 
         // Save the images using the ImageMapper
         imageMapper.createImages(images);
+    }
+
+    @Override
+    public List<Tour> search(TourQueryParam tourQueryParam) {
+        List<Tour> tour = tourMapper.search(tourQueryParam);
+        if (tour == null) {
+            throw new NotFoundException("No such tours");
+        }
+        return tour;
+    }
+
+    @Override
+    public Tour findById(Long tourId) {
+        Tour tour = tourMapper.findById(tourId);
+        if (tour == null) {
+            throw new NotFoundException("Tour not found");
+        }
+        List<String> images = imageMapper.findByTourId(tourId).stream()
+                .map(image -> image.getImageUrl()).toList();
+        tour.setImages(images);
+        return tour;
     }
 }

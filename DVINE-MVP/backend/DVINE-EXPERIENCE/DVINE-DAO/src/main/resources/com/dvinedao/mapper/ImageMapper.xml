@@ -12,4 +12,16 @@
             (#{image.imageUrl}, #{image.caption}, #{image.tourId}, #{image.isPrimary})
         </foreach>
     </update>
+    <select id="findByTourId" resultType="com.dvinedao.domain.Image">
+        SELECT
+            i.imageId,
+            i.imageUrl,
+            i.caption,
+            i.tourId,
+            i.isPrimary
+        FROM
+            images i
+        WHERE
+            i.tourId = #{tourId}
+    </select>
 </mapper>
