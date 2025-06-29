@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import propTypes from "prop-types";
+// import propTypes from "prop-types";
 // import axios from "axios";
 import { Header } from "../components/Header";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Grid } from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +12,7 @@ export function UserDashboard() {
     const token = localStorage.getItem("accessToken");
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
+    const userName = userInfo?.nickName || userInfo?.firstName || "User";
     const fetchUserInfo = async () => {
         try {
             const response = await fetch('http://localhost:8080/users/profile', {
@@ -42,59 +43,89 @@ export function UserDashboard() {
     return (
         <>
             <Header />
-            <DashboardHeaderCard />
-            <Box sx={{
-                width: "70%",
-                mx: "auto",
-                display: "flex",
-                justifyContent: "flex-start",
+            {userInfo ? (
+            <>
+                <Typography sx={{ textAlign: "center", mt: 10, mb: 2, fontSize: "2rem", fontWeight: "bold", color: "purple" }}> Welcome Back {userName} </Typography>
+                <DashboardHeaderCard />
+                <Box sx={{ width: "70%", mx: "auto", mt: -4 }}>
+                    <Grid container spacing={3}>
+                        <Grid size={6}>
+                            <Box
+                                sx={{
+                                    border: "2px black solid",
+                                    borderRadius: "16px",
+                                    backgroundColor: "white",
+                                    padding: 2,
+                                    mb: 3,
+                                    textAlign: "center",
+                                }}
+                            >
+                                <Button fullWidth onClick={() => navigate("/members")}>Upgrade Members</Button>
+                            </Box>
 
-            }}
-            >
-                <Box
-                    sx={{
-                        border: "2px black solid",
-                        borderRadius: "16px",
-                        width: "30%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: "white",
-                        mb: 5,
-                        mt: -4,
-                        padding: 2,
-                        
-                    }}>
-                    <Button onClick={() => navigate("/members")}>Upgrade Members</Button>
+                            <Box
+                                sx={{
+                                    border: "2px black solid",
+                                    borderRadius: "16px",
+                                    backgroundColor: "white",
+                                    padding: 2,
+                                    mb: 3,
+                                    textAlign: "center",
+                                }}
+                            >
+                                <Typography>Add Future Feature Here</Typography>
+                            </Box>
 
-                        
+                            <Box
+                                sx={{
+                                    border: "2px black solid",
+                                    borderRadius: "16px",
+                                    backgroundColor: "white",
+                                    padding: 2,
+                                    textAlign: "center",
+                                }}
+                            >
+                                <Typography fontWeight="bold">Profile</Typography>
+                                <Button fullWidth><Typography color="text.secondary">+ Introduce your self</Typography></Button>
+                                <Button fullWidth><Typography color="text.secondary">+ Add a trip</Typography></Button>
+                                <Button fullWidth><Typography color="text.secondary">+ Make a review</Typography></Button>
+                            </Box>
+                        </Grid>
+
+                        {/* Right Column - Next Tour Box */}
+                        <Grid size={6}>
+                            <Box
+                                sx={{
+                                    border: "2px black solid",
+                                    borderRadius: "16px",
+                                    backgroundColor: "white",
+                                    padding: 4,
+                                }}
+                            >
+                                <Typography variant="h6" fontWeight="bold" mb={2}>
+                                    Your Next Tour
+                                </Typography>
+                                {/* Placeholder image or details */}
+                                <Typography color="text.secondary">Tour Date: December 24, 2025</Typography>
+                                <Typography color="text.secondary">Beach</Typography>
+                                <img
+                                    src="../src/assets/background.png"
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            </Box>
+                        </Grid>
+                    </Grid>
                 </Box>
+            </>
+            ) : (
+            <Box sx={{ textAlign: "center", mt: 5 }}>
+                <Typography variant="h4">Loading User Information...</Typography>
             </Box>
-            <Box sx={{
-                width: "70%",
-                mx: "auto",
-                display: "flex",
-                justifyContent: "flex-start",
-
-            }}
-            >
-                <Box
-                    sx={{
-                        border: "2px black solid",
-                        borderRadius: "16px",
-                        width: "30%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: "white",
-                        padding: 2,
-                        
-                    }}>
-                    <Typography>
-                        Upgrade your account
-                    </Typography>
-                </Box>
-            </Box>
+            )}
 
         </>
     );
