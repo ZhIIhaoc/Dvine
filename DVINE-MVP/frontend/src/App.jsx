@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { Route, Routes, Link, NavLink } from "react-router-dom";
 import { Home } from "./pages/Home.jsx";
@@ -9,9 +9,20 @@ import { AdminDashboard } from "./pages/AdminDashboard.jsx";
 import { Catalogue } from "./pages/Catalogue.jsx";
 import { DvineMoments } from "./pages/DvineMoments.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
+import TestUserProfile from "./pages/TestUserProfile.jsx";
 import "./components/RouterDomColour.css";
 
 function App() {
+    const [token, setToken] = useState(localStorage.getItem('accessToken'));
+
+    useEffect(() => {
+        // Check if token exists in localStorage on app start
+        const storedToken = localStorage.getItem('accessToken');
+        if (storedToken) {
+            setToken(storedToken);
+        }
+    }, []);
+
     return (
         <>
             {/* <nav>
@@ -41,10 +52,11 @@ function App() {
             </nav> */}
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/register" element={<Register setToken={setToken} />} />
+                <Route path="/login" element={<Login setToken={setToken} />} />
+                <Route path="/user-dashboard" element={<UserDashboard setToken={setToken} />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard setToken={setToken} />} />
+                <Route path="/test-user-profile" element={<TestUserProfile setToken={setToken} />} />
                 <Route path="/catalogue" element={<Catalogue />} />
                 <Route path="/dvine-moments" element={<DvineMoments />} />
                 <Route path="*" element={<NotFound />} />
