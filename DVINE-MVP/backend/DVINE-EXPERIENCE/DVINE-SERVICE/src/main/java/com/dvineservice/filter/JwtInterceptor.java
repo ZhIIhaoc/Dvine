@@ -54,6 +54,12 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;                     // skip JWT, continue to controller
         }
 
+        // --- let every pre-flight straight through ---
+        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+            res.setStatus(HttpServletResponse.SC_OK);   // CORS framework adds headers
+            return true;
+        }
+
         String token = req.getHeader("Authorization");
 
         // Handle the case where the token is not present
