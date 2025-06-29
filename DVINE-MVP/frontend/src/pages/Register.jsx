@@ -17,7 +17,7 @@ export const Register = () => {
         phone: "",
         postcode: "",
         firstName: "",
-        lastName: ""
+        lastName: "",
     });
     //const { setToken } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -39,7 +39,6 @@ export const Register = () => {
         return { innerWidth, innerHeight };
     }
 
-
     // this tracks what process of the register process the user is on
     const pageNext = () => setPage(1);
     const pageBack = () => setPage(0);
@@ -48,11 +47,7 @@ export const Register = () => {
             ...userInfo,
             [value]: event.target.value,
         });
-    }
-
-
-
-
+    };
 
     const registerButton = async () => {
         alert("Register button clicked");
@@ -91,19 +86,15 @@ export const Register = () => {
         }
     };
     return (
-
-        <Grid container sx={{ height: "100vh" }}>
-            <Grid size={windowSize.innerWidth < 500 ? 12 : 6}>
+        <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
+            <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
                 <Logo />
                 <Box
                     sx={{
-                        width: "96%",
-                        display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
                         height: "100%",
-                        padding: 1,
                     }}
                 >
                     {page === 0 ? (
@@ -122,16 +113,18 @@ export const Register = () => {
                     )}
                 </Box>
             </Grid>
-            {windowSize.innerWidth >= 500 && (
+            {windowSize.innerWidth >= 900 && (
                 <Grid size={6}>
                     <img
                         src="../src/assets/background.png"
-                        style={{ width: "100%", height: "100%" }}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                        }}
                     />
                 </Grid>
             )}
-
-
         </Grid>
     );
 };
