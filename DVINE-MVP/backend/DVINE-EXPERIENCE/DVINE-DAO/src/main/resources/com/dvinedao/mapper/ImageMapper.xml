@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.ImageMapper">
+
+
+    <update id="createImages">
+        INSERT INTO images (imageUrl, caption, tourId, isPrimary)
+        VALUES
+        <foreach collection="images" item="image" separator=",">
+            (#{image.imageUrl}, #{image.caption}, #{image.tourId}, #{image.isPrimary})
+        </foreach>
+    </update>
+</mapper>

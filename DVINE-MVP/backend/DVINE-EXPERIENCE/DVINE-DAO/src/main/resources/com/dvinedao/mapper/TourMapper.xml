@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.TourMapper">
+
+    <insert id="createTour" parameterType="com.dvinedao.domain.Tour"
+            useGeneratedKeys="true" keyProperty="tourId" keyColumn="tourId">
+        INSERT INTO tours (title, description, destination, catalogueId, price)
+        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price})
+    </insert>
+
+</mapper>
