@@ -88,7 +88,7 @@ export const Register = () => {
                     localStorage.setItem("accessToken", accessToken);
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", userInfo.email);
-                    props.setToken(accessToken);
+                    // props.setToken(accessToken);
                     showSnackbar("Registration successful", "success");
                     navigate("/");
                 } else {

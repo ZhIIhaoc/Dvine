@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 
 
 export function UserDashboard() {
-    console.log("UserDashboard gettoken:", localStorage.getItem("token"));
-    const token = localStorage.getItem("token");
+    console.log("UserDashboard gettoken:", localStorage.getItem("accessToken"));
+    const token = localStorage.getItem("accessToken");
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
     const fetchUserInfo = async () => {
