@@ -8,6 +8,21 @@
         VALUES (#{title}, #{description}, #{type}, #{creatorId}, #{coverImage})
     </insert>
 
+    <update id="updateCatalogue">
+        UPDATE catalogues
+        SET
+            title = #{title},
+            description = #{description},
+            coverImage = #{coverImage}
+        WHERE
+            catalogueId = #{catalogueId}
+    </update>
+
+    <delete id="deleteCatalogue">
+        DELETE FROM catalogues
+        WHERE catalogueId = #{catalogueId}
+    </delete>
+
 
     <select id="findAllCatalogues" resultType="com.dvinedao.domain.Catalogue">
         SELECT

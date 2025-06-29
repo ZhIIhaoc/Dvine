@@ -15,6 +15,11 @@ public final class PermissionLevel {
     public static boolean isAdmin(Integer code) {
         return code != null && code >= PARTNER;
     }
+
+    public static boolean isPartner(Integer code) {
+        return code == PARTNER ;
+    }
+
     public static boolean isManager(Integer code) {
         return code == MANAGER;
     }

@@ -11,7 +11,7 @@ services:
       MYSQL_DATABASE: dvine_db
     volumes:
       - db-data:/var/lib/mysql
-      - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # ← add this
+      - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # first 01... then 02... initialization scripts in order.
     networks:
       - dvine-network
 

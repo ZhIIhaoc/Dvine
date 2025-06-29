@@ -1,6 +1,7 @@
 package com.dvineservice.service.impl;
 
 import com.dvinedao.annotation.AdminPermissionCheck;
+import com.dvinedao.annotation.CatalogueOwnerCheck;
 import com.dvinedao.domain.Catalogue;
 import com.dvinedao.domain.CatalogueType;
 import com.dvinedao.domain.PermissionLevel;
@@ -50,5 +51,21 @@ public class CatalogueServiceImpl implements CatalogueService {
             throw new NotFoundException("Catalogue not found");
         }
         return catalogue;
+    }
+
+    @AdminPermissionCheck
+    @CatalogueOwnerCheck
+    @Override
+    public void updateCatalogue(Catalogue catalogue) {
+        // Update the catalogue
+        catalogueMapper.updateCatalogue(catalogue);
+    }
+
+    @AdminPermissionCheck
+    @CatalogueOwnerCheck
+    @Override
+    public void deleteCatalogue(Long id) {
+        // TODO: should implement logic check catalogue is empty before deletion
+        catalogueMapper.deleteCatalogue(id);
     }
 }

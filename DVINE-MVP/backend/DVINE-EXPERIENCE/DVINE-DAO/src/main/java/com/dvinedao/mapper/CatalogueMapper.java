@@ -10,4 +10,6 @@ public interface CatalogueMapper {
     List<Catalogue> findAllCatalogues();
     void createCatalogue(Catalogue catalogue);
     Catalogue findCatalogueById(Long id);
+    void updateCatalogue(Catalogue catalogue);
+    void deleteCatalogue(Long id);
 }

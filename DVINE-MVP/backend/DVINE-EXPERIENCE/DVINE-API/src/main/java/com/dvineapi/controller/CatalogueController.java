@@ -39,14 +39,14 @@ public class CatalogueController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping
     public ReturnResult updateCatalogue(@RequestBody Catalogue catalogueData){
-        // TODO: Implement the logic to update an existing catalogue
+        catalogueService.updateCatalogue(catalogueData);
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
     public ReturnResult deleteCatalogue(@RequestParam Long catalogueId) {
-        // TODO: Implement the logic to delete a catalogue by its ID
+        catalogueService.deleteCatalogue(catalogueId);
         return ReturnResult.success();
     }
 
