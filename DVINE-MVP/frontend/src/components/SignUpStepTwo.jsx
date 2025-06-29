@@ -1,24 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Box, Typography, TextField, Button, Link, Step, StepLabel, Stepper } from "@mui/material";
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Link,
+    Step,
+    StepLabel,
+    Stepper,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const SignUpStepTwo = (props) => {
     const navigate = useNavigate();
     return (
-        <Box>
-            <Typography variant="h4" gutterBottom align="center" sx={{ mb: 2 }}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+            }}
+        >
+            <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4 }}>
                 Create an account
             </Typography>
             <Stepper activeStep={1}>
-                <Step><StepLabel /> </Step>
-                <Step><StepLabel /> </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
             </Stepper>
             <TextField
                 label="First Name"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ my: 4, width: "70%" }}
                 value={props.userInfo.firstName}
                 onChange={props.changeState("firstName")}
             />
@@ -26,7 +47,7 @@ const SignUpStepTwo = (props) => {
                 label="Last Name"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.lastName}
                 onChange={props.changeState("lastName")}
             />
@@ -34,7 +55,7 @@ const SignUpStepTwo = (props) => {
                 label="Phone Number"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.phone}
                 onChange={props.changeState("phone")}
             />
@@ -42,29 +63,58 @@ const SignUpStepTwo = (props) => {
                 label="Postcode"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                sx={{ mb: 4, width: "70%", justifyContent: "center" }}
                 value={props.userInfo.postcode}
                 onChange={props.changeState("postcode")}
             />
-            <Button fullWidth variant="contained" sx={{ bgcolor: "#800080", mb: 2 }} onClick={props.pageBack}>
-                Back
-            </Button>
-            <Button fullWidth variant="contained" sx={{ bgcolor: "#800080", mb: 2 }} onClick={props.registerButton}>
-                Sign Up
-            </Button>
+            <Box
+                sx={{
+                    display: "flex",
+                    width: "70%",
+                    justifyContent: "center",
+                    gap: 4,
+                }}
+            >
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: "background.default",
+                        mb: 4,
+                        width: "30%",
+                        height: "56px",
+                        color: "primary.main",
+                        border: 3,
+                        borderColor: "primary.main",
+                    }}
+                    onClick={props.pageBack}
+                >
+                    Back
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: "primary",
+                        mb: 4,
+                        width: "70%",
+                        height: "56px",
+                    }}
+                    onClick={props.registerButton}
+                >
+                    Sign Up
+                </Button>
+            </Box>
 
             <Typography variant="body2" align="center">
                 Already have an account?{" "}
                 <Link
                     underline="hover"
                     color="secondary"
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", ml: 2 }}
                     onClick={() => navigate("/login")}
                 >
                     Log in
                 </Link>
             </Typography>
-
         </Box>
     );
 };
