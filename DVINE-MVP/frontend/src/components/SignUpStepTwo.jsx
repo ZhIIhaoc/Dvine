@@ -27,7 +27,7 @@ const SignUpStepTwo = (props) => {
             <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4 }}>
                 Create an account
             </Typography>
-            <Stepper activeStep={1}>
+            <Stepper activeStep={1} sx={{ width: "40%" }}>
                 <Step>
                     <StepLabel />{" "}
                 </Step>
@@ -63,7 +63,7 @@ const SignUpStepTwo = (props) => {
                 label="Postcode"
                 variant="outlined"
                 fullWidth
-                sx={{ mb: 4, width: "70%", justifyContent: "center" }}
+                sx={{ mb: 6, width: "70%", justifyContent: "center" }}
                 value={props.userInfo.postcode}
                 onChange={props.changeState("postcode")}
             />

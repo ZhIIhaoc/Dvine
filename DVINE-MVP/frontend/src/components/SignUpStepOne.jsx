@@ -27,9 +27,10 @@ const SignUpStepOne = (props) => {
             <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4 }}>
                 Create an account
             </Typography>
-            <Stepper activeStep={0}>
+            <Stepper activeStep={0} sx={{ width: "40%" }}>
                 <Step>
-                    <StepLabel />{" "}
+                    <StepLabel />
+                    {""}
                 </Step>
                 <Step>
                     <StepLabel />{" "}
@@ -39,7 +40,7 @@ const SignUpStepOne = (props) => {
                 label="Email"
                 variant="outlined"
                 fullWidth
-                sx={{ my: 4, width: "70%" }}
+                sx={{ mb: 4, mt: 10, width: "70%" }}
                 value={props.userInfo.email}
                 onChange={props.changeState("email")}
             />
@@ -57,7 +58,7 @@ const SignUpStepOne = (props) => {
                 type="password"
                 variant="outlined"
                 fullWidth
-                sx={{ mb: 6, width: "70%" }}
+                sx={{ mb: 11, width: "70%" }}
                 value={props.userInfo.confirmPassword}
                 onChange={props.changeState("confirmPassword")}
             />
