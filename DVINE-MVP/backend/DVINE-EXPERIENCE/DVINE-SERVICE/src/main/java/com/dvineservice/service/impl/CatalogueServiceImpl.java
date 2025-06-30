@@ -70,20 +70,20 @@ public class CatalogueServiceImpl implements CatalogueService {
     @CatalogueOwnerCheck
     @Transactional
     @Override
-    public void deleteCatalogue(Long id) {
+    public void deleteCatalogue(Long catalogueId) {
         // Check if catalogue exists first
-        Catalogue catalogue = catalogueMapper.findCatalogueById(id);
+        Catalogue catalogue = catalogueMapper.findCatalogueById(catalogueId);
         if (catalogue == null) {
             throw new NotFoundException("Catalogue does not exist");
         }
 
         // Find all tours in this catalogue
-        List<Tour> tours = tourMapper.findByCatalogueId(id);
+        List<Tour> tours = tourMapper.findByCatalogueId(catalogueId);
         tours.forEach(tour -> {
             tourService.deleteTour(tour.getTourId());
         });
 
         // Finally delete the catalogue
-        catalogueMapper.deleteCatalogue(id);
+        catalogueMapper.deleteCatalogue(catalogueId);
     }
 }
