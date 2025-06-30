@@ -45,7 +45,7 @@ function App() {
             </nav> */}
             <Routes>
                 <Route path="/" element={<Layout />}>
-                    <Route path="/" element={<Home />} />
+                    <Route index path="/" element={<Home />} />
                     <Route
                         path="/admin-dashboard"
                         element={<AdminDashboard />}
@@ -59,7 +59,7 @@ function App() {
                     <Route path="/user-dashboard" element={<UserDashboard />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/user/settings" element={<UserSettings />} />
-                    <Route path="/tour/:id" element={<TourDetails  />} />
+                    <Route path="/tour/:id" element={<TourDetails />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route path="/login" element={<Login />} />

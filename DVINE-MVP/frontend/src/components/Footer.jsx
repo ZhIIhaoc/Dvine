@@ -18,23 +18,28 @@ export function Footer() {
             sx={{
                 backgroundColor: "#EDE9E3",
                 mt: "auto",
-                height: 400,
+                minHeight: 400,
                 padding: 4,
-                px: 15,
+                px: { xs: 2, md: 15 },
             }}
         >
             <Grid
                 container
                 spacing={3}
-                justifyContent="space-between"
+                justifyContent={{ xs: "center", md: "space-between" }}
                 alignItems="center"
             >
-                <Grid item>
+                <Grid item xs={12} md={4}>
                     <Box
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
-                        sx={{ width: 350 }}
+                        textAlign={{ xs: "center", md: "left" }}
+                        sx={{
+                            maxWidth: 350,
+                            width: "100%",
+                            overflowX: "hidden",
+                        }}
                     >
                         <Box sx={{ position: "relative" }}>
                             <Logo sx={{ height: 200 }} />
@@ -80,7 +85,8 @@ export function Footer() {
                     display="flex"
                     flexDirection="column"
                     gap={3}
-                    alignItems="flex-start"
+                    alignItems={{ xs: "center", md: "flex-start" }}
+                    textAlign={{ xs: "center", md: "left" }}
                     sx={{ mt: 5, width: 350 }}
                 >
                     <Typography variant="h6">Quick Link</Typography>
@@ -114,7 +120,8 @@ export function Footer() {
                     display="flex"
                     flexDirection="column"
                     gap={3}
-                    alignItems="flex-start"
+                    alignItems={{ xs: "center", md: "flex-start" }}
+                    textAlign={{ xs: "center", md: "left" }}
                     sx={{ mt: 5, width: 350 }}
                 >
                     <Typography variant="h6">Contact</Typography>
@@ -144,7 +151,7 @@ export function Footer() {
                     </Box>
                 </Grid>
             </Grid>
-            <Box sx={{ mt: 5 }}>
+            <Box sx={{ mt: 6, mb: 3 }}>
                 <Typography align="center">
                     © {new Date().getFullYear()} DVINE Experiences. All rights
                     reserved.
