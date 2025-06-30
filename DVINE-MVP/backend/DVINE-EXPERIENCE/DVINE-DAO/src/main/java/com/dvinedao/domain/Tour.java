@@ -1,5 +1,6 @@
 package com.dvinedao.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.List;
  * Represents a Catalogue entity in the system.
  * This class is currently empty and can be extended with properties and methods as needed.
  */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
