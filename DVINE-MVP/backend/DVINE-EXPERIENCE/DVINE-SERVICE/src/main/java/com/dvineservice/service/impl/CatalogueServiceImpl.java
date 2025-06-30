@@ -1,17 +1,18 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.AdminPermissionCheck;
+import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.annotation.CatalogueOwnerCheck;
-import com.dvinedao.domain.Catalogue;
-import com.dvinedao.domain.CatalogueType;
-import com.dvinedao.domain.PermissionLevel;
+import com.dvinedao.domain.*;
 import com.dvinedao.mapper.CatalogueMapper;
+import com.dvinedao.mapper.TourMapper;
 import com.dvinedao.mapper.UserMapper;
 import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.CatalogueService;
+import com.dvineservice.service.TourService;
 import com.dvineservice.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,13 +22,17 @@ public class CatalogueServiceImpl implements CatalogueService {
     private CatalogueMapper catalogueMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private TourMapper tourMapper;
+    @Autowired
+    private TourService tourService;
 
     @Override
     public List<Catalogue> findAllCatalogues() {
         return catalogueMapper.findAllCatalogues();
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @Override
     public void createCatalogue(Catalogue catalogue) {
         // Set the creator ID and nickname for the catalogue
@@ -53,7 +58,7 @@ public class CatalogueServiceImpl implements CatalogueService {
         return catalogue;
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
     @Override
     public void updateCatalogue(Catalogue catalogue) {
@@ -61,11 +66,24 @@ public class CatalogueServiceImpl implements CatalogueService {
         catalogueMapper.updateCatalogue(catalogue);
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
+    @Transactional
     @Override
-    public void deleteCatalogue(Long id) {
-        // TODO: should implement logic check catalogue is empty before deletion
-        catalogueMapper.deleteCatalogue(id);
+    public void deleteCatalogue(Long catalogueId) {
+        // Check if catalogue exists first
+        Catalogue catalogue = catalogueMapper.findCatalogueById(catalogueId);
+        if (catalogue == null) {
+            throw new NotFoundException("Catalogue does not exist");
+        }
+
+        // Find all tours in this catalogue
+        List<Tour> tours = tourMapper.findByCatalogueId(catalogueId);
+        tours.forEach(tour -> {
+            tourService.deleteTour(tour.getTourId());
+        });
+
+        // Finally delete the catalogue
+        catalogueMapper.deleteCatalogue(catalogueId);
     }
 }

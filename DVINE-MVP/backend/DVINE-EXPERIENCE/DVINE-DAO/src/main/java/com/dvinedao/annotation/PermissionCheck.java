@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AdminPermissionCheck {
+public @interface PermissionCheck {
+    int value(); // Default permission level for admin
 }

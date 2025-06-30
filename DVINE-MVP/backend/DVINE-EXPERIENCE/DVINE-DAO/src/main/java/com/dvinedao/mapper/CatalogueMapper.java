@@ -11,5 +11,5 @@ public interface CatalogueMapper {
     void createCatalogue(Catalogue catalogue);
     Catalogue findCatalogueById(Long id);
     void updateCatalogue(Catalogue catalogue);
-    void deleteCatalogue(Long id);
+    Integer deleteCatalogue(Long id);
 }

@@ -10,6 +10,33 @@
         VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price})
     </insert>
 
+    <update id="updateTour">
+        UPDATE tours
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="destination != null and destination != ''">
+                destination = #{destination},
+            </if>
+            <if test="catalogueId != null">
+                catalogueId = #{catalogueId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+        </set>
+        WHERE tourId = #{tourId}
+    </update>
+
+    <delete id="deleteTour">
+        DELETE FROM tours
+        WHERE tourId = #{tourId}
+    </delete>
+
     <select id="search" resultType="com.dvinedao.domain.Tour">
         SELECT
             t.tourId,
@@ -57,6 +84,20 @@
             tours t
         WHERE
             t.tourId = #{tourId}
+    </select>
+    <select id="findByCatalogueId" resultType="com.dvinedao.domain.Tour">
+        SELECT
+            t.tourId,
+            t.catalogueId,
+            t.title,
+            t.destination,
+            t.description,
+            t.price
+        FROM
+            tours t
+        WHERE
+            t.catalogueId = #{catalogueId}
+        ORDER BY t.updateTime
     </select>
 
 </mapper>

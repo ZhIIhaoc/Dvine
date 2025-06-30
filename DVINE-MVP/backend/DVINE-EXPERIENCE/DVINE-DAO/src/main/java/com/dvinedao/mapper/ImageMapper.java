@@ -9,5 +9,5 @@ import java.util.List;
 public interface ImageMapper {
     void createImages(List<Image> images);
     List<Image> findByTourId(Long tourId);
-
+    void deleteImages(List<Long> imageIds);
 }

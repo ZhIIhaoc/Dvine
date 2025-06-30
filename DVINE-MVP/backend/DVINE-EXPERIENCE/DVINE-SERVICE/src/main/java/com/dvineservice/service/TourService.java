@@ -9,4 +9,6 @@ public interface TourService {
     void createTour(Tour tour);
     List<Tour> search(TourQueryParam tourQueryParam);
     Tour findById(Long tourId);
+    void updateTour(Tour tour);
+    void deleteTour(Long tourId);
 }

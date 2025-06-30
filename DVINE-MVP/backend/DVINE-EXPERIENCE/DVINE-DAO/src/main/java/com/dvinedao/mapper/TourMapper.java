@@ -13,4 +13,10 @@ public interface TourMapper {
     List<Tour> search(TourQueryParam tourQueryParam);
 
     Tour findById(Long tourId);
+
+    void updateTour(Tour tour);
+
+    int deleteTour(Long tourId);
+
+    List<Tour> findByCatalogueId(Long id);
 }

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -33,5 +35,13 @@ public class UserController {
         log.info("updateUserProfile: {}", user);
         userService.updateUserProfile(user);
         return ReturnResult.success();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/list")
+    public ReturnResult getUserList(){
+        log.info("getUserList");
+        List<User> userList = userService.getUserList();
+        return ReturnResult.success(userList);
     }
 }
