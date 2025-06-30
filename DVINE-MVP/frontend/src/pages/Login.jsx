@@ -59,7 +59,7 @@ export const Login = () => {
                     localStorage.setItem("accessToken", accessToken);
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", loginEmail);
-                    // props.setToken(accessToken);
+                    props.setToken(accessToken);
                     showSnackbar("Login successful!", "success");
                     navigate("/");
                 } else {

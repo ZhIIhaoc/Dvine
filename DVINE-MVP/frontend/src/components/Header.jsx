@@ -26,6 +26,7 @@ export function Header() {
         setAnchorEl(null);
     };
     const { token, logout } = useContext(AuthContext);
+    console.log("token in Header:", token);
 
     return (
         <AppBar
