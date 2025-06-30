@@ -1,11 +1,16 @@
 import React from "react";
 import { Box, Button, Typography, Modal, TextField } from "@mui/material";
+// import CreateCatalogue from "../endpoints/CreateCatalogue"; change back to this in sprint 2
 import CreateTours from "../endpoints/CreateTours";
 
 export function CreateTourModal({ open, onClose }) {
     const [tourTitle, setTourTitle] = React.useState("");
     const [tourDescription, setTourDescription] = React.useState("");
     const [tourImage, setTourImage] = React.useState(""); // Assuming you want to handle images later
+    const [tourPrice, setTourPrice] = React.useState("");
+    const [tourDestination, setTourDestination] = React.useState("");
+    // const [tourPrimaryImageURL, setTourPrimaryImageURL] = React.useState("");
+    // const [imageList, setImageList] = React.useState([]);  = [] // Assuming you
     const [imagePreview, setImagePreview] = React.useState("");
     const accessToken = localStorage.getItem("accessToken");
 
@@ -22,13 +27,26 @@ export function CreateTourModal({ open, onClose }) {
     };
     const createTours = async () => {
         try {
-            const response = await CreateTours(
-                tourTitle,
-                tourDescription,
-                tourImage,
-                accessToken,
+            // TODO: come back to this in sprint 2
+            // const response = await CreateCatalogue(
+            //     tourTitle,
+            //     tourDescription,
+            //     tourImage,
+            //     accessToken,
 
+            // );
+
+            const response = await CreateTours(
+                tourTitle, 
+                tourDescription, 
+                tourImage, 
+                tourPrice, 
+                tourDestination,
+                "placeholder_primary_image_url", // Placeholder for primary image URL
+                [], // Placeholder for image list, can be updated later
+                accessToken
             );
+                
             const responseInfo = await response.json();
             console.log(responseInfo);
             
@@ -82,6 +100,38 @@ export function CreateTourModal({ open, onClose }) {
                         value={tourDescription}
                         onChange={(e) => setTourDescription(e.target.value)}
                     />
+                    <TextField
+                        label="Price"
+                        placeholder="Price"
+                        fullWidth
+                        sx={{ mb: 6, width: "100%" }}
+                        value={tourPrice}
+                        onChange={(e) => setTourPrice(e.target.value)}
+                    />
+                    <TextField
+                        label="Tour Destination"
+                        placeholder="Tour Destination"
+                        fullWidth
+                        sx={{ mb: 6, width: "100%" }}
+                        value={tourDestination}
+                        onChange={(e) => setTourDestination(e.target.value)}
+                    />
+                    {/* <TextField
+                        label="Tour Description"
+                        placeholder="Tour Description"
+                        fullWidth
+                        sx={{ mb: 6, width: "100%" }}
+                        value={tourDescription}
+                        onChange={(e) => setTourDescription(e.target.value)}
+                    />
+                    <TextField
+                        label="Tour Description"
+                        placeholder="Tour Description"
+                        fullWidth
+                        sx={{ mb: 6, width: "100%" }}
+                        value={tourDescription}
+                        onChange={(e) => setTourDescription(e.target.value)}
+                    /> */}
                 </Box>
                 <Button variant="outlined" component="label" sx={{ mb: 3 }}>
                     Upload Tour Image

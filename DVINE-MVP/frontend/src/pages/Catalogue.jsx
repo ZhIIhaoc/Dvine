@@ -7,6 +7,7 @@ import {
     Typography,
 } from "@mui/material";
 import React from "react";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -33,7 +34,33 @@ const tours = [
     },
 ];
 export function Catalogue() {
+    const [userInfoList, setUserInfoList] = useState(null);
     const navigate = useNavigate();
+    // const token = localStorage.getItem("accessToken");
+    const fetchTourCatalogueInfo = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/tours', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                const responseInfo = await response.json();
+                console.log("User Info Response:", responseInfo);
+    
+                if (responseInfo.code === 0) {
+                    setUserInfoList(responseInfo.data);
+                    console.log("User Info CAMERON HELLLLLLLLLOOOOOOO I am in the catalogue:", responseInfo.data);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+    useEffect(() => {
+        fetchTourCatalogueInfo();
+        // console.log("im running");
+    }, []);
     return (
         <Box>
             <Box
