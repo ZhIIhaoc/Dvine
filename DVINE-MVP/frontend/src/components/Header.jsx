@@ -26,7 +26,6 @@ export function Header() {
         setAnchorEl(null);
     };
     const { token, logout } = useContext(AuthContext);
-    console.log("token in Header:", token);
 
     return (
         <AppBar
@@ -76,8 +75,15 @@ export function Header() {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "flex-end",
+                            pr: 10,
                         }}
                     >
+                        <Button
+                            sx={{ mt: 0, color: "black", mr: 3 }}
+                            onClick={() => navigate("/user-dashboard")}
+                        >
+                            User Dashboard
+                        </Button>
                         <IconButton sx={{ my: 2 }} onClick={handleClick}>
                             <Avatar />
                         </IconButton>
@@ -94,14 +100,6 @@ export function Header() {
                                 horizontal: "right",
                             }}
                         >
-                            <MenuItem
-                                onClick={() => {
-                                    handleClose();
-                                    navigate("/login");
-                                }}
-                            >
-                                Sign In
-                            </MenuItem>
                             <MenuItem
                                 onClick={() => {
                                     handleClose();
