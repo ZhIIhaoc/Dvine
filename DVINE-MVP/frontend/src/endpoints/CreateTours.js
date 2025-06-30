@@ -11,14 +11,13 @@ const CreateTours = async (tourTitle, tourDescription, tourImage, tourPrice, tou
             catalogueId: 1, // Assuming a static catalogue ID for now
             title: tourTitle,
             destination: tourDestination,
-            price: tourPrice,
+            price: parseFloat(tourPrice),
             description: tourDescription,
-            coverImage: tourImage,
-            primaryImageURL: tourPrimaryImageURL,
-            imageList: imageList
+            primaryImageUrl: tourPrimaryImageURL,
+            images: imageList
         })
     });
     return response;
 }
 
-export default CreateTours
+export default CreateTours;

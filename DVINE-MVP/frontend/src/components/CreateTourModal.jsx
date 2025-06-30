@@ -104,6 +104,7 @@ export function CreateTourModal({ open, onClose }) {
                         label="Price"
                         placeholder="Price"
                         fullWidth
+                        type="number"
                         sx={{ mb: 6, width: "100%" }}
                         value={tourPrice}
                         onChange={(e) => setTourPrice(e.target.value)}
