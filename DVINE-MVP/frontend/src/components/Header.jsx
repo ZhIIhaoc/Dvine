@@ -27,7 +27,7 @@ export function Header() {
     return (
         <AppBar
             sx={{
-                backgroundColor: "rgba(251, 249, 245, 0.7)",
+                backgroundColor: "rgba(251, 249, 245, 0.8)",
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
             }}
@@ -39,7 +39,6 @@ export function Header() {
                     minHeight: 80,
                     alignItems: "flex-end",
                     mx: { xs: 0, sm: 3 },
-                    pb: 3,
                 }}
             >
                 <Box
@@ -55,13 +54,13 @@ export function Header() {
                         <Logo />
                     </Box>
                     <Button
-                        sx={{ mt: 4.4, color: "black" }}
+                        sx={{ mt: 1, color: "black" }}
                         onClick={() => navigate("/catalogue")}
                     >
                         Tours
                     </Button>
                     <Button
-                        sx={{ mt: 4.4, color: "black" }}
+                        sx={{ mt: 1, color: "black" }}
                         onClick={() => navigate("/dvine-moments")}
                     >
                         DVine Moments
@@ -72,11 +71,10 @@ export function Header() {
                     sx={{
                         display: "flex",
                         alignItems: "center",
-                        flexGrow: 1,
                         justifyContent: "flex-end",
                     }}
                 >
-                    <IconButton sx={{ mt: 2 }} onClick={handleClick}>
+                    <IconButton sx={{ my: 2 }} onClick={handleClick}>
                         <Avatar />
                     </IconButton>
                     <Menu
