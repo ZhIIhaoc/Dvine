@@ -101,7 +101,7 @@ export function Catalogue() {
                                                 cursor: "pointer",
                                             }}
 
-                                            onClick={() => navigate(`/tour/${tour.id}`)}
+                                            onClick={() => navigate(`/tour/${tour.tourId}`)}
                                         />
                                         <CardContent>
                                             <Typography
@@ -120,7 +120,7 @@ export function Catalogue() {
             ) : (
                 <Box sx={{ textAlign: "center", mt: 5 }}>
                     <Typography variant="h4">
-                        Loading User Information...
+                        Loading Server Information...
                     </Typography>
                 </Box>
             )}
