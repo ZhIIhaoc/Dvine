@@ -11,6 +11,7 @@ import { NotFound } from "./pages/NotFound.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
 import "./components/RouterDomColour.css";
+import Logout from "./pages/Logout.jsx";
 
 function App() {
     return (
@@ -55,6 +56,7 @@ function App() {
                     <Route path="/dvine-moments" element={<DvineMoments />} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/user-dashboard" element={<UserDashboard />} />
+                    <Route path="/logout" element={<Logout />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

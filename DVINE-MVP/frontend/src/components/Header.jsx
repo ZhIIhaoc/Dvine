@@ -101,7 +101,7 @@ export function Header() {
                         <MenuItem
                             onClick={() => {
                                 handleClose();
-                                navigate("/login");
+                                navigate("/logout");
                             }}
                             sx={{ color: "red" }}
                         >
