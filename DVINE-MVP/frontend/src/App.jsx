@@ -12,6 +12,7 @@ import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
 import "./components/RouterDomColour.css";
 import Logout from "./pages/Logout.jsx";
+import UserSettings from "./pages/UserSettings.jsx";
 
 function App() {
     return (
@@ -57,6 +58,7 @@ function App() {
                     <Route path="*" element={<NotFound />} />
                     <Route path="/user-dashboard" element={<UserDashboard />} />
                     <Route path="/logout" element={<Logout />} />
+                    <Route path="/user/settings" element={<UserSettings />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

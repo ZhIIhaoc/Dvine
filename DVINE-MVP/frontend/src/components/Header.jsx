@@ -93,7 +93,7 @@ export function Header() {
                         <MenuItem
                             onClick={() => {
                                 handleClose();
-                                navigate("/profile");
+                                navigate("/user/settings");
                             }}
                         >
                             Account Settings
