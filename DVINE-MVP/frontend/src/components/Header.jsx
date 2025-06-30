@@ -1,6 +1,8 @@
 import React from "react";
 import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../components/AuthContext";
+import { useState, useContext } from "react";
 import {
     AppBar,
     Box,
@@ -23,6 +25,7 @@ export function Header() {
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const { token, logout } = useContext(AuthContext);
 
     return (
         <AppBar
@@ -66,57 +69,74 @@ export function Header() {
                         DVine Moments
                     </Button>
                 </Box>
-
-                <Box
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <IconButton sx={{ my: 2 }} onClick={handleClick}>
-                        <Avatar />
-                    </IconButton>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right",
-                        }}
-                        transformOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
+                {token && (
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "flex-end",
                         }}
                     >
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                navigate("/login");
+                        <IconButton sx={{ my: 2 }} onClick={handleClick}>
+                            <Avatar />
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "right",
                             }}
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    navigate("/login");
+                                }}
+                            >
+                                Sign In
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    navigate("/user/settings");
+                                }}
+                            >
+                                Account Settings
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    navigate("/logout");
+                                }}
+                                sx={{ color: "red" }}
+                            >
+                                Logout
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                )}
+                {!token && (
+                    <Box>
+                        <Button
+                            onClick={() => navigate("/login")}
+                            sx={{ color: "black" }}
                         >
                             Sign In
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                navigate("/user/settings");
-                            }}
+                        </Button>
+                        <Button
+                            onClick={() => navigate("/login")}
+                            sx={{ color: "black" }}
                         >
-                            Account Settings
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                navigate("/logout");
-                            }}
-                            sx={{ color: "red" }}
-                        >
-                            Logout
-                        </MenuItem>
-                    </Menu>
-                </Box>
+                            Sign In
+                        </Button>
+                    </Box>
+                )}
             </Toolbar>
         </AppBar>
     );
