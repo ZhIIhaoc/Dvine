@@ -1,11 +1,11 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.AdminPermissionCheck;
+import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.annotation.CatalogueOwnerCheck;
 import com.dvinedao.domain.Image;
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
-import com.dvinedao.mapper.ImageMapper;
 import com.dvinedao.mapper.TourMapper;
 import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.ImageService;
@@ -26,7 +26,7 @@ public class TourServiceImpl implements TourService {
 
 
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
     @Transactional
     @Override
@@ -59,7 +59,7 @@ public class TourServiceImpl implements TourService {
         return tour;
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
     @Transactional
     @Override
@@ -70,7 +70,7 @@ public class TourServiceImpl implements TourService {
     }
 
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
     @Transactional
     @Override

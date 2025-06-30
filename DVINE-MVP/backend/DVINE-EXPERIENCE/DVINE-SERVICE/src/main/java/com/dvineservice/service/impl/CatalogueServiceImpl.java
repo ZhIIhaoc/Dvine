@@ -1,6 +1,6 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.AdminPermissionCheck;
+import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.annotation.CatalogueOwnerCheck;
 import com.dvinedao.domain.*;
 import com.dvinedao.mapper.CatalogueMapper;
@@ -32,7 +32,7 @@ public class CatalogueServiceImpl implements CatalogueService {
         return catalogueMapper.findAllCatalogues();
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @Override
     public void createCatalogue(Catalogue catalogue) {
         // Set the creator ID and nickname for the catalogue
@@ -58,7 +58,7 @@ public class CatalogueServiceImpl implements CatalogueService {
         return catalogue;
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
     @Override
     public void updateCatalogue(Catalogue catalogue) {
@@ -66,7 +66,7 @@ public class CatalogueServiceImpl implements CatalogueService {
         catalogueMapper.updateCatalogue(catalogue);
     }
 
-    @AdminPermissionCheck
+    @PermissionCheck(PermissionLevel.ADMIN)
     @CatalogueOwnerCheck
     @Transactional
     @Override
