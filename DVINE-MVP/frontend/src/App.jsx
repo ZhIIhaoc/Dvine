@@ -9,10 +9,10 @@ import { Catalogue } from "./pages/Catalogue.jsx";
 import { DvineMoments } from "./pages/DvineMoments.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
+import Layout from "./components/Layout";
 import "./components/RouterDomColour.css";
 
 function App() {
-
     return (
         <>
             {/* <nav>
@@ -41,15 +41,23 @@ function App() {
                 </ul>
             </nav> */}
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/" element={<Layout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route
+                        path="/admin-dashboard"
+                        element={<AdminDashboard />}
+                    />
+                    <Route
+                        path="/test-user-profile"
+                        element={<TestUserProfile />}
+                    />
+                    <Route path="/catalogue" element={<Catalogue />} />
+                    <Route path="/dvine-moments" element={<DvineMoments />} />
+                    <Route path="*" element={<NotFound />} />
+                    <Route path="/user-dashboard" element={<UserDashboard />} />
+                </Route>
                 <Route path="/login" element={<Login />} />
-                <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/test-user-profile" element={<TestUserProfile />} />
-                <Route path="/catalogue" element={<Catalogue />} />
-                <Route path="/dvine-moments" element={<DvineMoments />} />
-                <Route path="*" element={<NotFound />} />
+                <Route path="/register" element={<Register />} />
             </Routes>
         </>
     );
