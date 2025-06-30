@@ -3,6 +3,30 @@ import { Box, Typography, Paper, Avatar, CircularProgress, Divider, Grid, Button
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from "react-router-dom";
 
+const getPermissionLabel = (permission) => {
+    switch (permission) {
+        case 0:
+            return 'Regular User';
+        case 1:
+            return 'Premium User';
+        case 2:
+            return 'Partner (Admin)';
+        case 3:
+            return 'Manager (Admin)';
+        case 4:
+            return 'Owner (Admin)';
+        default:
+            return 'Unknown';
+    }
+};
+
+const getDashboardPath = (permission) => {
+    if (permission === 2 || permission === 3 || permission === 4) {
+        return "/admin-dashboard";
+    }
+    return "/user-dashboard";
+};
+
 const UserSettings = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -81,7 +105,7 @@ const UserSettings = () => {
                                 <Typography variant="body1"><b>Postcode:</b> {user.postcode || 'Not set'}</Typography>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <Typography variant="body1"><b>Permission:</b> {user.permission === 1 ? 'Admin' : 'Regular User'}</Typography>
+                                <Typography variant="body1"><b>Permission:</b> {getPermissionLabel(user.permission)}</Typography>
                             </Grid>
                         </Grid>
                         <Divider sx={{ my: 3 }} />
@@ -90,7 +114,7 @@ const UserSettings = () => {
                             color="primary"
                             fullWidth
                             sx={{ borderRadius: 99, py: 1.2, fontWeight: 600, fontSize: '1.1rem', background: 'linear-gradient(90deg, #a4508b 0%, #5f0a87 100%)', boxShadow: '0 2px 12px 0 #a4508b33', mt: 1, '&:hover': { background: 'linear-gradient(90deg, #5f0a87 0%, #a4508b 100%)', transform: 'scale(1.03)' } }}
-                            onClick={() => navigate(user.permission === 1 ? "/admin-dashboard" : "/user-dashboard")}
+                            onClick={() => navigate(getDashboardPath(user.permission))}
                         >
                             Go to Dashboard
                         </Button>
