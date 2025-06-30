@@ -42,7 +42,7 @@ public class TourServiceImpl implements TourService {
     public List<Tour> search(TourQueryParam tourQueryParam) {
         List<Tour> tour = tourMapper.search(tourQueryParam);
         if (tour.isEmpty()) {
-            throw new NotFoundException("No such tours");
+            throw new NotFoundException("Tour not found");
         }
         return tour;
     }

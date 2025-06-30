@@ -3,7 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dvinedao.mapper.CatalogueMapper">
-    <insert id="createCatalogue">
+    <insert id="createCatalogue"
+            parameterType="com.dvinedao.domain.Catalogue"
+            useGeneratedKeys="true"
+            keyProperty="catalogueId">
         INSERT INTO catalogues (title, description, type, creatorId, coverImage)
         VALUES (#{title}, #{description}, #{type}, #{creatorId}, #{coverImage})
     </insert>
@@ -38,7 +41,8 @@
         JOIN
             users u ON c.creatorId = u.userId
         ORDER BY
-            c.updateTime DESC
+            c.updateTime DESC,
+            c.catalogueId DESC
     </select>
     <select id="findCatalogueById" resultType="com.dvinedao.domain.Catalogue">
         SELECT

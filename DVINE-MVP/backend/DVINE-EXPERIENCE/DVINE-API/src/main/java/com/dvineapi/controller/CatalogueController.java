@@ -45,7 +45,7 @@ public class CatalogueController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
-    public ReturnResult deleteCatalogue(@RequestParam Long catalogueId) {
+    public ReturnResult deleteCatalogue(Long catalogueId) {
         catalogueService.deleteCatalogue(catalogueId);
         return ReturnResult.success();
     }
