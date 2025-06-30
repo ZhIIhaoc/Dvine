@@ -122,18 +122,33 @@ export function Header() {
                     </Box>
                 )}
                 {!token && (
-                    <Box>
+                    <Box
+                        display="flex"
+                        gap={3}
+                        alignItems="center"
+                        sx={{ pr: 10, pb: 3.5 }}
+                    >
                         <Button
                             onClick={() => navigate("/login")}
-                            sx={{ color: "black" }}
+                            sx={{ color: "black", textTransform: "none" }}
                         >
-                            Sign In
+                            Log In
                         </Button>
                         <Button
-                            onClick={() => navigate("/login")}
-                            sx={{ color: "black" }}
+                            onClick={() => navigate("/register")}
+                            sx={{
+                                color: "#fbf9f5",
+                                background: "#8d198f",
+                                "&:hover": {
+                                    backgroundColor: "#6f146f",
+                                },
+                                borderRadius: 5,
+                                py: 1,
+                                px: 2,
+                                textTransform: "none",
+                            }}
                         >
-                            Sign In
+                            Sign Up for Free
                         </Button>
                     </Box>
                 )}
