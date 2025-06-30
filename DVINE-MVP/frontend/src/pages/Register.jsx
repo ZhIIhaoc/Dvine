@@ -57,10 +57,14 @@ export const Register = () => {
             ...userInfo,
             [value]: event.target.value,
         });
-    }
+    };
 
     const registerButton = async () => {
-        if (userInfo.email === "" || userInfo.password === "" || userInfo.confirmPassword === "" ) {
+        if (
+            userInfo.email === "" ||
+            userInfo.password === "" ||
+            userInfo.confirmPassword === ""
+        ) {
             showSnackbar("Please fill in all fields", "warning");
             return;
         }
@@ -68,7 +72,7 @@ export const Register = () => {
             showSnackbar("Passwords do not match", "error");
             return;
         }
-        
+
         try {
             const response = await SubmitRegistration(
                 userInfo.email,
@@ -80,7 +84,7 @@ export const Register = () => {
             );
             const responseInfo = await response.json();
             console.log(responseInfo);
-            
+
             if (responseInfo.code === 0) {
                 // Success case
                 const { accessToken, refreshToken } = responseInfo.data || {};
@@ -92,11 +96,17 @@ export const Register = () => {
                     showSnackbar("Registration successful", "success");
                     navigate("/");
                 } else {
-                    showSnackbar("Registration response error: token missing", "error");
+                    showSnackbar(
+                        "Registration response error: token missing",
+                        "error"
+                    );
                 }
             } else {
                 // Error case
-                showSnackbar(responseInfo.msg || "Registration failed", "error");
+                showSnackbar(
+                    responseInfo.msg || "Registration failed",
+                    "error"
+                );
             }
         } catch (error) {
             console.error("Registration error:", error);
@@ -105,36 +115,46 @@ export const Register = () => {
     };
 
     return (
-        <Grid container sx={{ minHeight: "100vh" }}>
+        <Grid container sx={{ minHeight: "100vh", overflow: "hidden" }}>
             {/* left side of the page */}
             <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
-                <Logo />
                 <Box
                     sx={{
+                        display: "flex",
                         flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
                         height: "100%",
+                        px: 4,
                     }}
                 >
-                    {/* Multi-step registration implementation */}
-                    {page === 0 ? (
-                        <SignUpStepOne
-                            userInfo={userInfo}
-                            changeState={changeState}
-                            pageNext={pageNext}
-                        />
-                    ) : (
-                        <SignUpStepTwo
-                            userInfo={userInfo}
-                            changeState={changeState}
-                            pageBack={pageBack}
-                            registerButton={registerButton}
-                        />
-                    )}
+                    <Box sx={{ pl: { xs: 0, md: 12 } }}>
+                        <Logo />
+                    </Box>
+                    <Box
+                        sx={{
+                            height: "calc(100% - 120px)",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        {/* Multi-step registration implementation */}
+                        {page === 0 ? (
+                            <SignUpStepOne
+                                userInfo={userInfo}
+                                changeState={changeState}
+                                pageNext={pageNext}
+                            />
+                        ) : (
+                            <SignUpStepTwo
+                                userInfo={userInfo}
+                                changeState={changeState}
+                                pageBack={pageBack}
+                                registerButton={registerButton}
+                            />
+                        )}
 
-                    {/* Single Page Register Code (Commented) */}
-                    {/*
+                        {/* Single Page Register Code (Commented) */}
+                        {/*
                     <Typography variant="h4" sx={{ mb: 2 }}>
                         Create Account
                     </Typography>
@@ -209,6 +229,7 @@ export const Register = () => {
                         </Link>
                     </Typography>
                     */}
+                    </Box>
                 </Box>
             </Grid>
             {windowSize.innerWidth >= 900 && (
@@ -232,4 +253,3 @@ export const Register = () => {
         </Grid>
     );
 };
-
