@@ -1,0 +1,19 @@
+const CreateCatalogue = async (tourTitle, tourDescription, tourImage, token) => {
+    const localHost = "http://localhost:8080";
+    const response = await fetch(`${localHost}/catalogues`, {
+        method: 'POST',
+        headers: {
+            Authorization: `${token}`,
+            'Content-Type': 'application/json'
+
+        },
+        body: JSON.stringify({
+            title: tourTitle,
+            description: tourDescription,
+            coverImage: tourImage,
+        })
+    });
+    return response;
+};
+
+export default CreateCatalogue;
