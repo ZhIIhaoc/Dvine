@@ -2,6 +2,7 @@ package com.dvineservice.aop;
 
 import com.dvinedao.domain.Catalogue;
 import com.dvinedao.domain.PermissionLevel;
+import com.dvinedao.domain.Tour;
 import com.dvinedao.mapper.CatalogueMapper;
 import com.dvinedao.mapper.UserMapper;
 import com.dvineservice.exception.NotFoundException;
@@ -57,6 +58,7 @@ public class CatalogueOwnerAspect {
      * Supported shapes:
      *   • Long                      → returns the value
      *   • Catalogue                 → returns entity.getCatalogueId()
+     *   • Tour                      → returns entity.getCatalogueId()
      *
      * @return the id or {@code null} if none of the parameters contains it
      */
@@ -67,14 +69,21 @@ public class CatalogueOwnerAspect {
 
         for (Object arg : args) {
             // 1) direct Long id
-            if (arg instanceof Long id) {
-                return id;
+            if (arg instanceof Long catalogueId) {
+                return catalogueId;
             }
 
-            // 2) entity
+            // 2) Catalogue entity
             if (arg instanceof Catalogue catalogue) {
                 if (catalogue.getCatalogueId() != null) {
                     return catalogue.getCatalogueId();
+                }
+            }
+
+            // 3) Tour entity
+            if (arg instanceof Tour tour) {
+                if (tour.getCatalogueId() != null) {
+                    return tour.getCatalogueId();
                 }
             }
 

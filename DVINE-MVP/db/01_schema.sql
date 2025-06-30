@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS tours (
     FOREIGN KEY (catalogueId) REFERENCES catalogues(catalogueId)
 );
 
-CREATE TABLE IF NOT EXISTS tour_images (
+CREATE TABLE IF NOT EXISTS images (
     imageId BIGINT AUTO_INCREMENT PRIMARY KEY,
     tourId BIGINT NOT NULL,
     imageUrl VARCHAR(255) NOT NULL,

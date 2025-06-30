@@ -10,6 +10,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+  jackson:
+    default-property-inclusion: non_null # ignore null value in response
 
 mybatis:
   configuration:
