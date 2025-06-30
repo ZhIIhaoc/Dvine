@@ -54,10 +54,9 @@ function App() {
                     />
                     <Route path="/catalogue" element={<Catalogue />} />
                     <Route path="/dvine-moments" element={<DvineMoments />} />
-                    <Route path="*" element={<NotFound />} />
                     <Route path="/user-dashboard" element={<UserDashboard />} />
-                    <Route path="*" element={<NotFound />} />
                     <Route path="/tour/:id" element={<TourDetails  />} />
+                    <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
