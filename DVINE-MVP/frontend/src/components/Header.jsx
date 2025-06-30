@@ -2,51 +2,106 @@ import React from "react";
 import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
 import {
-    AppBar, Box, Toolbar, Button, Avatar,
-    IconButton, Menu, MenuItem
+    AppBar,
+    Box,
+    Toolbar,
+    Button,
+    Avatar,
+    IconButton,
+    Menu,
+    MenuItem,
 } from "@mui/material";
-
 
 export function Header() {
     const navigate = useNavigate();
-    // code taken from https://mui.com/material-ui/react-menu/ 
+    // code taken from https://mui.com/material-ui/react-menu/
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-    }
+    };
     const handleClose = () => {
         setAnchorEl(null);
     };
-    
-
 
     return (
-        <AppBar color="transparent" elevation={0} position="static">
-            <Toolbar sx={{ minHeight: 80, alignItems: 'flex-end' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-                    <Logo />
+        <AppBar color="transparent" elevation={0} position="sticky">
+            <Toolbar
+                sx={{
+                    minHeight: 80,
+                    alignItems: "flex-end",
+                    mx: { xs: 0, sm: 3 },
+                }}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexGrow: 1,
+                        gap: 3,
+                        ml: 10,
+                    }}
+                >
+                    <Box sx={{ minWidth: 40 }}>
+                        <Logo />
+                    </Box>
+                    <Button
+                        sx={{ mt: 2, color: "black" }}
+                        onClick={() => navigate("/catalogue")}
+                    >
+                        Tours
+                    </Button>
+                    <Button
+                        sx={{ mt: 2, color: "black" }}
+                        onClick={() => navigate("/dvine-moments")}
+                    >
+                        DVine Moments
+                    </Button>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', flexGrow: 1, gap: 2 }}>
-                    <Button onClick={() => navigate("/catalogue")}>Tours</Button>
-                    <Button onClick={() => navigate("/dvine-moments")}>DVine Moments</Button>
 
-                </Box> 
-                <Box sx={{ display: 'flex', alignItems: 'center',  flexGrow: 1, justifyContent: 'flex-end' }}>
-                    <IconButton onClick={handleClick}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexGrow: 1,
+                        justifyContent: "flex-end",
+                    }}
+                >
+                    <IconButton sx={{ mt: 2 }} onClick={handleClick}>
                         <Avatar />
                     </IconButton>
                     <Menu
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >  
-                        <MenuItem onClick={() => {handleClose(); navigate('/profile')}}>Account Settings</MenuItem>
-                        <MenuItem onClick={() => {handleClose(); navigate('/login')}} sx={{color: "red" }}>Logout</MenuItem>
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                        }}
+                    >
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                navigate("/profile");
+                            }}
+                        >
+                            Account Settings
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                navigate("/login");
+                            }}
+                            sx={{ color: "red" }}
+                        >
+                            Logout
+                        </MenuItem>
                     </Menu>
-                </Box>   
+                </Box>
             </Toolbar>
         </AppBar>
     );
