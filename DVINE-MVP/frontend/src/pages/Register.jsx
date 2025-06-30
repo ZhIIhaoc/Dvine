@@ -105,7 +105,7 @@ export const Register = () => {
     };
 
     return (
-        <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
+        <Grid container sx={{ minHeight: "100vh" }}>
             {/* left side of the page */}
             <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
                 <Logo />

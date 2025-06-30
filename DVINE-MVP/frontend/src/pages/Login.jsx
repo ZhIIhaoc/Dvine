@@ -85,7 +85,7 @@ export const Login = () => {
         //     Password <input id="passwordLogin" type="password" onChange={(event) => setLoginPassword(event.target.value)} value={loginPassword} /> <br />
         //     <button id="loginButton" onClick={loginButton}>Login</button>
         // </>
-        <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
+        <Grid container sx={{ minHeight: "100vh" }}>
             {/*left side of the page*/}
             <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
                 <Logo />

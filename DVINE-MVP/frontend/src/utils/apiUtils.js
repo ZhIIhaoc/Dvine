@@ -39,7 +39,7 @@ export const apiRequest = async (url, options = {}, setToken, navigate, showSnac
         ...otherOptions
     };
 
-    // if have have, add to requestadd to request
+    // if have body, add to request
     if (body) {
         requestOptions.body = JSON.stringify(body);
     }
