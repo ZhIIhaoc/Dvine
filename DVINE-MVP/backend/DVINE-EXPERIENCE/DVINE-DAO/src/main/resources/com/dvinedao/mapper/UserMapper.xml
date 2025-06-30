@@ -67,4 +67,18 @@
             permission
         FROM users WHERE userId = #{userId}
     </select>
+    <select id="getUserList" resultType="com.dvinedao.domain.User">
+        SELECT
+            userId,
+            email,
+            phone,
+            postcode,
+            nickName,
+            firstName,
+            lastName,
+            avatar,
+            permission
+        FROM users
+
+    </select>
 </mapper>
