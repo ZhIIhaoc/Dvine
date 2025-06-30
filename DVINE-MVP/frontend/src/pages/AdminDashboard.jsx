@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 // import propTypes from "prop-types";
 // import axios from "axios";
-import { Header } from "../components/Header";
-import { Box, Typography, Button, Grid } from "@mui/material";
+import { Box, Typography, Button, Grid, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Modal } from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 import { CreateTourModal } from "../components/CreateTourModal.jsx";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
 export function AdminDashboard() {
@@ -14,6 +14,12 @@ export function AdminDashboard() {
     const [userInfo, setUserInfo] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
+    const [users, setUsers] = useState([
+        { userId: 1, name: "Alice", email: "alice@example.com" },
+        { userId: 2, name: "Bob", email: "bob@example.com" },
+        { userId: 3, name: "Charlie", email: "charlie@example.com" },
+    ]);
+    const [userListModalOpen, setUserListModalOpen] = useState(false);
     const fetchUserInfo = async () => {
         try {
             const response = await fetch('http://localhost:8080/users/profile', {
@@ -43,7 +49,6 @@ export function AdminDashboard() {
 
     return (
         <>
-            <Header />
             {userInfo ? (
             <>
                 <Typography sx={{ textAlign: "center", mt: 10, mb: 2, fontSize: "2rem", fontWeight: "bold", color: "purple" }}> Welcome Back {userName} </Typography>
@@ -77,6 +82,58 @@ export function AdminDashboard() {
                                 <Button onClick={() => setModalOpen(true)}><Typography>Create Tour</Typography></Button>
                             </Box>
                             <CreateTourModal open={modalOpen} onClose={() => setModalOpen(false)} />
+
+                            {/* Button to open Users List Modal */}
+                            <Box
+                                sx={{
+                                    border: "2px black solid",
+                                    borderRadius: "16px",
+                                    backgroundColor: "white",
+                                    padding: 2,
+                                    mb: 3,
+                                    textAlign: "center",
+                                }}
+                            >
+                                <Button fullWidth onClick={() => setUserListModalOpen(true)}>
+                                    View Registered Users
+                                </Button>
+                            </Box>
+                            <Modal
+                                open={userListModalOpen}
+                                onClose={() => setUserListModalOpen(false)}
+                            >
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    width: "50%",
+                                    bgcolor: 'background.paper',
+                                    boxShadow: 24,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    p: 4,
+                                    borderRadius: 2,
+                                }}>
+                                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                                        Registered Users
+                                    </Typography>
+                                    <Box sx={{ maxHeight: 300, overflow: 'auto', mb: 2 }}>
+                                        <List>
+                                            {users.map((user) => (
+                                                <ListItem key={user.userId}>
+                                                    <ListItemText primary={user.name} secondary={user.email} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Box>
+                                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                                        <Button variant="outlined" onClick={() => setUserListModalOpen(false)}>
+                                            Close
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Modal>
 
                             <Box
                                 sx={{
