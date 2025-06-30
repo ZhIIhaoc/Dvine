@@ -41,7 +41,7 @@ public class TourServiceImpl implements TourService {
     @Override
     public List<Tour> search(TourQueryParam tourQueryParam) {
         List<Tour> tour = tourMapper.search(tourQueryParam);
-        if (tour == null) {
+        if (tour.isEmpty()) {
             throw new NotFoundException("No such tours");
         }
         return tour;
