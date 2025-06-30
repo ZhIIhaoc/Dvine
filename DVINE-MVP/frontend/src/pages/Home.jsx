@@ -5,8 +5,11 @@ import {
     CardMedia,
     Grid,
     Typography,
+    Link,
 } from "@mui/material";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 const tours = [
     {
@@ -27,6 +30,7 @@ const tours = [
 ];
 
 export const Home = () => {
+    const navigate = useNavigate();
     return (
         <Box>
             <Box
@@ -76,10 +80,26 @@ export const Home = () => {
                     gridAutoColumns: "auto",
                 }}
             >
-                <Box padding={3}>
-                    <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                        Explore your next all inclusive tour
-                    </Typography>
+                <Box padding={3} sx={{ mb: 10 }}>
+                    <Link
+                        component={RouterLink}
+                        to="/catalogue"
+                        underline="none"
+                        sx={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            transition: "color 0.3s ease",
+                            "&:hover": { color: "primary.main" },
+                        }}
+                    >
+                        <Typography
+                            variant="h5"
+                            fontWeight="bold"
+                            sx={{ mb: 2 }}
+                        >
+                            Explore your next all inclusive tour
+                        </Typography>
+                    </Link>
                     <Grid container spacing={4} justifyContent="center">
                         {tours.map((tour) => (
                             <Grid item xs={12} sm={6} md={4} key={tour.id}>
@@ -93,7 +113,11 @@ export const Home = () => {
                                             width: 400,
                                             objectFit: "cover",
                                             objectPosition: "center",
+                                            cursor: "pointer",
                                         }}
+                                        onClick={() =>
+                                            navigate(`/tour/${tour.id}`)
+                                        }
                                     />
                                     <CardContent>
                                         <Typography

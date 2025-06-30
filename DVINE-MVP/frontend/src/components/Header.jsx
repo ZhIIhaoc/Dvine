@@ -42,7 +42,6 @@ export function Header() {
                     minHeight: 80,
                     alignItems: "flex-end",
                     mx: { xs: 0, sm: 3 },
-                    width: "100%",
                     overflowX: "hidden",
                 }}
             >
