@@ -15,12 +15,14 @@ import java.util.List;
 public class TourController {
     @Autowired
     private TourService tourService;
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ReturnResult search(TourQueryParam tourQueryParam) {
         List<Tour> tour = tourService.search(tourQueryParam);
         return ReturnResult.success(tour);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{tourId}")
     public ReturnResult findById(@PathVariable Long tourId){
         Tour tour = tourService.findById(tourId);
@@ -34,15 +36,17 @@ public class TourController {
         return ReturnResult.success();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping
     public ReturnResult updateTour(@RequestBody Tour tour) {
-        // TODO: Implement the logic to update an existing tour
+        tourService.updateTour(tour);
         return ReturnResult.success();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
-    public ReturnResult deleteTour(@RequestParam Long tourId) {
-        // TODO: Implement the logic to delete a tour by its ID
+    public ReturnResult deleteTour(Long tourId) {
+        tourService.deleteTour(tourId);
         return ReturnResult.success();
     }
 
