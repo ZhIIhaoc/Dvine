@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import { Route, Routes, Link, NavLink } from "react-router-dom";
 import { Home } from "./pages/Home.jsx";
@@ -9,9 +8,11 @@ import { AdminDashboard } from "./pages/AdminDashboard.jsx";
 import { Catalogue } from "./pages/Catalogue.jsx";
 import { DvineMoments } from "./pages/DvineMoments.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
+import TestUserProfile from "./pages/TestUserProfile.jsx";
 import "./components/RouterDomColour.css";
 
 function App() {
+
     return (
         <>
             {/* <nav>
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/test-user-profile" element={<TestUserProfile />} />
                 <Route path="/catalogue" element={<Catalogue />} />
                 <Route path="/dvine-moments" element={<DvineMoments />} />
                 <Route path="*" element={<NotFound />} />

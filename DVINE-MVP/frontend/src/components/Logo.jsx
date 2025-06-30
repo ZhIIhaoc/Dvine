@@ -7,7 +7,7 @@ const Logo = () => {
     return (
         <Box
             component="img"
-            src="../src/assets/logoDE.png"
+            src="../src/assets/logo.png"
             alt="Dvine Logo"
             onClick={() => navigate("/")}
             sx={{

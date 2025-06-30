@@ -6,7 +6,7 @@ import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
 import MessageAlert from "../components/MessageAlert.jsx";
 
-export const Login = (props) => {
+export const Login = () => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
     // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
@@ -45,18 +45,33 @@ export const Login = (props) => {
         // console.log("Login password: ", loginPassword);
         if (loginEmail === "" || loginPassword === "") {
             showSnackbar("Please enter both email and password", "warning");
+            return;
         }
-        const response = await SubmitLogin(loginEmail, loginPassword);
-        const responseInfo = await response.json();
-        console.log(responseInfo);
-        if (responseInfo.code === 0) {
-            showSnackbar("Invalid email or password", "error");
-        } else {
-            props.setToken(responseInfo.token);
-            localStorage.setItem("token", responseInfo.token);
-            localStorage.setItem("Email", loginEmail);
-            showSnackbar("Login successful!", "success");
-            navigate("/");
+        try {
+            const response = await SubmitLogin(loginEmail, loginPassword);
+            const responseInfo = await response.json();
+            console.log(responseInfo);
+            
+            if (responseInfo.code === 0) {
+                // Success case
+                const { accessToken, refreshToken } = responseInfo.data || {};
+                if (accessToken && refreshToken) {
+                    localStorage.setItem("accessToken", accessToken);
+                    localStorage.setItem("refreshToken", refreshToken);
+                    localStorage.setItem("Email", loginEmail);
+                    // props.setToken(accessToken);
+                    showSnackbar("Login successful!", "success");
+                    navigate("/");
+                } else {
+                    showSnackbar("Login response error: token missing", "error");
+                }
+            } else {
+                // Error case
+                showSnackbar(responseInfo.msg || "Login failed", "error");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            showSnackbar("Network error. Please try again.", "error");
         }
     };
 
@@ -115,7 +130,7 @@ export const Login = (props) => {
                     </Button>
 
                     <Typography variant="body2" align="center">
-                        Don’t have an account?{" "}
+                        Don't have an account?{" "}
                         <Link
                             underline="hover"
                             color="secondary"
