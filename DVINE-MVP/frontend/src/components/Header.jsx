@@ -93,6 +93,14 @@ export function Header() {
                         <MenuItem
                             onClick={() => {
                                 handleClose();
+                                navigate("/login");
+                            }}
+                        >
+                            Sign In
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
                                 navigate("/user/settings");
                             }}
                         >
