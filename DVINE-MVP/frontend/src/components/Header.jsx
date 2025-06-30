@@ -84,13 +84,16 @@ export function Header() {
                             sx={{
                                 mt: 0,
                                 color: "black",
-                                pr: { xs: 2, sm: 4, md: 10 },
+                                mr: 3,
                             }}
                             onClick={() => navigate("/user-dashboard")}
                         >
                             User Dashboard
                         </Button>
-                        <IconButton sx={{ my: 2 }} onClick={handleClick}>
+                        <IconButton
+                            sx={{ my: 2, mr: { xs: 2, sm: 4, md: 10 } }}
+                            onClick={handleClick}
+                        >
                             <Avatar />
                         </IconButton>
                         <Menu
