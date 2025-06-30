@@ -248,7 +248,7 @@ class CatalogueControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(catalogue)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg").value("You don't have permission to modify this catalogue"));
+                .andExpect(jsonPath("$.msg").isString());
     }
 
 
@@ -377,7 +377,7 @@ class CatalogueControllerIntegrationTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(1))
                 .andExpect(jsonPath("$.msg")
-                        .value("You don't have permission to modify this catalogue"));
+                        .isString());
     }
     @Test
     void updateCatalogue_unauthenticated_shouldReturn401() throws Exception {

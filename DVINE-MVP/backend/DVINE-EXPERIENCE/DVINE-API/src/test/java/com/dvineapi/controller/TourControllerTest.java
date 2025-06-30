@@ -18,12 +18,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -227,6 +227,257 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.code").value(1))
                 .andExpect(jsonPath("$.msg").value("Partner can only modify catalogues created by themselves"));
     }
+    @Test
+    public void createTour_success_shouldReturn201_asAdminOwner() throws Exception {
+        // 1) Login as Owner (ADMIN)
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        // 2) 构造请求体，注意 catalogue.creatorId == 4L（BeforeEach 中那个 Catalogue）
+        Tour req = new Tour();
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Great Barrier Reef Adventure");
+        req.setDestination("Cairns, Australia");
+        req.setDescription("Explore the underwater wonders of the reef.");
+        req.setPrice(299.99);
+        req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
+        req.setImages(List.of(
+                "https://your-cdn.com/tour101_1.jpg",
+                "https://your-cdn.com/tour101_2.jpg"
+        ));
+
+        // 3) 执行请求并断言 Created
+        mockMvc.perform(post("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
+    }
+    @Test
+    public void createTour_unauthenticated_shouldReturn401() throws Exception {
+        // 构造一个合法的请求体（不关心内容，因为会先被拦截为 401）
+        Tour req = new Tour();
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Reef Adventure");
+        req.setDestination("Cairns, Australia");
+        req.setDescription("Underwater wonders.");
+        req.setPrice(299.99);
+        req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
+        req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
+
+        mockMvc.perform(post("/tours")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("User not logged in"));
+    }
+    /**
+     * POST /tours — 登录为 Manager（非 ADMIN），因 @PermissionCheck 触发，返回 403 +
+     * {code:1, msg:"You don't have permission to modify this catalogue"}
+     */
+    @Test
+    public void createTour_shouldReturn403_asManager() throws Exception {
+        // 以 manager 身份登录
+        String token = loginAndGetToken("i_am_premium@example.com");
+
+        // 构造请求体
+        Tour req = new Tour();
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Reef Adventure");
+        req.setDestination("Cairns, Australia");
+        req.setDescription("Underwater wonders.");
+        req.setPrice(299.99);
+        req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
+        req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
+
+        mockMvc.perform(post("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg")
+                        .isString());
+    }
+    @Test
+    public void createTour_shouldReturn404_forNonexistentCatalogue() throws Exception {
+        // 以 Owner（ADMIN）身份登录
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        // 构造一个指向不存在 catalogeId 的请求体
+        Tour req = new Tour();
+        req.setCatalogueId(99999L);
+        req.setTitle("Reef Adventure");
+        req.setDestination("Cairns, Australia");
+        req.setDescription("Underwater wonders.");
+        req.setPrice(299.99);
+        req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
+        req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
+
+        mockMvc.perform(post("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("Catalogue not found"));
+    }
+    @Test
+    public void deleteTour_unauthenticated_shouldReturn401() throws Exception {
+        // 无 token
+        mockMvc.perform(delete("/tours")
+                        .param("tourId", tour1.getTourId().toString()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("User not logged in"));
+    }
+    @Test
+    public void deleteTour_shouldReturn403_asPremiumMember() throws Exception {
+        String token = loginAndGetToken("i_am_premium@example.com");
+
+        mockMvc.perform(delete("/tours")
+                        .header("Authorization", token)
+                        .param("tourId", tour1.getTourId().toString()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg")
+                        .isString());
+    }
+    @Test
+    public void deleteTour_shouldReturn403_asPartnerOnOthersCatalogue() throws Exception {
+        String token = loginAndGetToken("i_am_partner@example.com");
+
+        mockMvc.perform(delete("/tours")
+                        .header("Authorization", token)
+                        .param("tourId", tour1.getTourId().toString()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg")
+                        .value("Partner can only modify catalogues created by themselves"));
+    }
+    @Test
+    public void deleteTour_shouldReturn404_forNonexistentTour() throws Exception {
+        // 以 Owner（ADMIN）身份登录
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        mockMvc.perform(delete("/tours")
+                        .header("Authorization", token)
+                        .param("tourId", "99999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("Tour not found"));
+    }
+    @Test
+    public void deleteTour_success_shouldReturn200() throws Exception {
+        // 以 Owner 身份登录
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        // 执行删除 tour1
+        mockMvc.perform(delete("/tours")
+                        .header("Authorization", token)
+                        .param("tourId", tour1.getTourId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
+    }
+    @Test
+    public void updateTour_success_shouldReturn200() throws Exception {
+        // 以 Owner 身份登录
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        // 构造请求体
+        Tour req = new Tour();
+        req.setTourId(tour1.getTourId());
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Updated Title");
+        req.setDestination("Updated Destination");
+        req.setDescription("Updated Description");
+        req.setPrice(199.99);
+        req.setPrimaryImageUrl("https://your-cdn.com/updated.jpg");
+        req.setImages(List.of(
+                "https://your-cdn.com/updated1.jpg",
+                "https://your-cdn.com/updated2.jpg"
+        ));
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
+    }
+    @Test
+    public void updateTour_unauthenticated_shouldReturn401() throws Exception {
+        // 不带 Authorization
+        Tour req = new Tour();
+        req.setTourId(tour1.getTourId());
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Whatever");
+
+        mockMvc.perform(put("/tours")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("User not logged in"));
+    }
+    @Test
+    public void updateTour_asPremiumMember_shouldReturn403() throws Exception {
+        String token = loginAndGetToken("i_am_premium@example.com");
+
+        Tour req = new Tour();
+        req.setTourId(tour1.getTourId());
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Nope");
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").isString());
+    }
+    @Test
+    public void updateTour_asPartner_modifyOthers_shouldReturn403() throws Exception {
+        // 先造一个别人的 Catalogue + Tour
+        String token = loginAndGetToken("i_am_partner@example.com");
+
+        Tour req = new Tour();
+        req.setTourId(tour1.getTourId());
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("Nope");
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg")
+                        .value("Partner can only modify catalogues created by themselves"));
+    }@Test
+    public void updateTour_notFoundCatalogue_shouldReturn404() throws Exception {
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        Tour req = new Tour();
+        req.setTourId(tour1.getTourId());
+        req.setCatalogueId(99999L);  // 不存在的 catalogueId
+        req.setTitle("Won't work");
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("Catalogue not found"));
+    }
+
+
 
 
 
