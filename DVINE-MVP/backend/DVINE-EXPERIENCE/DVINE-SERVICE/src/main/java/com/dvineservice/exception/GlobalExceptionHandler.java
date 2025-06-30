@@ -3,6 +3,7 @@ package com.dvineservice.exception;
 import com.dvinedao.domain.ReturnResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public ReturnResult handleException(Exception e) {
         log.error("An error occurred:", e);
@@ -62,6 +64,34 @@ public class GlobalExceptionHandler {
         String key = keyToken.substring(keyToken.lastIndexOf('.') + 1);   // email
 
         return ReturnResult.error("The " + key + " already exists");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler
+    public ReturnResult handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.error("Data integrity violation:", e);
+
+        String msg = e.getMessage();
+
+        // Check if it's a foreign key constraint violation
+        if (msg != null && msg.contains("foreign key constraint fails")) {
+            // Extract the referenced table and field
+            Pattern p = Pattern.compile("FOREIGN KEY \\(`([^`]+)`\\) REFERENCES `([^`]+)`");
+            Matcher m = p.matcher(msg);
+
+            if (m.find()) {
+                String referencedTable = m.group(2); // e.g., "tours"
+
+                // Convert table name to entity name (tours -> Tour)
+                String entityName = referencedTable.substring(0, 1).toUpperCase() +
+                                   referencedTable.substring(1, referencedTable.length() - 1);
+
+                return ReturnResult.error(entityName + " does not exist");
+            }
+        }
+
+        // Fallback for other data integrity violations (use 400 for these)
+        return ReturnResult.error("Data integrity constraint violation");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

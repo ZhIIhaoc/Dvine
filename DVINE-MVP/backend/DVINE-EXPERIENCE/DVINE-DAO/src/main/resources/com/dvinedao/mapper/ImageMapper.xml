@@ -12,6 +12,15 @@
             (#{image.imageUrl}, #{image.caption}, #{image.tourId}, #{image.isPrimary})
         </foreach>
     </update>
+
+    <delete id="deleteImages">
+        DELETE FROM images
+        WHERE imageId IN (
+            <foreach collection="imageIds" item="imageId" separator=",">
+                #{imageId}
+            </foreach>
+        )
+    </delete>
     <select id="findByTourId" resultType="com.dvinedao.domain.Image">
         SELECT
             i.imageId,
