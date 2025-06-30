@@ -42,6 +42,8 @@ export function Header() {
                     minHeight: 80,
                     alignItems: "flex-end",
                     mx: { xs: 0, sm: 3 },
+                    width: "100%",
+                    overflowX: "hidden",
                 }}
             >
                 <Box
@@ -50,7 +52,7 @@ export function Header() {
                         alignItems: "center",
                         flexGrow: 1,
                         gap: 3,
-                        ml: 10,
+                        ml: { xs: 1, sm: 2, md: 10 },
                     }}
                 >
                     <Box sx={{ minWidth: 40 }}>
@@ -79,7 +81,11 @@ export function Header() {
                         }}
                     >
                         <Button
-                            sx={{ mt: 0, color: "black", mr: 3 }}
+                            sx={{
+                                mt: 0,
+                                color: "black",
+                                pr: { xs: 2, sm: 4, md: 10 },
+                            }}
                             onClick={() => navigate("/user-dashboard")}
                         >
                             User Dashboard
