@@ -93,7 +93,15 @@ export function Header() {
                         <MenuItem
                             onClick={() => {
                                 handleClose();
-                                navigate("/profile");
+                                navigate("/login");
+                            }}
+                        >
+                            Sign In
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                navigate("/user/settings");
                             }}
                         >
                             Account Settings
@@ -101,7 +109,7 @@ export function Header() {
                         <MenuItem
                             onClick={() => {
                                 handleClose();
-                                navigate("/login");
+                                navigate("/logout");
                             }}
                             sx={{ color: "red" }}
                         >

@@ -12,6 +12,8 @@ import { NotFound } from "./pages/NotFound.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
 import "./components/RouterDomColour.css";
+import Logout from "./pages/Logout.jsx";
+import UserSettings from "./pages/UserSettings.jsx";
 
 function App() {
     return (
@@ -55,6 +57,8 @@ function App() {
                     <Route path="/catalogue" element={<Catalogue />} />
                     <Route path="/dvine-moments" element={<DvineMoments />} />
                     <Route path="/user-dashboard" element={<UserDashboard />} />
+                    <Route path="/logout" element={<Logout />} />
+                    <Route path="/user/settings" element={<UserSettings />} />
                     <Route path="/tour/:id" element={<TourDetails  />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
