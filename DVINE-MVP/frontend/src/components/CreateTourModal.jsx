@@ -7,6 +7,7 @@ export function CreateTourModal({ open, onClose }) {
     const [tourDescription, setTourDescription] = React.useState("");
     const [tourImage, setTourImage] = React.useState(""); // Assuming you want to handle images later
     const [imagePreview, setImagePreview] = React.useState("");
+    const accessToken = localStorage.getItem("accessToken");
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0]; 
@@ -24,7 +25,9 @@ export function CreateTourModal({ open, onClose }) {
             const response = await CreateTours(
                 tourTitle,
                 tourDescription,
-                tourImage
+                tourImage,
+                accessToken,
+
             );
             const responseInfo = await response.json();
             console.log(responseInfo);
@@ -63,7 +66,7 @@ export function CreateTourModal({ open, onClose }) {
                 <Typography variant="h6" component="h2">
                     Create New Tour
                 </Typography>
-                <Typography sx={{ mt: 2 }}>
+                <Box sx={{ mt: 2 }}>
                      <TextField
                         label="Tour Title"
                         placeholder="Tour Title"
@@ -79,7 +82,7 @@ export function CreateTourModal({ open, onClose }) {
                         value={tourDescription}
                         onChange={(e) => setTourDescription(e.target.value)}
                     />
-                </Typography>
+                </Box>
                 <Button variant="outlined" component="label" sx={{ mb: 3 }}>
                     Upload Tour Image
                     <input
