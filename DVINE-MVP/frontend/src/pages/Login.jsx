@@ -51,7 +51,7 @@ export const Login = () => {
             const response = await SubmitLogin(loginEmail, loginPassword);
             const responseInfo = await response.json();
             console.log(responseInfo);
-            
+
             if (responseInfo.code === 0) {
                 // Success case
                 const { accessToken, refreshToken } = responseInfo.data || {};
@@ -63,7 +63,10 @@ export const Login = () => {
                     showSnackbar("Login successful!", "success");
                     navigate("/");
                 } else {
-                    showSnackbar("Login response error: token missing", "error");
+                    showSnackbar(
+                        "Login response error: token missing",
+                        "error"
+                    );
                 }
             } else {
                 // Error case
