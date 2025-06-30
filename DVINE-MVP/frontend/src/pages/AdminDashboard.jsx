@@ -43,7 +43,6 @@ export function AdminDashboard() {
 
     return (
         <>
-            <Header />
             {userInfo ? (
             <>
                 <Typography sx={{ textAlign: "center", mt: 10, mb: 2, fontSize: "2rem", fontWeight: "bold", color: "purple" }}> Welcome Back {userName} </Typography>
