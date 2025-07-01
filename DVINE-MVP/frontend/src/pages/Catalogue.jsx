@@ -94,8 +94,8 @@ export function Catalogue() {
                                             image={"../src/assets/rested.png"}
                                             alt={tour.title}
                                             sx={{
-                                                height: 300,
-                                                width: 500,
+                                                height: 400,
+                                                width: 600,
                                                 objectFit: "cover",
                                                 objectPosition: "center",
                                                 cursor: "pointer",
