@@ -5,11 +5,15 @@ import { Grid, Box, Typography, TextField, Button, Link } from "@mui/material";
 import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
 import MessageAlert from "../components/MessageAlert.jsx";
+import { AuthContext } from "../components/AuthContext.jsx";
+import { useContext } from "react";
+
 
 export const Login = () => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
     // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
+    const { setToken } = useContext(AuthContext);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const navigate = useNavigate();
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
@@ -59,7 +63,8 @@ export const Login = () => {
                     localStorage.setItem("accessToken", accessToken);
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", loginEmail);
-                    props.setToken(accessToken);
+                    setToken(accessToken);
+                    // props.setToken(accessToken);
                     showSnackbar("Login successful!", "success");
                     navigate("/");
                 } else {

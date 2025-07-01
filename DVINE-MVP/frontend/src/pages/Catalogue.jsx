@@ -120,7 +120,7 @@ export function Catalogue() {
             ) : (
                 <Box sx={{ textAlign: "center", mt: 5 }}>
                     <Typography variant="h4">
-                        Loading Server Information...
+                        Please add a tour to the catalogue
                     </Typography>
                 </Box>
             )}

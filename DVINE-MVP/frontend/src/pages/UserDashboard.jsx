@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 // import propTypes from "prop-types";
 // import axios from "axios";
 import { Header } from "../components/Header";
-import { Box, Typography, Button, Grid } from "@mui/material";
+import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 
@@ -167,6 +167,7 @@ export function UserDashboard() {
                     <Typography variant="h4">
                         Loading User Information...
                     </Typography>
+                    <CircularProgress />
                 </Box>
             )}
         </>

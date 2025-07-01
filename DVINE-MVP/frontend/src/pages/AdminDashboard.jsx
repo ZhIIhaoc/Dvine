@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 // import propTypes from "prop-types";
 // import axios from "axios";
-import { Box, Typography, Button, Grid, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Modal } from "@mui/material";
+import { Box, Typography, Button, Grid, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Modal, CircularProgress } from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 import { CreateTourModal } from "../components/CreateTourModal.jsx";
@@ -227,6 +227,7 @@ export function AdminDashboard() {
             ) : (
             <Box sx={{ textAlign: "center", mt: 5 }}>
                 <Typography variant="h4">Loading User Information...</Typography>
+                <CircularProgress/>
             </Box>
             )}
 
