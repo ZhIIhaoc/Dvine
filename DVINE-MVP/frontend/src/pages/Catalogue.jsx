@@ -91,11 +91,11 @@ export function Catalogue() {
                                     <Card sx={{ display: "flex", flexDirection: "column", alignItems: "center", boxShadow: 1 }}>
                                         <CardMedia
                                             component="img"
-                                            image={"../src/assets/background.png"}
+                                            image={"../src/assets/rested.png"}
                                             alt={tour.title}
                                             sx={{
-                                                height: 300,
-                                                width: 500,
+                                                height: 400,
+                                                width: 600,
                                                 objectFit: "cover",
                                                 objectPosition: "center",
                                                 cursor: "pointer",
