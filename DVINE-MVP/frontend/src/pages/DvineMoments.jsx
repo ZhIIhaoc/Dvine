@@ -43,11 +43,11 @@ const mockPosts = [
             timeAgo: '3 days ago'
         },
         hashtag: '#Divine',
-        image: 'src/assets/dvine_test1.png',
+        image: '../src/assets/party.jpg',
         likes: 24,
         isLiked: false,
         comments: [
-            { id: 1, user: 'Friend 1', text: 'Amazing view!' },
+            { id: 1, user: 'Friend 1', text: 'I wish I was there!!!!!' },
             { id: 2, user: 'Friend 2', text: 'Love this place!' }
         ]
     },
@@ -59,7 +59,7 @@ const mockPosts = [
             timeAgo: '5 days ago'
         },
         hashtag: '#Divine',
-        image: 'src/assets/dvine_test2.png',
+        image: '../src/assets/sunset.jpg',
         likes: 18,
         isLiked: true,
         comments: [

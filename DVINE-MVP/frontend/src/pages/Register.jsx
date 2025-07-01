@@ -7,10 +7,14 @@ import SignUpStepOne from "../components/SignUpStepOne.jsx";
 import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
 import SubmitRegistration from "../endpoints/SubmitRegistration.js";
+import { AuthContext } from "../components/AuthContext.jsx";
+import { useContext } from "react";
+
 
 export const Register = () => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
+    const { setToken } = useContext(AuthContext);
     const [userInfo, setUsersInfo] = React.useState({
         email: "",
         password: "",
@@ -93,6 +97,8 @@ export const Register = () => {
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", userInfo.email);
                     // props.setToken(accessToken);
+                    setToken(accessToken);
+                    
                     showSnackbar("Registration successful", "success");
                     navigate("/");
                 } else {
