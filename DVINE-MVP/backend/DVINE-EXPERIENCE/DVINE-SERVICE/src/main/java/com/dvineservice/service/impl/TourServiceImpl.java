@@ -3,9 +3,11 @@ package com.dvineservice.service.impl;
 import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.annotation.CatalogueOwnerCheck;
 import com.dvinedao.domain.Image;
+import com.dvinedao.domain.PageResult;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
+import java.util.ArrayList;
 import com.dvinedao.mapper.TourMapper;
 import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.ImageService;
@@ -45,6 +47,23 @@ public class TourServiceImpl implements TourService {
             throw new NotFoundException("Tour not found");
         }
         return tour;
+    }
+
+    @Override
+    public PageResult<Tour> searchWithPagination(TourQueryParam tourQueryParam) {
+        // 获取总记录数
+        long totalElements = tourMapper.countSearch(tourQueryParam);
+        
+        // 如果没有数据，返回空的分页结果
+        if (totalElements == 0) {
+            return new PageResult<>(new ArrayList<>(), tourQueryParam.getPage(), tourQueryParam.getSize(), 0);
+        }
+        
+        // 获取当前页数据
+        List<Tour> tours = tourMapper.search(tourQueryParam);
+        
+        // 构建分页结果
+        return new PageResult<>(tours, tourQueryParam.getPage(), tourQueryParam.getSize(), totalElements);
     }
 
     @Override

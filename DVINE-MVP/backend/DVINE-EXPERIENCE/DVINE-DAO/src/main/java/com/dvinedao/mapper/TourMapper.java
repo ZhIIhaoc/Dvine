@@ -11,6 +11,8 @@ public interface TourMapper {
     void createTour(Tour tour);
 
     List<Tour> search(TourQueryParam tourQueryParam);
+    
+    long countSearch(TourQueryParam tourQueryParam);
 
     Tour findById(Long tourId);
 
