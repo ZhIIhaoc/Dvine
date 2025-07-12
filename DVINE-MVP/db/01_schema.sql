@@ -48,3 +48,12 @@ CREATE TABLE IF NOT EXISTS images (
     isPrimary BOOLEAN DEFAULT FALSE COMMENT "Tour Primary image, each tour only have 1 primary image",
     FOREIGN KEY (tourId) REFERENCES tours(tourId)
 );
+
+-- Insert default catalogue for tours not assigned to any catalogue
+INSERT INTO catalogues
+(title, description, coverImage)
+VALUES
+    ('Default Catalogue',
+     'Build-in catalogue for the tours not assigned to any catalogue',
+     'https://this-is-image-cover.jpg'
+    );

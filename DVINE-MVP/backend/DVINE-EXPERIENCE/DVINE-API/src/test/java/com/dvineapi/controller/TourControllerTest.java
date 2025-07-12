@@ -25,8 +25,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -456,13 +454,14 @@ public class TourControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
-    }@Test
+    }
+    @Test
     public void updateTour_notFoundCatalogue_shouldReturn404() throws Exception {
         String token = loginAndGetToken("i_am_owner@example.com");
 
         Tour req = new Tour();
         req.setTourId(tour1.getTourId());
-        req.setCatalogueId(99999L);  // 不存在的 catalogueId
+        req.setCatalogueId(99999L);
         req.setTitle("Won't work");
 
         mockMvc.perform(put("/tours")
@@ -471,7 +470,7 @@ public class TourControllerTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg").value("Catalogue not found"));
+                .andExpect(jsonPath("$.msg").value("Catalogue does not exist"));
     }
 
 
