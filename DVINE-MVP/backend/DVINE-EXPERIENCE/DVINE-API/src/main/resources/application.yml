@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: DVINE-API
+  datasource:
+    url: jdbc:mysql://localhost:3306/dvine_db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  jackson:
+    default-property-inclusion: non_null # ignore null value in response
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    map-underscore-to-camel-case: true    # camel-case button, the sql col must named like "xxx_xxx"
+
+jwt:
+  secret: KG0z7ycKfE7cHQJxPgW9WwO19o9I8y2tx7Gy3aJ9B4k=
+  access-token-expiration: 3600000 # 1 hour
+  refresh-token-expiration: 604800000 # 7 days

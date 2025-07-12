@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.ImageMapper">
+
+
+    <update id="createImages">
+        INSERT INTO images (imageUrl, caption, tourId, isPrimary)
+        VALUES
+        <foreach collection="images" item="image" separator=",">
+            (#{image.imageUrl}, #{image.caption}, #{image.tourId}, #{image.isPrimary})
+        </foreach>
+    </update>
+
+    <delete id="deleteImages">
+        DELETE FROM images
+        WHERE imageId IN (
+            <foreach collection="imageIds" item="imageId" separator=",">
+                #{imageId}
+            </foreach>
+        )
+    </delete>
+    <select id="findByTourId" resultType="com.dvinedao.domain.Image">
+        SELECT
+            i.imageId,
+            i.imageUrl,
+            i.caption,
+            i.tourId,
+            i.isPrimary
+        FROM
+            images i
+        WHERE
+            i.tourId = #{tourId}
+    </select>
+</mapper>

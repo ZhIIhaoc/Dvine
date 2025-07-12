@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Database
+  db:
+    image: mysql:8.4
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: dvine_db
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # first 01... then 02... initialization scripts in order.
+    networks:
+      - dvine-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - dvine-network
+  # Backend
+  backend:
+    build:
+      context: ./DVINE-MVP/backend/DVINE-EXPERIENCE
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/dvine_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    networks:
+      - dvine-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./DVINE-MVP/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    networks:
+      - dvine-network
+    depends_on:
+      - backend
+
+networks:
+  dvine-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  backend-data:
+  frontend-data:
