@@ -1,5 +1,7 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.annotation.PermissionCheck;
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.User;
 import com.dvinedao.domain.UserQueryParam;
@@ -39,6 +41,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/list")
+    @PermissionCheck(PermissionLevel.MANAGER)
     public ReturnResult getUserList(){
         log.info("getUserList");
         List<User> userList = userService.getUserList();

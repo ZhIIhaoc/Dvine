@@ -1,5 +1,7 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.annotation.PermissionCheck;
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
@@ -31,6 +33,7 @@ public class TourController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
+    @PermissionCheck(PermissionLevel.ADMIN)
     public ReturnResult createTour(@RequestBody Tour tour) {
         tourService.createTour(tour);
         return ReturnResult.success();
@@ -38,6 +41,7 @@ public class TourController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping
+    @PermissionCheck(PermissionLevel.ADMIN)
     public ReturnResult updateTour(@RequestBody Tour tour) {
         tourService.updateTour(tour);
         return ReturnResult.success();
@@ -45,6 +49,7 @@ public class TourController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
+    @PermissionCheck(PermissionLevel.ADMIN)
     public ReturnResult deleteTour(Long tourId) {
         tourService.deleteTour(tourId);
         return ReturnResult.success();

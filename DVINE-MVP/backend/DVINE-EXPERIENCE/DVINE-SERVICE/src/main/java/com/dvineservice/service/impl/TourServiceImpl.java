@@ -1,7 +1,6 @@
 package com.dvineservice.service.impl;
 
 import com.dvinedao.annotation.PermissionCheck;
-import com.dvinedao.annotation.CatalogueOwnerCheck;
 import com.dvinedao.domain.Image;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
@@ -26,15 +25,11 @@ public class TourServiceImpl implements TourService {
 
 
 
-    @PermissionCheck(PermissionLevel.ADMIN)
-    @CatalogueOwnerCheck
     @Transactional
     @Override
     public void createTour(Tour tour) {
-        // Save the tour to the database
         tourMapper.createTour(tour);
         List<Image> images = TourUtil.getImages(tour);
-        // Save the images using the ImageMapper
         imageService.createImages(images);
     }
 
@@ -59,19 +54,13 @@ public class TourServiceImpl implements TourService {
         return tour;
     }
 
-    @PermissionCheck(PermissionLevel.ADMIN)
-    @CatalogueOwnerCheck
     @Transactional
     @Override
     public void updateTour(Tour tour) {
-        // Update the tour in the database
         tourMapper.updateTour(tour);
         imageService.updateImage(tour);
     }
 
-
-    @PermissionCheck(PermissionLevel.ADMIN)
-    @CatalogueOwnerCheck
     @Transactional
     @Override
     public void deleteTour(Long tourId) {

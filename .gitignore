@@ -1,3 +1,4 @@
 # Ignore IntelliJ workspace in backend
 .idea/
 package-lock.json
+CLAUDE.md
