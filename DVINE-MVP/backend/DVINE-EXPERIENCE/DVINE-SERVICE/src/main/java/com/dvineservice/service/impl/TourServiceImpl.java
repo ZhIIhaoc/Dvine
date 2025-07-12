@@ -1,8 +1,6 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.domain.Image;
-import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvinedao.mapper.TourMapper;
@@ -22,6 +20,20 @@ public class TourServiceImpl implements TourService {
     private TourMapper tourMapper;
     @Autowired
     private ImageService imageService;
+
+    /**
+     * Helper method to ensure tour exists
+     * @param tourId the tour ID to check
+     * @return the tour if it exists
+     * @throws NotFoundException if tour does not exist
+     */
+    private Tour ensureTourExists(Long tourId) {
+        Tour tour = tourMapper.findById(tourId);
+        if (tour == null) {
+            throw new NotFoundException("Tour not found");
+        }
+        return tour;
+    }
 
 
 
@@ -44,12 +56,9 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public Tour findById(Long tourId) {
-        Tour tour = tourMapper.findById(tourId);
-        if (tour == null) {
-            throw new NotFoundException("Tour not found");
-        }
+        Tour tour = ensureTourExists(tourId);
         List<String> images = imageService.findByTourId(tourId).stream()
-                .map(image -> image.getImageUrl()).toList();
+                .map(Image::getImageUrl).toList();
         tour.setImages(images);
         return tour;
     }
@@ -57,6 +66,8 @@ public class TourServiceImpl implements TourService {
     @Transactional
     @Override
     public void updateTour(Tour tour) {
+        // Check if tour exists first
+        ensureTourExists(tour.getTourId());
         tourMapper.updateTour(tour);
         imageService.updateImage(tour);
     }
@@ -65,10 +76,7 @@ public class TourServiceImpl implements TourService {
     @Override
     public void deleteTour(Long tourId) {
         // Check if tour exists first
-        Tour tour = tourMapper.findById(tourId);
-        if (tour == null) {
-            throw new NotFoundException("Tour not found");
-        }
+        ensureTourExists(tourId);
 
         // Delete child records FIRST (images) to avoid FK constraint violation
         List<Image> images = imageService.findByTourId(tourId);
@@ -77,9 +85,6 @@ public class TourServiceImpl implements TourService {
         }
 
         // Then delete the parent record (tour)
-        int deletedRow = tourMapper.deleteTour(tourId);
-        if (deletedRow == 0) {
-            throw new NotFoundException("Tour not found");
-        }
+        tourMapper.deleteTour(tourId);
     }
 }

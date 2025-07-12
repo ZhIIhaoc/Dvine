@@ -1,6 +1,5 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.domain.*;
 import com.dvinedao.mapper.CatalogueMapper;
 import com.dvinedao.mapper.TourMapper;
@@ -22,6 +21,20 @@ public class CatalogueServiceImpl implements CatalogueService {
     @Autowired
     private TourService tourService;
 
+    /**
+     * Helper method to ensure catalogue exists
+     * @param catalogueId the catalogue ID to check
+     * @return the catalogue if it exists
+     * @throws NotFoundException if catalogue does not exist
+     */
+    private Catalogue ensureCatalogueExists(Long catalogueId) {
+        Catalogue catalogue = catalogueMapper.findCatalogueById(catalogueId);
+        if (catalogue == null) {
+            throw new NotFoundException("Catalogue not found");
+        }
+        return catalogue;
+    }
+
     @Override
     public List<Catalogue> findAllCatalogues() {
         return catalogueMapper.findAllCatalogues();
@@ -34,15 +47,13 @@ public class CatalogueServiceImpl implements CatalogueService {
 
     @Override
     public Catalogue findCatalogueById(Long id) {
-        Catalogue catalogue = catalogueMapper.findCatalogueById(id);
-        if (catalogue == null) {
-            throw new NotFoundException("Catalogue not found");
-        }
-        return catalogue;
+        return ensureCatalogueExists(id);
     }
 
     @Override
     public void updateCatalogue(Catalogue catalogue) {
+        // Check if catalogue exists first
+        ensureCatalogueExists(catalogue.getCatalogueId());
         catalogueMapper.updateCatalogue(catalogue);
     }
 
@@ -50,16 +61,11 @@ public class CatalogueServiceImpl implements CatalogueService {
     @Override
     public void deleteCatalogue(Long catalogueId) {
         // Check if catalogue exists first
-        Catalogue catalogue = catalogueMapper.findCatalogueById(catalogueId);
-        if (catalogue == null) {
-            throw new NotFoundException("Catalogue does not exist");
-        }
+        ensureCatalogueExists(catalogueId);
 
         // Find all tours in this catalogue
         List<Tour> tours = tourMapper.findByCatalogueId(catalogueId);
-        tours.forEach(tour -> {
-            tourService.deleteTour(tour.getTourId());
-        });
+        tours.forEach(tour -> tourService.deleteTour(tour.getTourId()));
 
         // Finally delete the catalogue
         catalogueMapper.deleteCatalogue(catalogueId);
