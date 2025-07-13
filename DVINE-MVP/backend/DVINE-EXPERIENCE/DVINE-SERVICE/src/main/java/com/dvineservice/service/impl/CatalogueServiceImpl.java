@@ -5,7 +5,7 @@ import com.dvinedao.mapper.CatalogueMapper;
 import com.dvinedao.mapper.TourMapper;
 import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.CatalogueService;
-import com.dvineservice.service.TourService;
+import com.dvineservice.service.TourOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,7 @@ public class CatalogueServiceImpl implements CatalogueService {
     @Autowired
     private TourMapper tourMapper;
     @Autowired
-    private TourService tourService;
+    private TourOperationService tourOperationService;
 
     /**
      * Helper method to ensure catalogue exists
@@ -65,7 +65,7 @@ public class CatalogueServiceImpl implements CatalogueService {
 
         // Find all tours in this catalogue
         List<Tour> tours = tourMapper.findByCatalogueId(catalogueId);
-        tours.forEach(tour -> tourService.deleteTour(tour.getTourId()));
+        tours.forEach(tour -> tourOperationService.deleteTour(tour.getTourId()));
 
         // Finally delete the catalogue
         catalogueMapper.deleteCatalogue(catalogueId);

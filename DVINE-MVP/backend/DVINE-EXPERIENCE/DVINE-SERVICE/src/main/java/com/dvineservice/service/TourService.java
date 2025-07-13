@@ -6,11 +6,9 @@ import com.dvinedao.domain.TourQueryParam;
 import java.util.List;
 
 public interface TourService {
-    void createTour(Tour tour);
+    // Read operations (wrappers for consistent service layer routing)
     List<Tour> search(TourQueryParam tourQueryParam);
     Tour findById(Long tourId);
-    void updateTour(Tour tour);
-    void deleteTour(Long tourId);
     
     // Permission checking
     boolean canPerformDirectOperation(Long userId);
@@ -19,9 +17,4 @@ public interface TourService {
     void createTourWithPermissionCheck(Tour tour);
     void updateTourWithPermissionCheck(Tour tour);
     void deleteTourWithPermissionCheck(Long tourId);
-    
-    // Explicit approval submission methods
-    void submitTourForApproval(Tour tour, Long userId);
-    void submitTourUpdateForApproval(Tour tour, Long userId);
-    void submitTourDeletionForApproval(Long tourId, Long userId);
 }

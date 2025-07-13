@@ -5,10 +5,9 @@ import com.dvinedao.domain.ApprovalStatus;
 import com.dvinedao.mapper.PendingTourImageMapper;
 import com.dvinedao.mapper.PendingTourMapper;
 import com.dvineservice.exception.NotFoundException;
-import com.dvineservice.service.ImageService;
 import com.dvineservice.service.PendingTourService;
-import com.dvineservice.service.TourService;
-import com.dvineservice.util.TourUtil;
+import com.dvineservice.service.TourOperationService;
+import com.dvineservice.util.TourConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +25,12 @@ public class PendingTourServiceImpl implements PendingTourService {
     private PendingTourImageMapper pendingTourImageMapper;
     
     @Autowired
-    private TourService tourService;
-    
-    @Autowired
-    private ImageService imageService;
+    private TourOperationService tourOperationService;
 
     @Override
     @Transactional
     public void submitTourCreation(Tour tour, Long submittedBy) {
-        PendingTour pendingTour = createPendingTourFromTour(tour, submittedBy);
+        PendingTour pendingTour = TourConversionUtil.convertTourToPendingTour(tour, submittedBy);
         pendingTour.setOperationType(PendingTour.OperationType.CREATE);
         
         createPendingTourWithImages(pendingTour, tour.getImages());
@@ -44,9 +40,9 @@ public class PendingTourServiceImpl implements PendingTourService {
     @Transactional
     public void submitTourUpdate(Tour tour, Long submittedBy) {
         // Verify original tour exists
-        tourService.findById(tour.getTourId());
+        tourOperationService.findById(tour.getTourId());
         
-        PendingTour pendingTour = createPendingTourFromTour(tour, submittedBy);
+        PendingTour pendingTour = TourConversionUtil.convertTourToPendingTour(tour, submittedBy);
         pendingTour.setOperationType(PendingTour.OperationType.UPDATE);
         pendingTour.setOriginalTourId(tour.getTourId());
         
@@ -57,9 +53,9 @@ public class PendingTourServiceImpl implements PendingTourService {
     @Transactional
     public void submitTourDeletion(Long tourId, Long submittedBy) {
         // Verify original tour exists
-        Tour originalTour = tourService.findById(tourId);
+        Tour originalTour = tourOperationService.findById(tourId);
         
-        PendingTour pendingTour = createPendingTourFromTour(originalTour, submittedBy);
+        PendingTour pendingTour = TourConversionUtil.convertTourToPendingTour(originalTour, submittedBy);
         pendingTour.setOperationType(PendingTour.OperationType.DELETE);
         pendingTour.setOriginalTourId(tourId);
         
@@ -148,7 +144,7 @@ public class PendingTourServiceImpl implements PendingTourService {
         
         // Create pending tour images if provided
         if (imageUrls != null && !imageUrls.isEmpty()) {
-            List<PendingTourImage> images = createPendingTourImages(pendingTour.getPendingTourId(), imageUrls);
+            List<PendingTourImage> images = TourConversionUtil.createPendingTourImages(pendingTour.getPendingTourId(), imageUrls);
             pendingTourImageMapper.createImages(images);
         }
     }
@@ -174,62 +170,26 @@ public class PendingTourServiceImpl implements PendingTourService {
         return pendingTours;
     }
 
-    private PendingTour createPendingTourFromTour(Tour tour, Long submittedBy) {
-        PendingTour pendingTour = new PendingTour();
-        pendingTour.setCatalogueId(tour.getCatalogueId());
-        pendingTour.setTitle(tour.getTitle());
-        pendingTour.setDestination(tour.getDestination());
-        pendingTour.setDescription(tour.getDescription());
-        pendingTour.setPrice(tour.getPrice());
-        pendingTour.setPrimaryImageUrl(tour.getPrimaryImageUrl());
-        pendingTour.setSubmittedBy(submittedBy);
-        return pendingTour;
-    }
-    
-    private List<PendingTourImage> createPendingTourImages(Long pendingTourId, List<String> imageUrls) {
-        return imageUrls.stream()
-                .map(url -> {
-                    PendingTourImage image = new PendingTourImage();
-                    image.setPendingTourId(pendingTourId);
-                    image.setImageUrl(url);
-                    image.setIsPrimary(imageUrls.indexOf(url) == 0); // First image is primary
-                    return image;
-                })
-                .collect(Collectors.toList());
-    }
     
     private void loadPendingTourImages(PendingTour pendingTour) {
         List<PendingTourImage> images = pendingTourImageMapper.findByPendingTourId(pendingTour.getPendingTourId());
-        List<String> imageUrls = images.stream()
-                .map(PendingTourImage::getImageUrl)
-                .collect(Collectors.toList());
+        List<String> imageUrls = TourConversionUtil.extractImageUrls(images);
         pendingTour.setImages(imageUrls);
     }
     
     private void executeApprovedCreation(PendingTour pendingTour) {
-        Tour tour = convertPendingTourToTour(pendingTour);
-        tourService.createTour(tour);
+        Tour tour = TourConversionUtil.convertPendingTourToTour(pendingTour);
+        tourOperationService.createTour(tour);
     }
     
     private void executeApprovedUpdate(PendingTour pendingTour) {
-        Tour tour = convertPendingTourToTour(pendingTour);
+        Tour tour = TourConversionUtil.convertPendingTourToTour(pendingTour);
         tour.setTourId(pendingTour.getOriginalTourId());
-        tourService.updateTour(tour);
+        tourOperationService.updateTour(tour);
     }
     
     private void executeApprovedDeletion(PendingTour pendingTour) {
-        tourService.deleteTour(pendingTour.getOriginalTourId());
+        tourOperationService.deleteTour(pendingTour.getOriginalTourId());
     }
     
-    private Tour convertPendingTourToTour(PendingTour pendingTour) {
-        Tour tour = new Tour();
-        tour.setCatalogueId(pendingTour.getCatalogueId());
-        tour.setTitle(pendingTour.getTitle());
-        tour.setDestination(pendingTour.getDestination());
-        tour.setDescription(pendingTour.getDescription());
-        tour.setPrice(pendingTour.getPrice());
-        tour.setPrimaryImageUrl(pendingTour.getPrimaryImageUrl());
-        tour.setImages(pendingTour.getImages());
-        return tour;
-    }
 }
