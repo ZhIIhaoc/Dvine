@@ -1,5 +1,6 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.domain.PageResult;
 import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.ReturnResult;
@@ -22,6 +23,13 @@ public class TourController {
     public ReturnResult search(TourQueryParam tourQueryParam) {
         List<Tour> tour = tourService.search(tourQueryParam);
         return ReturnResult.success(tour);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/page")
+    public ReturnResult searchWithPagination(TourQueryParam tourQueryParam) {
+        PageResult<Tour> pageResult = tourService.searchWithPagination(tourQueryParam);
+        return ReturnResult.success(pageResult);
     }
 
     @ResponseStatus(HttpStatus.OK)

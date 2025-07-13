@@ -1,6 +1,7 @@
 package com.dvineservice.service.impl;
 
 import com.dvinedao.domain.Image;
+import com.dvinedao.domain.PageResult;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvinedao.mapper.TourMapper;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -85,5 +87,21 @@ public class TourOperationServiceImpl implements TourOperationService {
 
         // Then delete the parent record (tour)
         tourMapper.deleteTour(tourId);
+    }
+
+    @Override
+    public PageResult<Tour> searchWithPagination(TourQueryParam tourQueryParam) {
+        // Validate pagination parameters
+        long totalElements = tourMapper.countSearch(tourQueryParam);
+
+        // If no results, return empty PageResult
+        if (totalElements == 0) {
+            return new PageResult<>(new ArrayList<>(), tourQueryParam.getPage(), tourQueryParam.getSize(), 0);
+        }
+
+        // Ensure page and size are within valid bounds
+        List<Tour> tours = tourMapper.search(tourQueryParam);
+
+        return new PageResult<>(tours, tourQueryParam.getPage(), tourQueryParam.getSize(), totalElements);
     }
 }

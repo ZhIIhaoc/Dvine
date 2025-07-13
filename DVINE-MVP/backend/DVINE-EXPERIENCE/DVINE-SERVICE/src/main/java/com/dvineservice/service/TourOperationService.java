@@ -1,5 +1,6 @@
 package com.dvineservice.service;
 
+import com.dvinedao.domain.PageResult;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvineservice.exception.NotFoundException;
@@ -21,6 +22,11 @@ public interface TourOperationService {
      * Search tours by query parameters
      */
     List<Tour> search(TourQueryParam tourQueryParam);
+    
+    /**
+     * Search tours with pagination
+     */
+    PageResult<Tour> searchWithPagination(TourQueryParam tourQueryParam);
     
     /**
      * Find tour by ID
