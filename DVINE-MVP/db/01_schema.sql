@@ -35,9 +35,11 @@ CREATE TABLE IF NOT EXISTS tours (
     destination VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
+    createdBy BIGINT NOT NULL COMMENT "User ID who created this tour",
     createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (catalogueId) REFERENCES catalogues(catalogueId)
+    FOREIGN KEY (catalogueId) REFERENCES catalogues(catalogueId),
+    FOREIGN KEY (createdBy) REFERENCES users(userId)
 );
 
 CREATE TABLE IF NOT EXISTS images (

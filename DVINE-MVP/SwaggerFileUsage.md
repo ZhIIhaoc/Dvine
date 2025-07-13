@@ -111,20 +111,30 @@ The API has different permission levels:
 - `POST /auth/logout` - Logout user
 - `POST /auth/refresh` - Refresh access token
 
-### Partner Level Required (Permission e 1)
-- `POST /tours` - Create new tour
-- `PUT /tours` - Update tour
-- `DELETE /tours` - Delete tour
+### Partner Level Required (Permission ≥ 1)
+- `POST /tours` - Create new tour (automatically assigned to creator)
+- `PUT /tours` - Update tour (only tours created by current partner)
+- `DELETE /tours` - Delete tour (only tours created by current partner)
 - `GET /approvals/my-submissions` - View own submissions
 
-### Manager Level Required (Permission e 4)
+**Note**: Partners can only modify tours they created. For unauthorized access attempts, you'll receive:
+```json
+{
+  "code": 1,
+  "msg": "Partner can only modify the tour created by themselves"
+}
+```
+
+### Manager Level Required (Permission ≥ 4)
 - `POST /catalogues` - Create catalogue
-- `PUT /catalogues` - Update catalogue
+- `PUT /catalogues` - Update catalogue  
 - `DELETE /catalogues` - Delete catalogue
 - `GET /users/list` - Get all users
 - `GET /approvals/pending-tours` - View pending tours
 - `POST /approvals/tours/{pendingTourId}/approve` - Approve tour
 - `POST /approvals/tours/{pendingTourId}/reject` - Reject tour
+
+**Note**: Managers can modify ANY tour regardless of creator (administrative override).
 
 ## Token Refresh
 

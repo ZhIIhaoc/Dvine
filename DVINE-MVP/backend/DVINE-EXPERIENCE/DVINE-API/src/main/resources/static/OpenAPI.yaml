@@ -169,6 +169,7 @@ paths:
                         destination: "Sydney, Australia"
                         description: Experience the breathtaking views...
                         price: 299.99
+                        createdBy: 123
                         primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                         images:
                           - https://example.com/images/sydney1.jpg
@@ -178,10 +179,10 @@ paths:
       summary: Create new tour
       description: "Create a new tour with catalogueId, title, destination, description,\
         \ price, primaryImageUrl, and images. Requires Partner level permission or\
-        \ higher."
+        \ higher. The tour will be automatically assigned to the current user as creator."
       operationId: createTour
       requestBody:
-        description: Tour creation data
+        description: "Tour creation data. Note: Do not include 'createdBy' field - it will be automatically set to the current user."
         content:
           application/json:
             schema:
@@ -241,10 +242,10 @@ paths:
       summary: Update tour
       description: "Update an existing tour with tourId, catalogueId, title, destination,\
         \ description, price, primaryImageUrl, and images. Requires Partner level\
-        \ permission or higher."
+        \ permission or higher. Partners can only update tours they created. Managers can update any tour."
       operationId: updateTour
       requestBody:
-        description: Tour update data
+        description: "Tour update data. Note: 'createdBy' field is read-only and cannot be modified."
         content:
           application/json:
             schema:
@@ -261,6 +262,7 @@ paths:
                     with our professional guided tour including Opera House and Harbor
                     Bridge visits.
                   price: 349.99
+                  createdBy: 123
                   primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                   images:
                     - https://example.com/images/sydney1.jpg
@@ -319,7 +321,7 @@ paths:
         - Tours
       summary: Delete tour
       description: Delete a tour by providing tourId. Requires Partner level permission
-        or higher. This action cannot be undone.
+        or higher. Partners can only delete tours they created. Managers can delete any tour. This action cannot be undone.
       operationId: deleteTour
       parameters:
         - name: tourId
@@ -931,6 +933,7 @@ paths:
                         with our professional guided tour including Opera House and
                         Harbor Bridge visits.
                       price: 299.99
+                      createdBy: 123
                       primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                       images:
                         - https://example.com/images/sydney1.jpg
@@ -949,14 +952,8 @@ paths:
           description: Pagination and filter parameters
           required: true
           schema:
-            $ref: "#/components/schemas/TourQueryParam"
+            $ref: "#/components/schemas/TourPageQueryParam"
       responses:
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "200":
           description: Paginated tours retrieved successfully
           content:
@@ -976,6 +973,7 @@ paths:
                           title: Amazing Sydney Harbor Tour
                           destination: "Sydney, Australia"
                           price: 299.99
+                          createdBy: 123
                       page: 0
                       size: 10
                       totalElements: 100
@@ -1330,6 +1328,12 @@ components:
             - https://example.com/images/sydney2.jpg
           items:
             type: string
+        createdBy:
+          type: integer
+          format: int64
+          description: User ID who created this tour (automatically set on creation)
+          example: 123
+          readOnly: true
       required:
         - catalogueId
         - description
@@ -1421,6 +1425,20 @@ components:
       required:
         - email
         - password
+    TourPageQueryParam:
+      type: object
+      description: Tour search and filter parameters
+      properties:
+        page:
+          type: integer
+          format: int32
+          description: Page number for pagination (starts from 0)
+          example: 1
+        size:
+          type: integer
+          format: int32
+          description: Number of items per page
+          example: 10
     TourQueryParam:
       type: object
       description: Tour search and filter parameters
@@ -1453,19 +1471,6 @@ components:
           format: double
           description: Maximum price filter
           example: 500.0
-        page:
-          type: integer
-          format: int32
-          description: Page number for pagination (starts from 0)
-          example: 0
-        size:
-          type: integer
-          format: int32
-          description: Number of items per page
-          example: 10
-        offset:
-          type: integer
-          format: int32
   securitySchemes:
     bearerAuth:
       type: http

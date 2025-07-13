@@ -9,6 +9,7 @@ import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.ImageService;
 import com.dvineservice.service.TourOperationService;
 import com.dvineservice.util.TourUtil;
+import com.dvineservice.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,11 @@ public class TourOperationServiceImpl implements TourOperationService {
     @Transactional
     @Override
     public void createTour(Tour tour) {
+        // Set the creator of the tour to the current user
+        if (tour.getCreatedBy() == null) {
+            tour.setCreatedBy(UserUtil.getCurrentUserId());
+        }
+        
         tourMapper.createTour(tour);
         List<Image> images = TourUtil.getImages(tour);
         imageService.createImages(images);

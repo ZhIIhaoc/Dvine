@@ -6,8 +6,8 @@
 
     <insert id="createTour" parameterType="com.dvinedao.domain.Tour"
             useGeneratedKeys="true" keyProperty="tourId" keyColumn="tourId">
-        INSERT INTO tours (title, description, destination, catalogueId, price)
-        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price})
+INSERT INTO tours (title, description, destination, catalogueId, price, createdBy)
+        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price}, #{createdBy})
     </insert>
 
     <update id="updateTour">
@@ -40,10 +40,12 @@
     <select id="search" resultType="com.dvinedao.domain.Tour">
         SELECT
             t.tourId,
+            t.catalogueId,
             t.title,
             t.destination,
             t.description,
             t.price,
+            t.createdBy,
             (SELECT i.imageUrl
              FROM images i
              WHERE i.tourId = t.tourId AND i.isPrimary = TRUE
@@ -105,7 +107,8 @@
             t.title,
             t.destination,
             t.description,
-            t.price
+            t.price,
+            t.createdBy
         FROM
             tours t
         WHERE
@@ -118,7 +121,8 @@
             t.title,
             t.destination,
             t.description,
-            t.price
+            t.price,
+            t.createdBy
         FROM
             tours t
         WHERE
