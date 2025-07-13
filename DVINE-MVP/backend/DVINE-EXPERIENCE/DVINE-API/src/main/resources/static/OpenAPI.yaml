@@ -645,9 +645,37 @@ paths:
           "application/json":
             schema:
               $ref: "#/components/schemas/UserLoginRequest"
-            example:
-              email: john.doe@example.com
-              password: SecurePassword123!
+            examples:
+                Login Example:
+                    description: Example of user login request
+                    value:
+                      email: john.doe@example.com
+                      password: SecurePassword123!
+                Owner Login Example:
+                    description: Example of owner login request
+                    value:
+                      email: i_am_owner@example.com
+                      password: 1234
+                Manager Login Example:
+                    description: Example of manager login request
+                    value:
+                      email: i_am_manager@example.com
+                      password: 1234
+                Partner Login Example:
+                    description: Example of partner login request
+                    value:
+                      email: i_am_partner@example.com
+                      password: 1234
+                Premium Member Login Example:
+                    description: Example of premium member login request
+                    value:
+                      email: i_am_premium@example.com
+                      password: 1234
+                Regular Member Login Example:
+                    description: Example of regular member login request
+                    value:
+                      email: i_am_regular@example.com
+                      password: 1234
         required: true
       responses:
         "401":

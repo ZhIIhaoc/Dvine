@@ -58,6 +58,11 @@ public class TourServiceImpl implements TourService {
     public void createTourWithPermissionCheck(Tour tour) {
         Long userId = UserUtil.getCurrentUserId();
 
+        // Ensure the tour has a catalogue ID, defaulting to 1 if not specified
+        if (tour.getCatalogueId() == null) {
+            tour.setCatalogueId(1L); // Default to the first catalogue if not specified
+        }
+
         if (canPerformDirectOperation(userId)) {
             tourOperationService.createTour(tour);
         } else {
