@@ -642,7 +642,7 @@ paths:
       requestBody:
         description: User login credentials
         content:
-          "*/*":
+          "application/json":
             schema:
               $ref: "#/components/schemas/UserLoginRequest"
             example:

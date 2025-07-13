@@ -150,4 +150,11 @@ public class TokenUtil {
                 tokens.get("refreshToken")
         );
     }
+
+    public String extractBearerToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+        return authorizationHeader; // Return the header as is if it doesn't start with "Bearer "
+    }
 }
