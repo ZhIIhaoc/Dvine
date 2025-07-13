@@ -1,13 +1,17 @@
 package com.dvineservice.service.impl;
 
 import com.dvinedao.domain.Image;
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvinedao.mapper.TourMapper;
+import com.dvinedao.mapper.UserMapper;
 import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.ImageService;
+import com.dvineservice.service.PendingTourService;
 import com.dvineservice.service.TourService;
 import com.dvineservice.util.TourUtil;
+import com.dvineservice.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,10 @@ public class TourServiceImpl implements TourService {
     private TourMapper tourMapper;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private PendingTourService pendingTourService;
 
     /**
      * Helper method to ensure tour exists
@@ -86,5 +94,71 @@ public class TourServiceImpl implements TourService {
 
         // Then delete the parent record (tour)
         tourMapper.deleteTour(tourId);
+    }
+
+    // Permission checking
+    
+    @Override
+    public boolean canPerformDirectOperation(Long userId) {
+        Integer userPermission = userMapper.findPermissionById(userId);
+        return userPermission >= PermissionLevel.MANAGER;
+    }
+    
+    // Permission-aware methods
+    
+    @Override
+    @Transactional
+    public void createTourWithPermissionCheck(Tour tour) {
+        Long userId = UserUtil.getCurrentUserId();
+        
+        if (canPerformDirectOperation(userId)) {
+            createTour(tour);
+        } else {
+            submitTourForApproval(tour, userId);
+        }
+    }
+    
+    @Override
+    @Transactional
+    public void updateTourWithPermissionCheck(Tour tour) {
+        Long userId = UserUtil.getCurrentUserId();
+        
+        if (canPerformDirectOperation(userId)) {
+            updateTour(tour);
+        } else {
+            submitTourUpdateForApproval(tour, userId);
+        }
+    }
+    
+    @Override
+    @Transactional
+    public void deleteTourWithPermissionCheck(Long tourId) {
+        Long userId = UserUtil.getCurrentUserId();
+        
+        if (canPerformDirectOperation(userId)) {
+            deleteTour(tourId);
+        } else {
+            submitTourDeletionForApproval(tourId, userId);
+        }
+    }
+    
+    // Explicit approval submission methods
+    
+    @Override
+    @Transactional
+    public void submitTourForApproval(Tour tour, Long userId) {
+        pendingTourService.submitTourCreation(tour, userId);
+    }
+
+    @Override
+    @Transactional
+    public void submitTourUpdateForApproval(Tour tour, Long userId) {
+        pendingTourService.submitTourUpdate(tour, userId);
+    }
+
+    @Override
+    @Transactional
+    public void submitTourDeletionForApproval(Long tourId, Long userId) {
+        pendingTourService.submitTourDeletion(tourId, userId);
     }
 }

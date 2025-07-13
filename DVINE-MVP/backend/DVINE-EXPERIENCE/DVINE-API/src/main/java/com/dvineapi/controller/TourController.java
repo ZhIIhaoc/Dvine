@@ -33,25 +33,25 @@ public class TourController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @PermissionCheck(PermissionLevel.ADMIN)
+    @PermissionCheck(PermissionLevel.PARTNER)
     public ReturnResult createTour(@RequestBody Tour tour) {
-        tourService.createTour(tour);
+        tourService.createTourWithPermissionCheck(tour);
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping
-    @PermissionCheck(PermissionLevel.ADMIN)
+    @PermissionCheck(PermissionLevel.PARTNER)
     public ReturnResult updateTour(@RequestBody Tour tour) {
-        tourService.updateTour(tour);
+        tourService.updateTourWithPermissionCheck(tour);
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
-    @PermissionCheck(PermissionLevel.ADMIN)
+    @PermissionCheck(PermissionLevel.PARTNER)
     public ReturnResult deleteTour(Long tourId) {
-        tourService.deleteTour(tourId);
+        tourService.deleteTourWithPermissionCheck(tourId);
         return ReturnResult.success();
     }
 
