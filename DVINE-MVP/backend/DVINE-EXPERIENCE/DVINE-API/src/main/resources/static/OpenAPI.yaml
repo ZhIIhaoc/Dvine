@@ -262,7 +262,9 @@ paths:
       summary: Update tour
       description: "Update an existing tour with tourId, catalogueId, title, destination,\
         \ description, price, primaryImageUrl, and images. Requires Partner level\
-        \ permission or higher. Partners can only update tours they created. Managers can update any tour."
+        \ permission or higher. Partners can only update tours they created. Managers can update any tour.\
+        \ \n\n**Behavior:**\n- **Partners**: Tour update is submitted for approval (202 ACCEPTED)\
+        \ \n- **Managers**: Tour is updated directly (200 OK)"
       operationId: updateTour
       requestBody:
         description: "Tour update data. Note: 'createdBy' field is read-only and cannot be modified."
@@ -329,8 +331,18 @@ paths:
                   value:
                     code: 1
                     msg: "Partner can only modify the tour created by themselves"
+        "202":
+          description: Tour update submitted for approval (Partner users)
+          content:
+            application/json:
+              examples:
+                Tour Update Submitted Response:
+                  description: Tour update submitted for approval
+                  value:
+                    code: 0
+                    msg: success
         "200":
-          description: Tour updated successfully
+          description: Tour updated successfully (Manager users)
           content:
             application/json:
               examples:
@@ -345,8 +357,10 @@ paths:
       tags:
         - Tours
       summary: Delete tour
-      description: Delete a tour by providing tourId. Requires Partner level permission
-        or higher. Partners can only delete tours they created. Managers can delete any tour. This action cannot be undone.
+      description: "Delete a tour by providing tourId. Requires Partner level permission\
+        \ or higher. Partners can only delete tours they created. Managers can delete any tour. This action cannot be undone.\
+        \ \n\n**Behavior:**\n- **Partners**: Tour deletion is submitted for approval (202 ACCEPTED)\
+        \ \n- **Managers**: Tour is deleted directly (200 OK)"
       operationId: deleteTour
       parameters:
         - name: tourId
@@ -393,8 +407,18 @@ paths:
                   value:
                     code: 1
                     msg: "Partner can only modify the tour created by themselves"
+        "202":
+          description: Tour deletion submitted for approval (Partner users)
+          content:
+            application/json:
+              examples:
+                Tour Deletion Submitted Response:
+                  description: Tour deletion submitted for approval
+                  value:
+                    code: 0
+                    msg: success
         "200":
-          description: Tour deleted successfully
+          description: Tour deleted successfully (Manager users)
           content:
             application/json:
               examples:

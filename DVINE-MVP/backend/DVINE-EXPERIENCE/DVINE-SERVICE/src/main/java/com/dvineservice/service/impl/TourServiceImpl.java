@@ -81,6 +81,7 @@ public class TourServiceImpl implements TourService {
             tourOperationService.updateTour(tour);
         } else {
             pendingTourService.submitTourUpdate(tour, userId);
+            throw new TourSubmittedException();
         }
     }
 
@@ -93,6 +94,7 @@ public class TourServiceImpl implements TourService {
             tourOperationService.deleteTour(tourId);
         } else {
             pendingTourService.submitTourDeletion(tourId, userId);
+            throw new TourSubmittedException();
         }
     }
 }
