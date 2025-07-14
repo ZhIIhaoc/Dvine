@@ -25,10 +25,14 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import com.dvinedao.mapper.PendingTourMapper;
+import com.dvinedao.domain.PendingTour;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional  // 保证每个测试方法结束后自动回滚，表保持干净
+@Transactional  // Ensure each test method is automatically rolled back after completion to keep tables clean
 public class TourControllerTest {
 
     @Autowired
@@ -40,6 +44,8 @@ public class TourControllerTest {
     private CatalogueMapper catalogueMapper;
     @Autowired
     private ImageMapper imageMapper;
+    @Autowired
+    private PendingTourMapper pendingTourMapper;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -68,7 +74,7 @@ public class TourControllerTest {
 
     @BeforeEach
     public void setup() {
-        // 1) 建一个父级 Catalogue
+        // 1) Create a parent Catalogue
         Catalogue c = new Catalogue();
         c.setTitle("Test Catalogue");
         c.setDescription("Catalogue Desc");
@@ -76,14 +82,15 @@ public class TourControllerTest {
         catalogueMapper.createCatalogue(c);
         this.catalogue = c;
 
-        // 2) 插入两条固定的 Tour
+        // 2) Insert two fixed Tours (created by Owner userId=5)
         this.tour1 = makeTour(
                 c.getCatalogueId(),
                 "Sydney Coastal Walk",
                 "Sydney, Australia",
                 "See the cliffs and beaches.",
                 129.99,
-                "https://your-cdn.com/tour101.jpg"
+                "https://your-cdn.com/tour101.jpg",
+                5L  // Owner user ID
         );
         this.tour2 = makeTour(
                 c.getCatalogueId(),
@@ -91,7 +98,8 @@ public class TourControllerTest {
                 "Northern Territory, Australia",
                 "Explore the heart of Australia.",
                 499.99,
-                "https://your-cdn.com/tour102.jpg"
+                "https://your-cdn.com/tour102.jpg",
+                5L  // Owner user ID
         );
 
     }
@@ -101,7 +109,8 @@ public class TourControllerTest {
                           String destination,
                           String description,
                           double price,
-                          String primaryImageUrl) {
+                          String primaryImageUrl,
+                          Long createdBy) {
         Tour t = new Tour();
         t.setCatalogueId(catalogueId);
         t.setTitle(title);
@@ -109,7 +118,8 @@ public class TourControllerTest {
         t.setDescription(description);
         t.setPrice(price);
         t.setPrimaryImageUrl(primaryImageUrl);
-        // 插入后 t.getTourId() 会被回填
+        t.setCreatedBy(createdBy);
+        // After insertion, t.getTourId() will be auto-filled
         tourMapper.createTour(t);
         makeImage(t.getTourId(), primaryImageUrl, true);
         makeImage(t.getTourId(), primaryImageUrl.replace(".jpg", "_2.jpg"), false);
@@ -120,7 +130,7 @@ public class TourControllerTest {
         image.setTourId(tourId);
         image.setImageUrl(imageUrl);
         image.setIsPrimary(isPrimary);
-        // 插入后 image.getImageId() 会被回填
+        // After insertion, image.getImageId() will be auto-filled
         imageMapper.createImages(List.of(image));
         return image;
     }
@@ -128,14 +138,14 @@ public class TourControllerTest {
     @Test
     public void search_shouldReturnExactlyThoseTwoTours() throws Exception {
         mockMvc.perform(get("/tours")
-                        // <- 关键：加上 catalogueId 参数
+                        // Key: add catalogueId parameter
                         .param("catalogueId", catalogue.getCatalogueId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"))
                 .andExpect(jsonPath("$.data", hasSize(2)))
-                // 校验第一条
+                // Validate first record
                 .andExpect(jsonPath("$.data[0].tourId").value(tour1.getTourId()))
                 .andExpect(jsonPath("$.data[0].title").value("Sydney Coastal Walk"))
                 .andExpect(jsonPath("$.data[0].destination").value("Sydney, Australia"))
@@ -143,7 +153,7 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.data[0].price").value(129.99))
                 .andExpect(jsonPath("$.data[0].primaryImageUrl")
                                 .isString())
-                // 校验第二条
+                // Validate second record
                 .andExpect(jsonPath("$.data[1].tourId").value(tour2.getTourId()))
                 .andExpect(jsonPath("$.data[1].title").value("Outback Adventure"))
                 .andExpect(jsonPath("$.data[1].destination").value("Northern Territory, Australia"))
@@ -157,15 +167,15 @@ public class TourControllerTest {
         mockMvc.perform(get("/tours")
                         .param("catalogueId", "99999")
                         .contentType(MediaType.APPLICATION_JSON))
-                // 期望 404 Not Found
+                // Expect 404 Not Found
                 .andExpect(status().isNotFound())
-                // 返回体里 code = 1
+                // Response body should have code = 1
                 .andExpect(jsonPath("$.code").value(1))
-                // msg 为 "Tour not found"
+                // msg should be "Tour not found"
                 .andExpect(jsonPath("$.msg").value("Tour not found"));
     }
     /**
-     * GET /tours/{tourId} —— 不存在该 tourId 时，返回 404 + { code:1, msg:"Tour not found" }
+     * GET /tours/{tourId} - When tourId doesn't exist, return 404 + { code:1, msg:"Tour not found" }
      */
     @Test
     public void getById_notFound_shouldReturn404() throws Exception {
@@ -183,24 +193,24 @@ public class TourControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"))
-                // 注意这里要用 $.data.xxx
+                // Note: use $.data.xxx here
                 .andExpect(jsonPath("$.data.tourId").value(tour1.getTourId().intValue()))
                 .andExpect(jsonPath("$.data.catalogueId").value(catalogue.getCatalogueId().intValue()))
                 .andExpect(jsonPath("$.data.title").value("Sydney Coastal Walk"))
                 .andExpect(jsonPath("$.data.destination").value("Sydney, Australia"))
                 .andExpect(jsonPath("$.data.description").value("See the cliffs and beaches."))
                 .andExpect(jsonPath("$.data.price").value(129.99))
-                // images 是长度为 2 的数组
+                // images is an array of length 2
                 .andExpect(jsonPath("$.data.images", hasSize(2)))
                 .andExpect(jsonPath("$.data.images[0]").isString())
                 .andExpect(jsonPath("$.data.images[1]").isString());
     }
     @Test
-    public void createTour_asPartner_shouldReturn201() throws Exception {
-        // 1) 以 partner 身份登录（catalogue.creatorId == 4）
+    public void createTour_asPartner_shouldReturn202() throws Exception {
+        // 1) Login as partner (catalogue.creatorId == 4)
         String token = loginAndGetToken("i_am_partner@example.com");
 
-        // 2) 构造一个 Tour 对象作为请求体6
+        // 2) Create a Tour object as request body
         Tour req = new Tour();
         req.setCatalogueId(catalogue.getCatalogueId());
         req.setTitle("Great Barrier Reef Adventure");
@@ -208,27 +218,39 @@ public class TourControllerTest {
         req.setDescription("Explore the underwater wonders of the reef.");
         req.setPrice(299.99);
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
-        // 记得给 images 字段也赋值
+        // Remember to assign values to images field too
         req.setImages(List.of(
                 "https://your-cdn.com/tour101_1.jpg",
                 "https://your-cdn.com/tour101_2.jpg"
         ));
 
-        // 3) 执行请求并断言 - Partners can now create tours
+        // 3) Execute request and assert - Partners submit for approval (202 ACCEPTED)
         mockMvc.perform(post("/tours")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isAccepted()) // 202 ACCEPTED for Partners
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
+
+        // 4) Verify data is actually saved in pending_tours table, not tours table
+        List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
+        assertThat(pendingTours).isNotEmpty();
+        
+        // Verify the latest submitted pending tour is the one we just created
+        PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
+        assertThat(latestPending.getTitle()).isEqualTo("Great Barrier Reef Adventure");
+        assertThat(latestPending.getDestination()).isEqualTo("Cairns, Australia");
+        assertThat(latestPending.getPrice()).isEqualTo(299.99);
+        assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.CREATE);
+        assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
     }
     @Test
     public void createTour_success_shouldReturn201_asAdminOwner() throws Exception {
         // 1) Login as Owner (ADMIN)
         String token = loginAndGetToken("i_am_owner@example.com");
 
-        // 2) 构造请求体，注意 catalogue.creatorId == 4L（BeforeEach 中那个 Catalogue）
+        // 2) Create request body, note catalogue.creatorId == 4L (the Catalogue in BeforeEach)
         Tour req = new Tour();
         req.setCatalogueId(catalogue.getCatalogueId());
         req.setTitle("Great Barrier Reef Adventure");
@@ -241,7 +263,7 @@ public class TourControllerTest {
                 "https://your-cdn.com/tour101_2.jpg"
         ));
 
-        // 3) 执行请求并断言 Created
+        // 3) Execute request and assert Created
         mockMvc.perform(post("/tours")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -252,7 +274,7 @@ public class TourControllerTest {
     }
     @Test
     public void createTour_unauthenticated_shouldReturn401() throws Exception {
-        // 构造一个合法的请求体（不关心内容，因为会先被拦截为 401）
+        // Create a valid request body (content doesn't matter since it will be intercepted as 401 first)
         Tour req = new Tour();
         req.setCatalogueId(catalogue.getCatalogueId());
         req.setTitle("Reef Adventure");
@@ -270,15 +292,15 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.msg").value("User not logged in"));
     }
     /**
-     * POST /tours — 登录为 Premium Member，因 @PermissionCheck 触发，返回 403 +
+     * POST /tours - Login as Premium Member, due to @PermissionCheck trigger, return 403 +
      * {code:1, msg:"You don't have permission to access this resource"}
      */
     @Test
     public void createTour_shouldReturn403_asPremiumMember() throws Exception {
-        // 以 premium member 身份登录
+        // Login as premium member
         String token = loginAndGetToken("i_am_premium@example.com");
 
-        // 构造请求体
+        // Create request body
         Tour req = new Tour();
         req.setCatalogueId(catalogue.getCatalogueId());
         req.setTitle("Reef Adventure");
@@ -297,14 +319,14 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.msg")
                         .isString());
     }
+    
     @Test
-    public void createTour_shouldReturn404_forNonexistentCatalogue() throws Exception {
-        // 以 Owner（ADMIN）身份登录
-        String token = loginAndGetToken("i_am_owner@example.com");
+    public void createTour_catalogueNotFound_shouldReturn404() throws Exception {
+        String token = loginAndGetToken("i_am_partner@example.com");
 
-        // 构造一个指向不存在 catalogeId 的请求体
+        // Create request body with non-existent catalogueId
         Tour req = new Tour();
-        req.setCatalogueId(99999L);
+        req.setCatalogueId(99999L); // Non-existent catalogue ID
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
@@ -320,9 +342,10 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.code").value(1))
                 .andExpect(jsonPath("$.msg").value("Catalogue not found"));
     }
+
     @Test
     public void deleteTour_unauthenticated_shouldReturn401() throws Exception {
-        // 无 token
+        // No token
         mockMvc.perform(delete("/tours")
                         .param("tourId", tour1.getTourId().toString()))
                 .andExpect(status().isUnauthorized())
@@ -342,7 +365,7 @@ public class TourControllerTest {
                         .isString());
     }
     @Test
-    public void deleteTour_shouldReturn403_asPartnerOnOthersCatalogue() throws Exception {
+    public void deleteTour_shouldReturn403_asPartnerdeleteOtherTour() throws Exception {
         String token = loginAndGetToken("i_am_partner@example.com");
 
         mockMvc.perform(delete("/tours")
@@ -351,11 +374,11 @@ public class TourControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(1))
                 .andExpect(jsonPath("$.msg")
-                        .value("Partner can only modify catalogues created by themselves"));
+                        .value("Partner can only modify the tour created by themselves"));
     }
     @Test
     public void deleteTour_shouldReturn404_forNonexistentTour() throws Exception {
-        // 以 Owner（ADMIN）身份登录
+        // Login as Owner (ADMIN)
         String token = loginAndGetToken("i_am_owner@example.com");
 
         mockMvc.perform(delete("/tours")
@@ -367,10 +390,10 @@ public class TourControllerTest {
     }
     @Test
     public void deleteTour_success_shouldReturn200() throws Exception {
-        // 以 Owner 身份登录
+        // Login as Owner
         String token = loginAndGetToken("i_am_owner@example.com");
 
-        // 执行删除 tour1
+        // Execute deletion of tour1
         mockMvc.perform(delete("/tours")
                         .header("Authorization", token)
                         .param("tourId", tour1.getTourId().toString()))
@@ -378,12 +401,55 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
     }
+
+    @Test
+    public void deleteTour_asPartner_deleteOwnTour_shouldSubmitToPending() throws Exception {
+        // 1. Owner creates catalogue (since partner cannot create catalogue)
+        String ownerToken = loginAndGetToken("i_am_owner@example.com");
+        
+        Catalogue ownerCatalogue = new Catalogue();
+        ownerCatalogue.setTitle("Owner's Catalogue for Partner Delete");
+        ownerCatalogue.setDescription("Catalogue created by Owner for Partner to delete tour");
+        ownerCatalogue.setCoverImage("https://cdn/owner-catalogue.jpg");
+        catalogueMapper.createCatalogue(ownerCatalogue);
+
+        // 2. Partner creates tour in Owner's catalogue (simulate approved status)
+        String partnerToken = loginAndGetToken("i_am_partner@example.com");
+        
+        Tour partnerTour = makeTour(
+                ownerCatalogue.getCatalogueId(),
+                "Partner's Tour to Delete",
+                "Partner Destination",
+                "Tour created by partner for deletion test",
+                299.99,
+                "https://cdn/partner-tour-delete.jpg",
+                3L  // Partner user ID
+        );
+
+        // 3. Partner deletes their own created tour (should submit to pending_tours for approval)
+        mockMvc.perform(delete("/tours")
+                        .header("Authorization", partnerToken)
+                        .param("tourId", partnerTour.getTourId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
+
+        // Verify deletion request is submitted to pending_tours table for approval
+        List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
+        assertThat(pendingTours).isNotEmpty();
+        
+        // Verify the latest submitted pending tour is our deletion request
+        PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
+        assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.DELETE);
+        assertThat(latestPending.getOriginalTourId()).isEqualTo(partnerTour.getTourId()); // Points to the tour being deleted
+        assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
+    }
     @Test
     public void updateTour_success_shouldReturn200() throws Exception {
-        // 以 Owner 身份登录
+        // Login as Owner
         String token = loginAndGetToken("i_am_owner@example.com");
 
-        // 构造请求体
+        // Create request body
         Tour req = new Tour();
         req.setTourId(tour1.getTourId());
         req.setCatalogueId(catalogue.getCatalogueId());
@@ -404,10 +470,26 @@ public class TourControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
+
+        // Verify update is applied directly to tours table, not pending_tours table
+        Tour updatedTour = tourMapper.findById(tour1.getTourId());
+        assertThat(updatedTour).isNotNull();
+        assertThat(updatedTour.getTitle()).isEqualTo("Updated Title");
+        assertThat(updatedTour.getDestination()).isEqualTo("Updated Destination");
+        assertThat(updatedTour.getDescription()).isEqualTo("Updated Description");
+        assertThat(updatedTour.getPrice()).isEqualTo(199.99);
+        
+        // Verify this update didn't create pending_tours record (Owner/Admin direct update)
+        List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
+        // Count how many pending tours are related to current tourId (should be 0)
+        long relatedPendingCount = pendingTours.stream()
+                .filter(pt -> pt.getOriginalTourId() != null && pt.getOriginalTourId().equals(tour1.getTourId()))
+                .count();
+        assertThat(relatedPendingCount).isEqualTo(0);
     }
     @Test
     public void updateTour_unauthenticated_shouldReturn401() throws Exception {
-        // 不带 Authorization
+        // Without Authorization
         Tour req = new Tour();
         req.setTourId(tour1.getTourId());
         req.setCatalogueId(catalogue.getCatalogueId());
@@ -439,13 +521,34 @@ public class TourControllerTest {
     }
     @Test
     public void updateTour_asPartner_shouldReturn200() throws Exception {
-        // 先造一个别人的 Catalogue + Tour
+        // Create a new catalogue and tour inside the test
+        Catalogue testCatalogue = new Catalogue();
+        testCatalogue.setTitle("Test Catalogue for Update");
+        testCatalogue.setDescription("Test Catalogue Desc");
+        testCatalogue.setCoverImage("https://cdn/test-catalogue.jpg");
+        catalogueMapper.createCatalogue(testCatalogue);
+
+        // Create a tour (created by Partner)
+        Tour testTour = makeTour(
+                testCatalogue.getCatalogueId(),
+                "Original Tour",
+                "Original Destination",
+                "Original Description",
+                199.99,
+                "https://cdn/original-tour.jpg",
+                3L  // Partner user ID
+        );
+
+        // Partner tries to update this tour
         String token = loginAndGetToken("i_am_partner@example.com");
 
         Tour req = new Tour();
-        req.setTourId(tour1.getTourId());
-        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTourId(testTour.getTourId());
+        req.setCatalogueId(testCatalogue.getCatalogueId());
         req.setTitle("Updated by Partner");
+        req.setDestination("Updated Destination");
+
+        req.setPrice(399.99);
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
@@ -454,7 +557,41 @@ public class TourControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
+
+        // Verify data is actually saved in pending_tours table, not directly updated to tours table
+        List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
+        assertThat(pendingTours).isNotEmpty();
+
+        // Verify the latest submitted pending tour is our update request
+        PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
+        assertThat(latestPending.getTitle()).isEqualTo("Updated by Partner");
+        assertThat(latestPending.getDestination()).isEqualTo("Updated Destination");
+        assertThat(latestPending.getPrice()).isEqualTo(399.99);
+        assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.UPDATE);
+        assertThat(latestPending.getOriginalTourId()).isEqualTo(testTour.getTourId()); // Points to the tour being updated
+        assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
     }
+    @Test
+    public void updateTour_notFoundTour_shouldReturn404() throws Exception {
+        String token = loginAndGetToken("i_am_owner@example.com");
+
+        Tour req = new Tour();
+        req.setTourId(99999L); // Non-existent tourId
+        req.setCatalogueId(catalogue.getCatalogueId());
+        req.setTitle("This tour doesn't exist");
+        req.setDestination("Nowhere");
+        req.setDescription("This should fail");
+        req.setPrice(999.99);
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("Tour not found"));
+    }
+
     @Test
     public void updateTour_notFoundCatalogue_shouldReturn404() throws Exception {
         String token = loginAndGetToken("i_am_owner@example.com");
@@ -463,6 +600,7 @@ public class TourControllerTest {
         req.setTourId(tour1.getTourId());
         req.setCatalogueId(99999L);
         req.setTitle("Won't work");
+        req.setCreatedBy(5L);
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
@@ -470,11 +608,108 @@ public class TourControllerTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg").value("Catalogue does not exist"));
+                .andExpect(jsonPath("$.msg").value("Catalogue not found"));
+    }
+
+    @Test
+    public void updateTour_asPartner_updateOwnTour_shouldSubmitToPending() throws Exception {
+        // 1. Owner creates catalogue (since partner cannot create catalogue)
+        String ownerToken = loginAndGetToken("i_am_owner@example.com");
+        
+        Catalogue ownerCatalogue = new Catalogue();
+        ownerCatalogue.setTitle("Owner's Catalogue for Partner");
+        ownerCatalogue.setDescription("Catalogue created by Owner for Partner to use");
+        ownerCatalogue.setCoverImage("https://cdn/owner-catalogue.jpg");
+        catalogueMapper.createCatalogue(ownerCatalogue);
+
+        // 2. Partner creates tour in Owner's catalogue and gets approval (simulate approved status)
+        String partnerToken = loginAndGetToken("i_am_partner@example.com");
+        
+        Tour partnerTour = makeTour(
+                ownerCatalogue.getCatalogueId(),
+                "Partner's Tour in Owner Catalogue",
+                "Partner Destination",
+                "Tour created by partner and already approved",
+                299.99,
+                "https://cdn/partner-tour.jpg",
+                3L  // Partner user ID
+        );
+
+        // 3. Partner updates their own created tour (should submit to pending_tours for re-approval)
+        Tour updateReq = new Tour();
+        updateReq.setTourId(partnerTour.getTourId());
+        updateReq.setCatalogueId(ownerCatalogue.getCatalogueId());
+        updateReq.setTitle("Updated Partner Tour");
+        updateReq.setDestination("Updated Destination");
+        updateReq.setDescription("Updated by partner for approval");
+        updateReq.setPrice(399.99);
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", partnerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
+
+        // Verify update request is submitted to pending_tours table for approval
+        List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
+        assertThat(pendingTours).isNotEmpty();
+        
+        // Verify the latest submitted pending tour is our update request
+        PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
+        assertThat(latestPending.getTitle()).isEqualTo("Updated Partner Tour");
+        assertThat(latestPending.getDestination()).isEqualTo("Updated Destination");
+        assertThat(latestPending.getPrice()).isEqualTo(399.99);
+        assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.UPDATE);
+        assertThat(latestPending.getOriginalTourId()).isEqualTo(partnerTour.getTourId());
+        assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
     }
 
 
 
+
+    @Test
+    public void updateTour_asPartner_updateOthersTour_shouldReturn403() throws Exception {
+        // 1. Owner creates catalogue and tour
+        String ownerToken = loginAndGetToken("i_am_owner@example.com");
+
+        Catalogue ownerCatalogue = new Catalogue();
+        ownerCatalogue.setTitle("Owner's Private Catalogue");
+        ownerCatalogue.setDescription("Catalogue and tour both created by Owner");
+        ownerCatalogue.setCoverImage("https://cdn/owner-catalogue.jpg");
+        catalogueMapper.createCatalogue(ownerCatalogue);
+
+        // Owner creates tour
+        Tour ownerTour = makeTour(
+                ownerCatalogue.getCatalogueId(),
+                "Owner's Tour",
+                "Owner Destination",
+                "Tour created by owner",
+                199.99,
+                "https://cdn/owner-tour.jpg",
+                5L  // Owner user ID
+        );
+
+        // 2. Partner tries to update Owner's created tour should return 403
+        String partnerToken = loginAndGetToken("i_am_partner@example.com");
+
+        Tour updateReq = new Tour();
+        updateReq.setTourId(ownerTour.getTourId());
+        updateReq.setCatalogueId(ownerCatalogue.getCatalogueId());
+        updateReq.setTitle("Partner trying to update Owner's tour");
+        updateReq.setDestination("Unauthorized update");
+        updateReq.setDescription("This should be forbidden");
+        updateReq.setPrice(999.99);
+
+        mockMvc.perform(put("/tours")
+                        .header("Authorization", partnerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateReq)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("Partner can only modify the tour created by themselves"));
+    }
 
 
 
