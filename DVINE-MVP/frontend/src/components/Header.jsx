@@ -39,7 +39,7 @@ export function Header() {
         >
             <Toolbar
                 sx={{
-                    minHeight: 80,
+                    height: 95,
                     alignItems: "flex-end",
                     mx: { xs: 0, sm: 3 },
                     overflowX: "hidden",
