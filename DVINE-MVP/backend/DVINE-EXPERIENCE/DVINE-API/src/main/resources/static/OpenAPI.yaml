@@ -712,36 +712,33 @@ paths:
             type: integer
             format: int64
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
           description: Pending tour not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Tour rejected successfully
           content:
@@ -765,36 +762,33 @@ paths:
             type: integer
             format: int64
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
           description: Pending tour not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Tour approved successfully
           content:
@@ -1061,36 +1055,33 @@ paths:
             type: integer
             format: int64
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
           description: Pending tour not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Pending tour found
           content:
@@ -1107,42 +1098,65 @@ paths:
       description: Get all tours awaiting approval (Manager permission required)
       operationId: getAllPendingTours
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "200":
           description: Pending tours retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - pendingTourId: 1
+                    catalogueId: 1
+                    title: Amazing Sydney Harbor Tour
+                    destination: Sydney, Australia
+                    description: Experience the breathtaking views of Sydney Harbor with our professional
+                      guided tour including Opera House and Harbor Bridge visits.
+                    price: 299.99
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:47:06'
+                    images:
+                      - https://example.com/images/sydney1.jpg
+                      - https://example.com/images/sydney2.jpg
+                    submitterName: partnerPro
+                  - pendingTourId: 2
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:49:05'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
       security:
         - bearerAuth: []
   /approvals/my-submissions:
@@ -1154,42 +1168,81 @@ paths:
         required)
       operationId: getMySubmissions
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Partner"
         "200":
           description: User submissions retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - pendingTourId: 3
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:49:08'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                  - pendingTourId: 2
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:49:05'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                  - pendingTourId: 1
+                    catalogueId: 1
+                    title: Amazing Sydney Harbor Tour
+                    destination: Sydney, Australia
+                    description: Experience the breathtaking views of Sydney Harbor with our professional
+                      guided tour including Opera House and Harbor Bridge visits.
+                    price: 299.99
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:47:06'
+                    images:
+                      - https://example.com/images/sydney1.jpg
+                      - https://example.com/images/sydney2.jpg
+                    submitterName: partnerPro
+
       security:
         - bearerAuth: []
   /approvals/history:
@@ -1201,42 +1254,71 @@ paths:
         required)
       operationId: getApprovalHistory
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Approval history retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - pendingTourId: 2
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 1
+                    reviewedBy: 4
+                    submissionTime: '2025-07-14T02:49:05'
+                    reviewTime: '2025-07-14T03:54:04'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                    reviewerName: managerMan
+                  - pendingTourId: 3
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 2
+                    reviewedBy: 4
+                    submissionTime: '2025-07-14T02:49:08'
+                    reviewTime: '2025-07-14T03:53:16'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                    reviewerName: managerMan
+
       security:
         - bearerAuth: []
 components:
@@ -1257,6 +1339,9 @@ components:
         data:
           description: Response data (can be any object)
           example: {}
+      example:
+        code: 0
+        msg: success
     User:
       type: object
       properties:
