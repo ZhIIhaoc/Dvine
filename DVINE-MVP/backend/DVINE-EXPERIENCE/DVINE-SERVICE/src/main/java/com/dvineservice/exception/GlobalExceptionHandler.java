@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
                 String entityName = referencedTable.substring(0, 1).toUpperCase() +
                                    referencedTable.substring(1, referencedTable.length() - 1);
 
-                return ReturnResult.error(entityName + " does not exist");
+                return ReturnResult.error(entityName + " not found");
             }
         }
 
