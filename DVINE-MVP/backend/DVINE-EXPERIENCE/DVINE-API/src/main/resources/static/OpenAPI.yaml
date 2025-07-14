@@ -12,8 +12,6 @@ info:
 servers:
   - url: http://localhost:8080
     description: Development Server
-  - url: https://api.dvine.com
-    description: Production Server
 tags:
   - name: Authentication
     description: User authentication and authorization operations
@@ -179,7 +177,9 @@ paths:
       summary: Create new tour
       description: "Create a new tour with catalogueId, title, destination, description,\
         \ price, primaryImageUrl, and images. Requires Partner level permission or\
-        \ higher. The tour will be automatically assigned to the current user as creator."
+        \ higher. The tour will be automatically assigned to the current user as creator.\
+        \ \n\n**Behavior:**\n- **Partners**: Tour is submitted for approval (202 ACCEPTED)\
+        \ \n- **Managers**: Tour is created directly (201 CREATED)"
       operationId: createTour
       requestBody:
         description: "Tour creation data. Note: Do not include 'createdBy' field - it will be automatically set to the current user."
@@ -234,8 +234,18 @@ paths:
                   value:
                     code: 1
                     msg: "Access denied: requires Partner level permission"
+        "202":
+          description: Tour submitted for approval (Partner users)
+          content:
+            application/json:
+              examples:
+                Tour Submitted Response:
+                  description: Tour submitted for approval
+                  value:
+                    code: 0
+                    msg: success
         "201":
-          description: Tour created successfully
+          description: Tour created successfully (Manager users)
           content:
             application/json:
               examples:
@@ -582,7 +592,7 @@ paths:
                   description: Required fields validation failure
                   value:
                     code: 1
-                    msg: Invalid registration data
+                    msg: Registration fields cannot be empty or contain only spaces
                 Empty Fields:
                   description: Empty or whitespace-only fields
                   value:
@@ -1244,6 +1254,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  pendingTourId: 1
+                  catalogueId: 1
+                  title: Amazing Sydney Harbor Tour
+                  destination: Sydney, Australia
+                  description: Experience the breathtaking views of Sydney Harbor with our professional
+                    guided tour including Opera House and Harbor Bridge visits.
+                  price: 299.99
+                  primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                  submittedBy: 3
+                  operationType: CREATE
+                  status: 0
+                  submissionTime: '2025-07-14T02:47:06'
+                  images:
+                    - https://example.com/images/sydney1.jpg
+                    - https://example.com/images/sydney2.jpg
+                  submitterName: partnerPro
       security:
         - bearerAuth: []
   /approvals/pending-tours:

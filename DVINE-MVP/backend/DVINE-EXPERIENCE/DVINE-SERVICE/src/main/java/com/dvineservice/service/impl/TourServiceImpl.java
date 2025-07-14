@@ -5,6 +5,7 @@ import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvinedao.mapper.UserMapper;
+import com.dvineservice.exception.TourSubmittedException;
 
 import java.util.List;
 import com.dvineservice.service.PendingTourService;
@@ -67,6 +68,7 @@ public class TourServiceImpl implements TourService {
             tourOperationService.createTour(tour);
         } else {
             pendingTourService.submitTourCreation(tour, userId);
+            throw new TourSubmittedException();
         }
     }
 

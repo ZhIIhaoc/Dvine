@@ -135,4 +135,11 @@ public class GlobalExceptionHandler {
         log.error("Resource not found error:", e);
         return ReturnResult.error(e.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ExceptionHandler
+    public ReturnResult handleTourSubmittedException(TourSubmittedException e) {
+        log.info("Tour submitted for approval:", e);
+        return ReturnResult.success();
+    }
 }
