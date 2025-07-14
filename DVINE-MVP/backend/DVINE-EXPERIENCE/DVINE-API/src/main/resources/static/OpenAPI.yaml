@@ -763,14 +763,22 @@ paths:
             format: int64
       responses:
         "404":
-          description: Pending tour not found
+          description: Pending tour not found / Tour not found (if tourId is not found)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
-              example:
-                code: 1
-                msg: Pending tour not found
+              examples:
+                Tour Not Found Response:
+                  description: Tour Not Found Response
+                  value:
+                    code: 1
+                    msg: Tour not found
+                Pending Tour Not Found Response:
+                  description: Pending Tour Not Found Response
+                  value:
+                    code: 1
+                    msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
