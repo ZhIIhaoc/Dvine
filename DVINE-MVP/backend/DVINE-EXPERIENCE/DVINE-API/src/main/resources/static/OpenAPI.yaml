@@ -24,7 +24,7 @@ tags:
   - name: Tours
     description: Tour management operations
   - name: Approvals
-    description: Tour approval management operations (DETAIL NOT DONE)
+    description: Tour approval workflow management operations for pending tour submissions
 paths:
   /users/profile:
     get:
@@ -35,9 +35,9 @@ paths:
       operationId: getUserProfile
       responses:
         "401":
-          description: Unauthorized
+          description: Authentication failed - occurs when JWT token is missing, expired, or invalid in Authorization header
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
@@ -46,12 +46,12 @@ paths:
         "200":
           description: Profile retrieved successfully
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
                 data:
                   userId: 1
                   email: user@example.com
@@ -86,18 +86,18 @@ paths:
         required: true
       responses:
         "400":
-          description: Invalid user data
+          description: Bad Request - occurs when all profile fields are empty or null (at least one field must be provided for update)
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
                 msg: You should patch at least one field
         "409":
-          description: Conflict
+          description: Conflict - occurs when the new email already exists for another user
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
@@ -106,7 +106,7 @@ paths:
         "401":
           description: Unauthorized
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
@@ -115,12 +115,12 @@ paths:
         "200":
           description: Profile updated successfully
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
 
       security:
         - bearerAuth: []
@@ -204,6 +204,16 @@ paths:
                     - https://example.com/images/sydney2.jpg
         required: true
       responses:
+        "404":
+          description: Not Found - occurs when the specified catalogueId does not exist
+          content:
+            application/json:
+              examples:
+                Catalogue Not Found:
+                  description: Catalogue not found
+                  value:
+                    code: 1
+                    msg: Catalogue not found
         "401":
           description: Unauthorized - Invalid or missing token
           content:
@@ -270,15 +280,20 @@ paths:
         required: true
       responses:
         "404":
-          description: Tour not found
+          description: Not Found - occurs when the tour or catalogue doesn't exist
           content:
             application/json:
               examples:
-                Not Found Response:
-                  description: Not Found Response
+                Tour Not Found:
+                  description: Tour not found
                   value:
                     code: 1
                     msg: Tour not found
+                Catalogue Not Found:
+                  description: Catalogue not found
+                  value:
+                    code: 1
+                    msg: Catalogue not found
         "401":
           description: Unauthorized - Invalid or missing token
           content:
@@ -334,7 +349,7 @@ paths:
           example: 1
       responses:
         "404":
-          description: Tour not found
+          description: Not Found - occurs when the specified tour does not exist
           content:
             application/json:
               examples:
@@ -497,6 +512,15 @@ paths:
             type: integer
             format: int64
       responses:
+        "404":
+          description: Catalogue not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Catalogue not found
         "401":
           description: Unauthorized
           content:
@@ -549,6 +573,21 @@ paths:
               lastName: Doe
         required: true
       responses:
+        "400":
+          description: Bad Request - occurs when required fields are null, empty, or contain only whitespace characters
+          content:
+            application/json:
+              examples:
+                Missing Required Fields:
+                  description: Required fields validation failure
+                  value:
+                    code: 1
+                    msg: Invalid registration data
+                Empty Fields:
+                  description: Empty or whitespace-only fields
+                  value:
+                    code: 1
+                    msg: Registration fields cannot be empty or contain only spaces
         "409":
           description: Email already exists
           content:
@@ -585,14 +624,14 @@ paths:
         required: true
       responses:
         "400":
-          description: Missing refresh token
+          description: Bad Request - occurs when refresh token is missing or null in request body
           content:
             application/json:
               example:
                 code: 1
                 msg: Refresh token and user ID are required
         "401":
-          description: Invalid or expired refresh token
+          description: Authentication failed - occurs when refresh token is expired, malformed, or doesn't exist in Redis cache
           content:
             application/json:
               example:
@@ -681,7 +720,7 @@ paths:
         required: true
       responses:
         "401":
-          description: Invalid email or password
+          description: Authentication failed - occurs when provided email doesn't exist or password is incorrect
           content:
             application/json:
               example:
@@ -745,6 +784,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
       security:
         - bearerAuth: []
   /approvals/tours/{pendingTourId}/approve:
@@ -803,6 +845,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
       security:
         - bearerAuth: []
   /users/list:
@@ -839,7 +884,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
                 data:
                   - userId: 1
                     email: user@example.com
@@ -867,7 +912,19 @@ paths:
       tags:
         - Users
       summary: Update user permission
-      description: Update a user's permission level. Managers can modify member-level permissions (Regular/Premium). Only Owners can modify admin-level permissions (Partner/Manager/Owner).
+      description: |
+        Update a user's permission level with role-based access control.
+        
+        **Access Rules:**
+        - **Managers (3)**: Can only modify member-level permissions (Regular=0, Premium=1)
+        - **Owners (4)**: Can modify admin-level permissions (Partner=2, Manager=3) but cannot create other Owners
+        
+        **Permission Levels:**
+        - 0: Regular (Member)
+        - 1: Premium (Member) 
+        - 2: Partner (Admin)
+        - 3: Manager (Admin)
+        - 4: Owner (Admin - cannot be assigned to others)
       operationId: updateUserPermission
       requestBody:
         content:
@@ -881,11 +938,11 @@ paths:
                 userId:
                   type: integer
                   format: int64
-                  description: ID of the user whose permission to update
+                  description: ID of the target user whose permission level will be updated
                   example: 1
                 permission:
                   type: integer
-                  description: "New permission level (0: Regular, 1: Premium, 2: Partner, 3: Manager, 4: Owner)"
+                  description: "New permission level to assign to the user. Note: Owner level (4) cannot be assigned."
                   minimum: 0
                   maximum: 4
                   example: 1
@@ -895,31 +952,39 @@ paths:
         required: true
       responses:
         "400":
-          description: Invalid request data
+          description: Bad Request - Invalid input data that fails client-side validation
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               examples:
                 Missing Required Fields:
-                  description: Missing Required Fields
+                  description: "Occurs when userId or permission fields are null/missing in request body"
                   value:
                     code: 1
                     msg: User ID and permission cannot be null
-                Invalid Permission Level:
-                  description: Invalid Permission Level
+                Invalid Permission Value:
+                  description: "Occurs when permission value is outside valid range (0-4) or not an integer"
                   value:
                     code: 1
                     msg: Invalid permission level
         "401":
-          description: Unauthorized
+          description: Unauthorized - Authentication failed or missing credentials
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
-              example:
-                code: 1
-                msg: User not logged in
+              examples:
+                Missing JWT Token:
+                  description: "Occurs when Authorization header is missing or doesn't contain Bearer token"
+                  value:
+                    code: 1
+                    msg: User not logged in
+                Invalid JWT Token:
+                  description: "Occurs when JWT token is expired, malformed, or invalid"
+                  value:
+                    code: 1
+                    msg: Invalid or expired token
         "403":
           description: Insufficient permissions
           content:
@@ -964,7 +1029,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
       security:
         - bearerAuth: []
   /tours/{tourId}:
@@ -985,66 +1050,44 @@ paths:
             format: int64
           example: 1
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
-          description: Tour not found
+          description: Not Found - occurs when tour or catalogue doesn't exist
           content:
             application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
               examples:
-                Not Found Response:
-                  description: Not Found Response
+                Tour Not Found:
+                  description: Tour not found
                   value:
                     code: 1
                     msg: Tour not found
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "200":
-          description: Tour found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-              examples:
-                Success Response:
-                  description: Success Response
+                Catalogue Not Found:
+                  description: Catalogue not found
                   value:
-                    code: 0
-                    msg: success
-                    data:
-                      tourId: 1
-                      catalogueId: 5
-                      title: Amazing Sydney Harbor Tour
-                      destination: "Sydney, Australia"
-                      description: Experience the breathtaking views of Sydney Harbor
-                        with our professional guided tour including Opera House and
-                        Harbor Bridge visits.
-                      price: 299.99
-                      createdBy: 123
-                      primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
-                      images:
-                        - https://example.com/images/sydney1.jpg
-                        - https://example.com/images/sydney2.jpg
+                    code: 1
+                    msg: Catalogue not found
+        "200":
+          description: Tour found successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  catalogueId: 5
+                  title: Amazing Sydney Harbor Tour
+                  destination: "Sydney, Australia"
+                  description: Experience the breathtaking views of Sydney Harbor with our professional guided tour including Opera House and Harbor Bridge visits.
+                  price: 299.99
+                  createdBy: 123
+                  primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                  images:
+                    - https://example.com/images/sydney1.jpg
+                    - https://example.com/images/sydney2.jpg
   /tours/page:
     get:
       tags:
