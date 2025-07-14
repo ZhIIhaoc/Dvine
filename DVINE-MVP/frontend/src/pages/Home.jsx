@@ -42,11 +42,10 @@ export const Home = () => {
                     justifyContent: "center",
                     alignContent: "center",
                     alignItems: "center",
-                    px: { xs: 2, sm: 4, md: 8 },
                     backgroundImage: `url(${homepageImage})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    color: "white",
+                    color: "background.default",
                     position: "relative",
                     "::before": {
                         content: '""',
