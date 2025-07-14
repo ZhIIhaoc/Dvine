@@ -49,6 +49,7 @@ import {
     deleteCatalogue,
 } from "../endpoints/CatalogueEndpoints";
 import CatalogueSearch from "../components/CatalogueSearch";
+import FeaturedCarousel from "../components/FeaturedCarousel";
 
 // Mock data for fallback
 const mockTours = [
@@ -337,7 +338,7 @@ export function Catalogue() {
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                         <Typography variant="h5" fontWeight="bold">
                             Manage Catalogues
-                        </Typography>
+                    </Typography>
                         <Tooltip title="Create New Catalogue">
                             <Fab
                                 color="primary"
@@ -355,8 +356,8 @@ export function Catalogue() {
                         {catalogues.map((catalogue) => (
                             <Grid item xs={12} sm={6} md={4} key={catalogue.catalogueId}>
                                 <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                                    <CardMedia
-                                        component="img"
+                                        <CardMedia
+                                            component="img"
                                         height="200"
                                         image={catalogue.coverImage || "/src/assets/logo.png"}
                                         alt={catalogue.title}
@@ -372,7 +373,7 @@ export function Catalogue() {
                                                 color={getCatalogueTypeColor(catalogue.type)}
                                                 size="small"
                                             />
-                                        </Box>
+                    </Box>
                                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                                             {catalogue.description}
                                         </Typography>
@@ -381,12 +382,12 @@ export function Catalogue() {
                                             <Typography variant="caption" color="text.secondary">
                                                 {catalogue.creatorNickName}
                                             </Typography>
-                                        </Box>
+                </Box>
                                         <Box sx={{ display: "flex", alignItems: "center" }}>
                                             <CategoryIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
                                             <Typography variant="caption" color="text.secondary">
                                                 {getToursByCatalogue(catalogue.catalogueId).length} tours
-                                            </Typography>
+                    </Typography>
                                         </Box>
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: "space-between", p: 2 }}>
@@ -421,6 +422,12 @@ export function Catalogue() {
                 </Box>
             )}
 
+            {/* Featured Tours Carousel */}
+            <FeaturedCarousel 
+                tours={tours.slice(0, 6)} // Show first 6 tours as featured
+                onTourClick={(tourId) => navigate(`/tour/${tourId}`)}
+            />
+
             {/* Search and Filter Section */}
             <CatalogueSearch onSearch={handleSearch} onClear={handleClearSearch} />
 
@@ -436,10 +443,10 @@ export function Catalogue() {
                     {(filteredTours.length > 0 ? filteredTours : tours).map((tour) => (
                         <Grid item xs={12} sm={6} md={4} key={tour.tourId}>
                             <Card 
-                                sx={{ 
+                sx={{
                                     height: "100%", 
-                                    display: "flex", 
-                                    flexDirection: "column",
+                    display: "flex",
+                    flexDirection: "column",
                                     cursor: "pointer",
                                     transition: "transform 0.2s, box-shadow 0.2s",
                                     "&:hover": {
