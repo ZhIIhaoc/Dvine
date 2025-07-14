@@ -4,7 +4,6 @@ import com.dvineservice.exception.InvalidTokenException;
 import com.dvineservice.exception.MissingTokenException;
 import com.dvineservice.util.TokenUtil;
 import com.dvineservice.util.UserUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,12 @@ public class JwtInterceptor implements HandlerInterceptor {
     private static final List<String> ANY_METHOD_WHITELIST = List.of(
             "/auth/login",
             "/auth/register",
-            "/auth/refresh"
+            "/auth/refresh",
+            // OpenAPI/Swagger endpoints
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/OpenAPI.yaml"
     );
 
     @Override
@@ -61,6 +65,10 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
 
         String token = req.getHeader("Authorization");
+
+        // if the token is prefixed with "Bearer ", extract it
+        // otherwise, just keep the token as is
+        token = tokenUtil.extractBearerToken(token);
 
         // Handle the case where the token is not present
         if (!StringUtils.hasText(token)) {

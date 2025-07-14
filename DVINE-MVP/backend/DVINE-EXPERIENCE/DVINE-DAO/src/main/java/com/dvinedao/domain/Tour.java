@@ -23,4 +23,5 @@ public class Tour {
     private Double price;
     private String primaryImageUrl; // URL of the primary image for the tour
     private List<String> images; // List of image URLs associated with the tour
+    private Long createdBy; // User ID who created this tour
 }

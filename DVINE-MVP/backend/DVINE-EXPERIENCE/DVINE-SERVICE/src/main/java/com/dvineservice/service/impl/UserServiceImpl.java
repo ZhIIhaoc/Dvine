@@ -1,7 +1,5 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.PermissionCheck;
-import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.User;
 import com.dvinedao.domain.UserQueryParam;
 import com.dvinedao.mapper.UserMapper;
@@ -31,7 +29,6 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(user);
     }
 
-    @PermissionCheck(PermissionLevel.MANAGER)
     @Override
     public List<User> getUserList() {
         return userMapper.getUserList();

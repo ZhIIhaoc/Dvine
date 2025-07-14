@@ -25,8 +25,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,8 +72,6 @@ public class TourControllerTest {
         Catalogue c = new Catalogue();
         c.setTitle("Test Catalogue");
         c.setDescription("Catalogue Desc");
-        c.setType(1);            // partner 类型
-        c.setCreatorId(4L);      // 假设 userId=4 有权限
         c.setCoverImage("https://cdn/catalogue.jpg");
         catalogueMapper.createCatalogue(c);
         this.catalogue = c;
@@ -200,7 +196,7 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.data.images[1]").isString());
     }
     @Test
-    public void createTour_shouldReturn403() throws Exception {
+    public void createTour_asPartner_shouldReturn201() throws Exception {
         // 1) 以 partner 身份登录（catalogue.creatorId == 4）
         String token = loginAndGetToken("i_am_partner@example.com");
 
@@ -218,14 +214,14 @@ public class TourControllerTest {
                 "https://your-cdn.com/tour101_2.jpg"
         ));
 
-        // 3) 执行请求并断言
+        // 3) 执行请求并断言 - Partners can now create tours
         mockMvc.perform(post("/tours")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg").value("Partner can only modify catalogues created by themselves"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
     }
     @Test
     public void createTour_success_shouldReturn201_asAdminOwner() throws Exception {
@@ -274,12 +270,12 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.msg").value("User not logged in"));
     }
     /**
-     * POST /tours — 登录为 Manager（非 ADMIN），因 @PermissionCheck 触发，返回 403 +
-     * {code:1, msg:"You don't have permission to modify this catalogue"}
+     * POST /tours — 登录为 Premium Member，因 @PermissionCheck 触发，返回 403 +
+     * {code:1, msg:"You don't have permission to access this resource"}
      */
     @Test
-    public void createTour_shouldReturn403_asManager() throws Exception {
-        // 以 manager 身份登录
+    public void createTour_shouldReturn403_asPremiumMember() throws Exception {
+        // 以 premium member 身份登录
         String token = loginAndGetToken("i_am_premium@example.com");
 
         // 构造请求体
@@ -442,30 +438,30 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.msg").isString());
     }
     @Test
-    public void updateTour_asPartner_modifyOthers_shouldReturn403() throws Exception {
+    public void updateTour_asPartner_shouldReturn200() throws Exception {
         // 先造一个别人的 Catalogue + Tour
         String token = loginAndGetToken("i_am_partner@example.com");
 
         Tour req = new Tour();
         req.setTourId(tour1.getTourId());
         req.setCatalogueId(catalogue.getCatalogueId());
-        req.setTitle("Nope");
+        req.setTitle("Updated by Partner");
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg")
-                        .value("Partner can only modify catalogues created by themselves"));
-    }@Test
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"));
+    }
+    @Test
     public void updateTour_notFoundCatalogue_shouldReturn404() throws Exception {
         String token = loginAndGetToken("i_am_owner@example.com");
 
         Tour req = new Tour();
         req.setTourId(tour1.getTourId());
-        req.setCatalogueId(99999L);  // 不存在的 catalogueId
+        req.setCatalogueId(99999L);
         req.setTitle("Won't work");
 
         mockMvc.perform(put("/tours")
@@ -474,7 +470,7 @@ public class TourControllerTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg").value("Catalogue not found"));
+                .andExpect(jsonPath("$.msg").value("Catalogue does not exist"));
     }
 
 

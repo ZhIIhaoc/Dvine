@@ -1,5 +1,9 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.domain.PageResult;
+import com.dvinedao.annotation.PermissionCheck;
+import com.dvinedao.annotation.TourOwnerCheck;
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
@@ -23,6 +27,13 @@ public class TourController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/page")
+    public ReturnResult searchWithPagination(TourQueryParam tourQueryParam) {
+        PageResult<Tour> pageResult = tourService.searchWithPagination(tourQueryParam);
+        return ReturnResult.success(pageResult);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{tourId}")
     public ReturnResult findById(@PathVariable Long tourId){
         Tour tour = tourService.findById(tourId);
@@ -31,22 +42,27 @@ public class TourController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
+    @PermissionCheck(PermissionLevel.PARTNER)
     public ReturnResult createTour(@RequestBody Tour tour) {
-        tourService.createTour(tour);
+        tourService.createTourWithPermissionCheck(tour);
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping
+    @PermissionCheck(PermissionLevel.PARTNER)
+    @TourOwnerCheck
     public ReturnResult updateTour(@RequestBody Tour tour) {
-        tourService.updateTour(tour);
+        tourService.updateTourWithPermissionCheck(tour);
         return ReturnResult.success();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
+    @PermissionCheck(PermissionLevel.PARTNER)
+    @TourOwnerCheck
     public ReturnResult deleteTour(Long tourId) {
-        tourService.deleteTour(tourId);
+        tourService.deleteTourWithPermissionCheck(tourId);
         return ReturnResult.success();
     }
 

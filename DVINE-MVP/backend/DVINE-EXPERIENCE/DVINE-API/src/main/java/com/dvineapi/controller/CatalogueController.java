@@ -1,6 +1,8 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.domain.Catalogue;
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.ReturnResult;
 import com.dvineservice.service.CatalogueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ public class CatalogueController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
+    @PermissionCheck(PermissionLevel.MANAGER)
     public ReturnResult createCatalogue(@RequestBody Catalogue catalogueData){
         catalogueService.createCatalogue(catalogueData);
         return ReturnResult.success();
@@ -38,6 +41,7 @@ public class CatalogueController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping
+    @PermissionCheck(PermissionLevel.MANAGER)
     public ReturnResult updateCatalogue(@RequestBody Catalogue catalogueData){
         catalogueService.updateCatalogue(catalogueData);
         return ReturnResult.success();
@@ -45,6 +49,7 @@ public class CatalogueController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
+    @PermissionCheck(PermissionLevel.MANAGER)
     public ReturnResult deleteCatalogue(Long catalogueId) {
         catalogueService.deleteCatalogue(catalogueId);
         return ReturnResult.success();

@@ -16,6 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mockStatic;
@@ -112,5 +115,28 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(1))
                 .andExpect(jsonPath("$.msg").value("You should patch at least one field"));
+    }
+
+    @Test
+    void getUserList_success_shouldReturn200WithUserList() throws Exception {
+        MockMvc mockMvc = buildMockMvc();
+        
+        List<User> userList = Arrays.asList(
+            new User() {{ setUserId(1L); setEmail("user1@example.com"); }},
+            new User() {{ setUserId(2L); setEmail("user2@example.com"); }}
+        );
+        
+        when(userService.getUserList()).thenReturn(userList);
+
+        mockMvc.perform(get("/users/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("success"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.data[0].userId").value(1))
+                .andExpect(jsonPath("$.data[0].email").value("user1@example.com"))
+                .andExpect(jsonPath("$.data[1].userId").value(2))
+                .andExpect(jsonPath("$.data[1].email").value("user2@example.com"));
     }
 }

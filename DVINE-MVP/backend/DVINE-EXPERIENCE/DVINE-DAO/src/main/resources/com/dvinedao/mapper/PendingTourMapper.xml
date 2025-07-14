@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.PendingTourMapper">
+
+    <insert id="createPendingTour" parameterType="com.dvinedao.domain.PendingTour"
+            useGeneratedKeys="true" keyProperty="pendingTourId" keyColumn="pendingTourId">
+        INSERT INTO pending_tours (catalogueId, title, destination, description, price, primaryImageUrl, 
+                                  submittedBy, operationType, originalTourId, status)
+        VALUES (#{catalogueId}, #{title}, #{destination}, #{description}, #{price}, #{primaryImageUrl},
+                #{submittedBy}, #{operationType}, #{originalTourId}, #{status})
+    </insert>
+
+    <select id="findById" resultType="com.dvinedao.domain.PendingTour">
+        SELECT 
+            pt.pendingTourId,
+            pt.catalogueId,
+            pt.title,
+            pt.destination,
+            pt.description,
+            pt.price,
+            pt.primaryImageUrl,
+            pt.submittedBy,
+            pt.operationType,
+            pt.originalTourId,
+            pt.status,
+            pt.reviewedBy,
+            pt.submissionTime,
+            pt.reviewTime,
+            u1.nickName as submitterName,
+            u2.nickName as reviewerName
+        FROM pending_tours pt
+        LEFT JOIN users u1 ON pt.submittedBy = u1.userId
+        LEFT JOIN users u2 ON pt.reviewedBy = u2.userId
+        WHERE pt.pendingTourId = #{pendingTourId}
+    </select>
+
+    <select id="findAllPending" resultType="com.dvinedao.domain.PendingTour">
+        SELECT 
+            pt.pendingTourId,
+            pt.catalogueId,
+            pt.title,
+            pt.destination,
+            pt.description,
+            pt.price,
+            pt.primaryImageUrl,
+            pt.submittedBy,
+            pt.operationType,
+            pt.originalTourId,
+            pt.status,
+            pt.reviewedBy,
+            pt.submissionTime,
+            pt.reviewTime,
+            u1.nickName as submitterName,
+            u2.nickName as reviewerName
+        FROM pending_tours pt
+        LEFT JOIN users u1 ON pt.submittedBy = u1.userId
+        LEFT JOIN users u2 ON pt.reviewedBy = u2.userId
+        WHERE pt.status = 0
+        ORDER BY pt.submissionTime ASC
+    </select>
+
+    <select id="findByStatus" resultType="com.dvinedao.domain.PendingTour">
+        SELECT 
+            pt.pendingTourId,
+            pt.catalogueId,
+            pt.title,
+            pt.destination,
+            pt.description,
+            pt.price,
+            pt.primaryImageUrl,
+            pt.submittedBy,
+            pt.operationType,
+            pt.originalTourId,
+            pt.status,
+            pt.reviewedBy,
+            pt.submissionTime,
+            pt.reviewTime,
+            u1.nickName as submitterName,
+            u2.nickName as reviewerName
+        FROM pending_tours pt
+        LEFT JOIN users u1 ON pt.submittedBy = u1.userId
+        LEFT JOIN users u2 ON pt.reviewedBy = u2.userId
+        WHERE pt.status = #{status}
+        ORDER BY pt.submissionTime ASC
+    </select>
+
+    <select id="findBySubmittedBy" resultType="com.dvinedao.domain.PendingTour">
+        SELECT 
+            pt.pendingTourId,
+            pt.catalogueId,
+            pt.title,
+            pt.destination,
+            pt.description,
+            pt.price,
+            pt.primaryImageUrl,
+            pt.submittedBy,
+            pt.operationType,
+            pt.originalTourId,
+            pt.status,
+            pt.reviewedBy,
+            pt.submissionTime,
+            pt.reviewTime,
+            u1.nickName as submitterName,
+            u2.nickName as reviewerName
+        FROM pending_tours pt
+        LEFT JOIN users u1 ON pt.submittedBy = u1.userId
+        LEFT JOIN users u2 ON pt.reviewedBy = u2.userId
+        WHERE pt.submittedBy = #{submittedBy}
+        ORDER BY pt.submissionTime DESC
+    </select>
+
+    <select id="findByOriginalTourId" resultType="com.dvinedao.domain.PendingTour">
+        SELECT 
+            pt.pendingTourId,
+            pt.catalogueId,
+            pt.title,
+            pt.destination,
+            pt.description,
+            pt.price,
+            pt.primaryImageUrl,
+            pt.submittedBy,
+            pt.operationType,
+            pt.originalTourId,
+            pt.status,
+            pt.reviewedBy,
+            pt.submissionTime,
+            pt.reviewTime,
+            u1.nickName as submitterName,
+            u2.nickName as reviewerName
+        FROM pending_tours pt
+        LEFT JOIN users u1 ON pt.submittedBy = u1.userId
+        LEFT JOIN users u2 ON pt.reviewedBy = u2.userId
+        WHERE pt.originalTourId = #{originalTourId}
+        ORDER BY pt.submissionTime DESC
+    </select>
+
+    <update id="updateApprovalStatus">
+        UPDATE pending_tours
+        SET status = #{status},
+            reviewedBy = #{reviewedBy},
+            reviewTime = NOW()
+        WHERE pendingTourId = #{pendingTourId}
+    </update>
+
+    <delete id="deletePendingTour">
+        DELETE FROM pending_tours
+        WHERE pendingTourId = #{pendingTourId}
+    </delete>
+
+</mapper>

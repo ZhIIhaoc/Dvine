@@ -7,8 +7,8 @@
             parameterType="com.dvinedao.domain.Catalogue"
             useGeneratedKeys="true"
             keyProperty="catalogueId">
-        INSERT INTO catalogues (title, description, type, creatorId, coverImage)
-        VALUES (#{title}, #{description}, #{type}, #{creatorId}, #{coverImage})
+        INSERT INTO catalogues (title, description, coverImage)
+        VALUES (#{title}, #{description}, #{coverImage})
     </insert>
 
     <update id="updateCatalogue">
@@ -29,35 +29,25 @@
 
     <select id="findAllCatalogues" resultType="com.dvinedao.domain.Catalogue">
         SELECT
-            c.catalogueId,
-            c.title,
-            c.description,
-            c.type,
-            c.creatorId,
-            u.nickName as creatorNickName,
-            c.coverImage
+            catalogueId,
+            title,
+            description,
+            coverImage
         FROM
-            catalogues c
-        JOIN
-            users u ON c.creatorId = u.userId
+            catalogues
         ORDER BY
-            c.updateTime DESC,
-            c.catalogueId DESC
+            updateTime DESC,
+            catalogueId DESC
     </select>
     <select id="findCatalogueById" resultType="com.dvinedao.domain.Catalogue">
         SELECT
-            c.catalogueId,
-            c.title,
-            c.description,
-            c.type,
-            c.creatorId,
-            u.nickName as creatorNickName,
-            c.coverImage
+            catalogueId,
+            title,
+            description,
+            coverImage
         FROM
-            catalogues c
-        JOIN
-            users u ON c.creatorId = u.userId
+            catalogues
         WHERE
-            c.catalogueId = #{catalogueId}
+            catalogueId = #{catalogueId}
     </select>
 </mapper>

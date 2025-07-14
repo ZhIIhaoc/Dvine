@@ -6,8 +6,8 @@
 
     <insert id="createTour" parameterType="com.dvinedao.domain.Tour"
             useGeneratedKeys="true" keyProperty="tourId" keyColumn="tourId">
-        INSERT INTO tours (title, description, destination, catalogueId, price)
-        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price})
+INSERT INTO tours (title, description, destination, catalogueId, price, createdBy)
+        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price}, #{createdBy})
     </insert>
 
     <update id="updateTour">
@@ -40,10 +40,12 @@
     <select id="search" resultType="com.dvinedao.domain.Tour">
         SELECT
             t.tourId,
+            t.catalogueId,
             t.title,
             t.destination,
             t.description,
             t.price,
+            t.createdBy,
             (SELECT i.imageUrl
              FROM images i
              WHERE i.tourId = t.tourId AND i.isPrimary = TRUE
@@ -71,6 +73,32 @@
             </if>
         </where>
         ORDER BY t.updateTime
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countSearch" resultType="long">
+        SELECT COUNT(*)
+        FROM tours t
+        <where>
+            <if test="tourId != null">
+                AND t.tourId = #{tourId}
+            </if>
+            <if test="catalogueId != null">
+                AND t.catalogueId = #{catalogueId}
+            </if>
+            <if test="title != null and title != ''">
+                AND t.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="destination != null and destination != ''">
+                AND t.destination LIKE CONCAT('%', #{destination}, '%')
+            </if>
+            <if test="minPrice != null">
+                AND t.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND t.price &lt;= #{maxPrice}
+            </if>
+        </where>
     </select>
     <select id="findById" resultType="com.dvinedao.domain.Tour">
         SELECT
@@ -79,7 +107,8 @@
             t.title,
             t.destination,
             t.description,
-            t.price
+            t.price,
+            t.createdBy
         FROM
             tours t
         WHERE
@@ -92,7 +121,8 @@
             t.title,
             t.destination,
             t.description,
-            t.price
+            t.price,
+            t.createdBy
         FROM
             tours t
         WHERE

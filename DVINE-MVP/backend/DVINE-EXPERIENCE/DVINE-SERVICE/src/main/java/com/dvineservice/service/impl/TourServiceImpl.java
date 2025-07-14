@@ -1,96 +1,96 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.annotation.PermissionCheck;
-import com.dvinedao.annotation.CatalogueOwnerCheck;
-import com.dvinedao.domain.Image;
+import com.dvinedao.domain.PageResult;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
-import com.dvinedao.mapper.TourMapper;
-import com.dvineservice.exception.NotFoundException;
-import com.dvineservice.service.ImageService;
+import com.dvinedao.mapper.UserMapper;
+
+import java.util.List;
+import com.dvineservice.service.PendingTourService;
+import com.dvineservice.service.TourOperationService;
 import com.dvineservice.service.TourService;
-import com.dvineservice.util.TourUtil;
+import com.dvineservice.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 public class TourServiceImpl implements TourService {
     @Autowired
-    private TourMapper tourMapper;
+    private TourOperationService tourOperationService;
     @Autowired
-    private ImageService imageService;
+    private UserMapper userMapper;
+    @Autowired
+    private PendingTourService pendingTourService;
 
-
-
-    @PermissionCheck(PermissionLevel.ADMIN)
-    @CatalogueOwnerCheck
-    @Transactional
-    @Override
-    public void createTour(Tour tour) {
-        // Save the tour to the database
-        tourMapper.createTour(tour);
-        List<Image> images = TourUtil.getImages(tour);
-        // Save the images using the ImageMapper
-        imageService.createImages(images);
-    }
+    // Read operations (wrappers for consistent service layer routing)
 
     @Override
     public List<Tour> search(TourQueryParam tourQueryParam) {
-        List<Tour> tour = tourMapper.search(tourQueryParam);
-        if (tour.isEmpty()) {
-            throw new NotFoundException("Tour not found");
-        }
-        return tour;
+        return tourOperationService.search(tourQueryParam);
     }
+
+    @Override
+    public PageResult<Tour> searchWithPagination(TourQueryParam tourQueryParam) {
+        return tourOperationService.searchWithPagination(tourQueryParam);
+    }
+
 
     @Override
     public Tour findById(Long tourId) {
-        Tour tour = tourMapper.findById(tourId);
-        if (tour == null) {
-            throw new NotFoundException("Tour not found");
-        }
-        List<String> images = imageService.findByTourId(tourId).stream()
-                .map(image -> image.getImageUrl()).toList();
-        tour.setImages(images);
-        return tour;
+        return tourOperationService.findById(tourId);
     }
 
-    @PermissionCheck(PermissionLevel.ADMIN)
-    @CatalogueOwnerCheck
-    @Transactional
+    // Permission checking
+
     @Override
-    public void updateTour(Tour tour) {
-        // Update the tour in the database
-        tourMapper.updateTour(tour);
-        imageService.updateImage(tour);
+    public boolean canPerformDirectOperation(Long userId) {
+        Integer userPermission = userMapper.findPermissionById(userId);
+        return userPermission >= PermissionLevel.MANAGER;
     }
 
+    // Permission-aware methods
 
-    @PermissionCheck(PermissionLevel.ADMIN)
-    @CatalogueOwnerCheck
-    @Transactional
     @Override
-    public void deleteTour(Long tourId) {
-        // Check if tour exists first
-        Tour tour = tourMapper.findById(tourId);
-        if (tour == null) {
-            throw new NotFoundException("Tour not found");
+    @Transactional
+    public void createTourWithPermissionCheck(Tour tour) {
+        Long userId = UserUtil.getCurrentUserId();
+
+        // Ensure the tour has a catalogue ID, defaulting to 1 if not specified
+        if (tour.getCatalogueId() == null) {
+            tour.setCatalogueId(1L); // Default to the first catalogue if not specified
         }
 
-        // Delete child records FIRST (images) to avoid FK constraint violation
-        List<Image> images = imageService.findByTourId(tourId);
-        if (!images.isEmpty()) {
-            imageService.deleteImages(images);
+        if (canPerformDirectOperation(userId)) {
+            tourOperationService.createTour(tour);
+        } else {
+            pendingTourService.submitTourCreation(tour, userId);
         }
+    }
 
-        // Then delete the parent record (tour)
-        int deletedRow = tourMapper.deleteTour(tourId);
-        if (deletedRow == 0) {
-            throw new NotFoundException("Tour not found");
+    @Override
+    @Transactional
+    public void updateTourWithPermissionCheck(Tour tour) {
+        Long userId = UserUtil.getCurrentUserId();
+
+        if (canPerformDirectOperation(userId)) {
+            tourOperationService.updateTour(tour);
+        } else {
+            pendingTourService.submitTourUpdate(tour, userId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteTourWithPermissionCheck(Long tourId) {
+        Long userId = UserUtil.getCurrentUserId();
+
+        if (canPerformDirectOperation(userId)) {
+            tourOperationService.deleteTour(tourId);
+        } else {
+            pendingTourService.submitTourDeletion(tourId, userId);
         }
     }
 }

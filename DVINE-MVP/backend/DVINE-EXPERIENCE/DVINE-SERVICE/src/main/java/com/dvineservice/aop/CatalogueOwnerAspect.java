@@ -52,11 +52,11 @@ public class CatalogueOwnerAspect {
         int perm = userMapper.findPermissionById(currentUser);
 
         // Check if the current user is the creator of the catalogue
-        if (PermissionLevel.isPartner(perm) &&
-                !existing.getCreatorId().equals(currentUser)) {
-            throw new PermissionDeniedException(
-                    "Partner can only modify catalogues created by themselves");
-        }
+//        if (PermissionLevel.isPartner(perm) &&
+//                !existing.getCreatorId().equals(currentUser)) {
+//            throw new PermissionDeniedException(
+//                    "Partner can only modify catalogues created by themselves");
+//        }
         /* nothing else — returning void continues execution */
     }
 
