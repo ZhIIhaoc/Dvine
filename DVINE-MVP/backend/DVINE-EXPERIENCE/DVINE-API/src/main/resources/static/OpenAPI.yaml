@@ -862,6 +862,111 @@ paths:
 
       security:
         - bearerAuth: []
+  /users/permission:
+    put:
+      tags:
+        - Users
+      summary: Update user permission
+      description: Update a user's permission level. Managers can modify member-level permissions (Regular/Premium). Only Owners can modify admin-level permissions (Partner/Manager/Owner).
+      operationId: updateUserPermission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - permission
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  description: ID of the user whose permission to update
+                  example: 1
+                permission:
+                  type: integer
+                  description: "New permission level (0: Regular, 1: Premium, 2: Partner, 3: Manager, 4: Owner)"
+                  minimum: 0
+                  maximum: 4
+                  example: 1
+            example:
+              userId: 1
+              permission: 1
+        required: true
+      responses:
+        "400":
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Missing Required Fields:
+                  description: Missing Required Fields
+                  value:
+                    code: 1
+                    msg: User ID and permission cannot be null
+                Invalid Permission Level:
+                  description: Invalid Permission Level
+                  value:
+                    code: 1
+                    msg: Invalid permission level
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Access Denied:
+                  description: Access Denied
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Manager"
+                Manager Limitation:
+                  description: Manager Limitation
+                  value:
+                    code: 1
+                    msg: Managers can only modify member-level permissions (Regular/Premium)
+                Insufficient Permissions:
+                  description: Insufficient Permissions
+                  value:
+                    code: 1
+                    msg: Insufficient permissions to modify user permissions
+                Owner Restriction:
+                  description: Owner Restriction
+                  value:
+                    code: 1
+                    msg: Cannot upgrade users to Owner level
+        "404":
+          description: Target user not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Target user not found
+        "200":
+          description: User permission updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                message: success
+      security:
+        - bearerAuth: []
   /tours/{tourId}:
     get:
       tags:
