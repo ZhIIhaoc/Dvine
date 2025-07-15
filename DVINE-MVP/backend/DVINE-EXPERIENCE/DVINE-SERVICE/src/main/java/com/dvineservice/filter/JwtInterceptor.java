@@ -26,7 +26,8 @@ public class JwtInterceptor implements HandlerInterceptor {
     /** URLs that never need JWT */
     private static final List<String> GET_WHITELIST = List.of(
             "/catalogues/**",    // /catalogues/list  |  /catalogues/123
-            "/tours/**"          // /tours?catalogueId=3  |  /tours/101
+            "/tours/**",          // /tours?catalogueId=3  |  /tours/101
+            "/featured-tours"
     );
 
     /** URLs that skip JWT for all verbs (login, register, refresh…) */

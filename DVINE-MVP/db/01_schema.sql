@@ -81,6 +81,18 @@ CREATE TABLE IF NOT EXISTS pending_tour_images (
     FOREIGN KEY (pendingTourId) REFERENCES pending_tours(pendingTourId) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS featured_tours (
+    featuredTourId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tourId BIGINT NOT NULL UNIQUE,
+    displayOrder INT NOT NULL COMMENT "Order in which the tour appears on the main page (1 = first)",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (tourId) REFERENCES tours(tourId) ON DELETE CASCADE
+);
+
+-- Index for efficient ordering on main page
+CREATE INDEX idx_featured_tours_order ON featured_tours (displayOrder);
+
 -- Insert default catalogue for tours not assigned to any catalogue
 INSERT INTO catalogues
 (title, description, coverImage)

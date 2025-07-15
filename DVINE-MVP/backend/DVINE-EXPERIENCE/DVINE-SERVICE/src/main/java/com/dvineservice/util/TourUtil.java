@@ -2,6 +2,7 @@ package com.dvineservice.util;
 
 import com.dvinedao.domain.Image;
 import com.dvinedao.domain.Tour;
+import com.dvineservice.service.ImageService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,5 +32,30 @@ public class TourUtil {
             return image;
         }).toList();
         return images;
+    }
+
+    /**
+     * Populates the images list for a tour using the ImageService.
+     * Follows the existing pattern used in TourOperationServiceImpl.
+     *
+     * @param tour The Tour object to populate with images.
+     * @param imageService The ImageService to get images from.
+     */
+    public static void populateImages(Tour tour, ImageService imageService) {
+        List<String> images = imageService.findByTourId(tour.getTourId()).stream()
+                .map(Image::getImageUrl).toList();
+        tour.setImages(images);
+    }
+
+    /**
+     * Populates images for a list of tours using the ImageService.
+     *
+     * @param tours List of tours to populate with images.
+     * @param imageService The ImageService to get images from.
+     */
+    public static void populateImages(List<Tour> tours, ImageService imageService) {
+        for (Tour tour : tours) {
+            populateImages(tour, imageService);
+        }
     }
 }

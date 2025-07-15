@@ -23,6 +23,8 @@ tags:
     description: Tour management operations
   - name: Approvals
     description: Tour approval workflow management operations for pending tour submissions
+  - name: Featured Tours
+    description: Main page featured tours management operations
 paths:
   /users/profile:
     get:
@@ -1531,6 +1533,270 @@ paths:
 
       security:
         - bearerAuth: []
+  /featured-tours:
+    get:
+      tags:
+        - Featured Tours
+      summary: Get featured tours for main page
+      description: Get tours featured on the main page, ordered by display order. Public access - no authentication required.
+      operationId: getFeaturedToursForMainPage
+      responses:
+        "200":
+          description: Featured tours retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - tourId: 1
+                    catalogueId: 5
+                    title: Amazing Sydney Harbor Tour
+                    destination: "Sydney, Australia"
+                    description: Experience the breathtaking views of Sydney Harbor
+                    price: 299.99
+                    createdBy: 123
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    images:
+                      - https://example.com/images/sydney1.jpg
+                      - https://example.com/images/sydney2.jpg
+    post:
+      tags:
+        - Featured Tours
+      summary: Add tour to featured list
+      description: Add a tour to the featured tours list (Manager permission required)
+      operationId: addFeaturedTour
+      parameters:
+        - name: tourId
+          in: query
+          description: ID of the tour to add to featured list
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour not found
+        "400":
+          description: Tour is already featured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour is already featured
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "201":
+          description: Tour added to featured list successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Featured Tours
+      summary: Remove tour from featured list
+      description: Remove a tour from the featured tours list (Manager permission required)
+      operationId: removeFeaturedTour
+      parameters:
+        - name: tourId
+          in: query
+          description: ID of the tour to remove from featured list
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "400":
+          description: Tour is not featured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour is not featured
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: Tour removed from featured list successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
+  /featured-tours/manage:
+    get:
+      tags:
+        - Featured Tours
+      summary: Get featured tours for management
+      description: Get all featured tour entries for management purposes (Manager permission required)
+      operationId: getAllFeaturedTours
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: Featured tours management data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - featuredTourId: 1
+                    tourId: 5
+                    displayOrder: 1
+                    createTime: '2025-07-15T10:30:00'
+                    updateTime: '2025-07-15T10:30:00'
+                  - featuredTourId: 2
+                    tourId: 8
+                    displayOrder: 2
+                    createTime: '2025-07-15T11:00:00'
+                    updateTime: '2025-07-15T11:00:00'
+      security:
+        - bearerAuth: []
+  /featured-tours/reorder:
+    put:
+      tags:
+        - Featured Tours
+      summary: Reorder featured tours
+      description: Update the display order of featured tours (Manager permission required)
+      operationId: reorderFeaturedTours
+      requestBody:
+        description: List of featured tours with new display orders
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeaturedTour"
+            example:
+              - tourId: 8
+                displayOrder: 1
+              - tourId: 5
+                displayOrder: 2
+              - tourId: 12
+                displayOrder: 3
+        required: true
+      responses:
+        "400":
+          description: Invalid reorder request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Order:
+                  description: Display orders must be consecutive starting from 1
+                  value:
+                    code: 1
+                    msg: Display orders must be consecutive starting from 1
+                Tour Not Featured:
+                  description: One or more tours are not currently featured
+                  value:
+                    code: 1
+                    msg: Tour 5 is not featured
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: Featured tours reordered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
 components:
   schemas:
     ReturnResult:
@@ -1766,6 +2032,38 @@ components:
           format: double
           description: Maximum price filter
           example: 500.0
+    FeaturedTour:
+      type: object
+      description: Featured tour information for management
+      properties:
+        featuredTourId:
+          type: integer
+          format: int64
+          description: Unique featured tour identifier
+          example: 1
+        tourId:
+          type: integer
+          format: int64
+          description: ID of the tour that is featured
+          example: 5
+        displayOrder:
+          type: integer
+          format: int32
+          description: Display order on main page (1 = first)
+          example: 1
+        createTime:
+          type: string
+          format: date-time
+          description: When the tour was added to featured list
+          example: '2025-07-15T10:30:00'
+        updateTime:
+          type: string
+          format: date-time
+          description: When the featured tour entry was last updated
+          example: '2025-07-15T10:30:00'
+      required:
+        - tourId
+        - displayOrder
   securitySchemes:
     bearerAuth:
       type: http

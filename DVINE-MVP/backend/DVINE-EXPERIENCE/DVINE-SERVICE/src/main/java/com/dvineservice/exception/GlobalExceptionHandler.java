@@ -39,6 +39,13 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleIllegalStateException(IllegalStateException e) {
+        log.error("IllegalState:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
     /**
      * Handles database duplicate key exceptions.
      * <p>
