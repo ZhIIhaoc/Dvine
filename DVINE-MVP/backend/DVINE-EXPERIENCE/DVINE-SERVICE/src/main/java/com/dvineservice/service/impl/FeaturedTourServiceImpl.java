@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -75,6 +76,7 @@ public class FeaturedTourServiceImpl implements FeaturedTourService {
     @Transactional
     public void removeFeaturedTour(Long tourId) {
         // Check if tour is featured
+        log.info("removeFeaturedTour:{} - for management", tourId);
         if (!featuredTourMapper.isTourFeatured(tourId)) {
             throw new IllegalStateException("Tour is not featured");
         }
@@ -89,6 +91,7 @@ public class FeaturedTourServiceImpl implements FeaturedTourService {
     @Override
     @Transactional
     public void reorderFeaturedTours(List<FeaturedTour> reorderedTours) {
+        log.info("reorderFeaturedTours - for management");
         // Validate that all tours in the list are currently featured
         for (FeaturedTour featuredTour : reorderedTours) {
             if (!featuredTourMapper.isTourFeatured(featuredTour.getTourId())) {
@@ -97,7 +100,7 @@ public class FeaturedTourServiceImpl implements FeaturedTourService {
         }
 
         // Validate display orders are consecutive starting from 1
-        reorderedTours.sort((a, b) -> a.getDisplayOrder().compareTo(b.getDisplayOrder()));
+        reorderedTours.sort(Comparator.comparing(FeaturedTour::getDisplayOrder));
         for (int i = 0; i < reorderedTours.size(); i++) {
             if (!reorderedTours.get(i).getDisplayOrder().equals(i + 1)) {
                 throw new IllegalArgumentException("Display orders must be consecutive starting from 1");

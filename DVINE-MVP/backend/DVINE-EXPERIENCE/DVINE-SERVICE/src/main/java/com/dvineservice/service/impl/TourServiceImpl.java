@@ -12,11 +12,12 @@ import com.dvineservice.service.PendingTourService;
 import com.dvineservice.service.TourOperationService;
 import com.dvineservice.service.TourService;
 import com.dvineservice.util.UserUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Slf4j
 @Service
 public class TourServiceImpl implements TourService {
     @Autowired
@@ -65,8 +66,10 @@ public class TourServiceImpl implements TourService {
         }
 
         if (canPerformDirectOperation(userId)) {
+            log.info("Manager/Owner creating tour");
             tourOperationService.createTour(tour);
         } else {
+            log.info("Partner submitting tour for approval");
             pendingTourService.submitTourCreation(tour, userId);
             throw new TourSubmittedException();
         }
@@ -78,8 +81,10 @@ public class TourServiceImpl implements TourService {
         Long userId = UserUtil.getCurrentUserId();
 
         if (canPerformDirectOperation(userId)) {
+            log.info("Manager/Owner updating tour");
             tourOperationService.updateTour(tour);
         } else {
+            log.info("Partner submitting tour update for approval");
             pendingTourService.submitTourUpdate(tour, userId);
             throw new TourSubmittedException();
         }
@@ -91,8 +96,10 @@ public class TourServiceImpl implements TourService {
         Long userId = UserUtil.getCurrentUserId();
 
         if (canPerformDirectOperation(userId)) {
+            log.info("Manager/Owner deleting tour");
             tourOperationService.deleteTour(tourId);
         } else {
+            log.info("Partner submitting tour deletion for approval");
             pendingTourService.submitTourDeletion(tourId, userId);
             throw new TourSubmittedException();
         }

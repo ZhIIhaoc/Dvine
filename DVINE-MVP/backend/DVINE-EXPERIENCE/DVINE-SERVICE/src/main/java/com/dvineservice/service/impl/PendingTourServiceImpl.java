@@ -8,6 +8,7 @@ import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.PendingTourService;
 import com.dvineservice.service.TourOperationService;
 import com.dvineservice.util.TourConversionUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PendingTourServiceImpl implements PendingTourService {
     
@@ -30,6 +32,7 @@ public class PendingTourServiceImpl implements PendingTourService {
     @Override
     @Transactional
     public void submitTourCreation(Tour tour, Long submittedBy) {
+        log.info("submitTourCreation: {} by user {}", tour.getTourId(), submittedBy);
         PendingTour pendingTour = TourConversionUtil.convertTourToPendingTour(tour, submittedBy);
         pendingTour.setOperationType(PendingTour.OperationType.CREATE);
         
@@ -39,6 +42,7 @@ public class PendingTourServiceImpl implements PendingTourService {
     @Override
     @Transactional
     public void submitTourUpdate(Tour tour, Long submittedBy) {
+        log.info("submitTourUpdate: {} by user {}", tour.getTourId(), submittedBy);
         // Verify original tour exists
         tourOperationService.findById(tour.getTourId());
         
@@ -52,6 +56,7 @@ public class PendingTourServiceImpl implements PendingTourService {
     @Override
     @Transactional
     public void submitTourDeletion(Long tourId, Long submittedBy) {
+        log.info("submitTourDeletion: {} by user {}", tourId, submittedBy);
         // Verify original tour exists
         Tour originalTour = tourOperationService.findById(tourId);
         
@@ -65,12 +70,14 @@ public class PendingTourServiceImpl implements PendingTourService {
 
     @Override
     public List<PendingTour> getAllPendingTours() {
+        log.info("getAllPendingTours - for management");
         List<PendingTour> pendingTours = pendingTourMapper.findAllPending();
         return loadImagesForPendingTours(pendingTours);
     }
 
     @Override
     public PendingTour getPendingTourById(Long pendingTourId) {
+        log.info("getPendingTourById: {}", pendingTourId);
         PendingTour pendingTour = pendingTourMapper.findById(pendingTourId);
         if (pendingTour == null) {
             throw new NotFoundException("Pending tour not found");
@@ -81,6 +88,7 @@ public class PendingTourServiceImpl implements PendingTourService {
 
     @Override
     public List<PendingTour> getPendingToursBySubmitter(Long submittedBy) {
+        log.info("getPendingToursBySubmitter: {}", submittedBy);
         List<PendingTour> pendingTours = pendingTourMapper.findBySubmittedBy(submittedBy);
         return loadImagesForPendingTours(pendingTours);
     }
@@ -93,12 +101,15 @@ public class PendingTourServiceImpl implements PendingTourService {
         // Execute the actual operation based on type
         switch (pendingTour.getOperationType()) {
             case CREATE:
+                log.info("Approving creation of pending tour: {}", pendingTourId);
                 executeApprovedCreation(pendingTour);
                 break;
             case UPDATE:
+                log.info("Approving update of pending tour: {}", pendingTourId);
                 executeApprovedUpdate(pendingTour);
                 break;
             case DELETE:
+                log.info("Approving deletion of pending tour: {}", pendingTourId);
                 executeApprovedDeletion(pendingTour);
                 break;
         }
@@ -110,6 +121,7 @@ public class PendingTourServiceImpl implements PendingTourService {
     @Override
     @Transactional
     public void rejectPendingTour(Long pendingTourId, Long reviewedBy) {
+        log.info("Rejecting pending tour: {}", pendingTourId);
         validatePendingStatus(pendingTourId);
         
         // Update pending tour status to rejected
@@ -118,6 +130,7 @@ public class PendingTourServiceImpl implements PendingTourService {
 
     @Override
     public List<PendingTour> getApprovalHistory() {
+        log.info("getApprovalHistory - approved and rejected tours");
         List<PendingTour> approved = pendingTourMapper.findByStatus(ApprovalStatus.APPROVED);
         List<PendingTour> rejected = pendingTourMapper.findByStatus(ApprovalStatus.REJECTED);
         
@@ -137,6 +150,7 @@ public class PendingTourServiceImpl implements PendingTourService {
      * Creates a pending tour with images
      */
     private void createPendingTourWithImages(PendingTour pendingTour, List<String> imageUrls) {
+        log.info("Creating pending tour");
         pendingTour.setStatus(ApprovalStatus.PENDING);
         
         // Create pending tour record
