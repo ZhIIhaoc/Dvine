@@ -52,12 +52,18 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
              LIMIT 1) as primaryImageUrl
         FROM
             tours t
+        <if test="catalogueName != null and catalogueName != ''">
+            INNER JOIN catalogues c ON t.catalogueId = c.catalogueId
+        </if>
         <where>
             <if test="tourId != null">
                 AND t.tourId = #{tourId}
             </if>
             <if test="catalogueId != null">
                 AND t.catalogueId = #{catalogueId}
+            </if>
+            <if test="catalogueName != null and catalogueName != ''">
+                AND c.title = #{catalogueName}
             </if>
             <if test="title != null and title != ''">
                 AND t.title LIKE CONCAT('%', #{title}, '%')
@@ -79,12 +85,18 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
     <select id="countSearch" resultType="long">
         SELECT COUNT(*)
         FROM tours t
+        <if test="catalogueName != null and catalogueName != ''">
+            INNER JOIN catalogues c ON t.catalogueId = c.catalogueId
+        </if>
         <where>
             <if test="tourId != null">
                 AND t.tourId = #{tourId}
             </if>
             <if test="catalogueId != null">
                 AND t.catalogueId = #{catalogueId}
+            </if>
+            <if test="catalogueName != null and catalogueName != ''">
+                AND c.title = #{catalogueName}
             </if>
             <if test="title != null and title != ''">
                 AND t.title LIKE CONCAT('%', #{title}, '%')

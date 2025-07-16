@@ -54,6 +54,12 @@ public class TourOperationServiceImpl implements TourOperationService {
 
     @Override
     public List<Tour> search(TourQueryParam tourQueryParam) {
+        // If no catalogueId or catalogueName is provided, default to catalogue ID 1 (Default Catalogue)
+        if (tourQueryParam.getCatalogueId() == null && 
+            (tourQueryParam.getCatalogueName() == null || tourQueryParam.getCatalogueName().trim().isEmpty())) {
+            tourQueryParam.setCatalogueId(1L);
+        }
+        
         List<Tour> tour = tourMapper.search(tourQueryParam);
         if (tour.isEmpty()) {
             throw new NotFoundException("Tour not found");
@@ -97,6 +103,12 @@ public class TourOperationServiceImpl implements TourOperationService {
 
     @Override
     public PageResult<Tour> searchWithPagination(TourQueryParam tourQueryParam) {
+        // If no catalogueId or catalogueName is provided, default to catalogue ID 1 (Default Catalogue)
+        if (tourQueryParam.getCatalogueId() == null && 
+            (tourQueryParam.getCatalogueName() == null || tourQueryParam.getCatalogueName().trim().isEmpty())) {
+            tourQueryParam.setCatalogueId(1L);
+        }
+        
         // Validate pagination parameters
         long totalElements = tourMapper.countSearch(tourQueryParam);
 
