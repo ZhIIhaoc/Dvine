@@ -17,7 +17,6 @@ RUN chmod +x ./mvnw
 RUN ./mvnw dependency:go-offline -B
 
 # Copy the source code
-COPY src src
 COPY DVINE-API/src DVINE-API/src
 COPY DVINE-DAO/src DVINE-DAO/src
 COPY DVINE-SERVICE/src DVINE-SERVICE/src
