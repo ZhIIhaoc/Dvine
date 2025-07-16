@@ -10,6 +10,7 @@ import {
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
+import homepageImage from "/src/assets/homepage_pic.png";
 
 const tours = [
     {
@@ -35,13 +36,27 @@ export const Home = () => {
         <Box>
             <Box
                 sx={{
-                    minHeight: "50vh",
+                    minHeight: { xs: "40vh", sm: "70vh" },
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
                     alignContent: "center",
                     alignItems: "center",
-                    px: { xs: 2, sm: 4, md: 8 },
+                    backgroundImage: `url(${homepageImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    color: "background.default",
+                    position: "relative",
+                    "::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        zIndex: 0,
+                    },
                 }}
             >
                 <Typography
@@ -57,6 +72,7 @@ export const Home = () => {
                         lineHeight: 1.2,
                         textAlign: "left",
                         mx: "auto",
+                        position: "relative",
                     }}
                 >
                     Experience the extraordinary
@@ -64,7 +80,37 @@ export const Home = () => {
                     with{" "}
                     <Box
                         component="span"
-                        sx={{ color: "primary.main", fontWeight: "bold" }}
+                        // https://youtube.com/shorts/HUkZxON7t1I?si=edWY-PLUg3o0njTt
+                        sx={{
+                            fontWeight: "bold",
+                            display: "inline-block",
+                            background: `
+                                linear-gradient(
+                                    135deg,
+                                    #6F146F 0%,
+                                    #9B3DAF 25%,
+                                    #D27AFF 50%,
+                                    #9B3DAF 75%,
+                                    #6F146F 100%
+                                )
+                                `,
+                            backgroundSize: "500% 500%",
+                            backgroundClip: "text",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            animation: "gradientShift 12s ease-in-out infinite",
+                            "@keyframes gradientShift": {
+                                "0%": {
+                                    backgroundPosition: "0% 50%",
+                                },
+                                "50%": {
+                                    backgroundPosition: "100% 50%",
+                                },
+                                "100%": {
+                                    backgroundPosition: "0% 50%",
+                                },
+                            },
+                        }}
                     >
                         DVINE
                     </Box>
@@ -78,6 +124,7 @@ export const Home = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     gridAutoColumns: "auto",
+                    mt: 3,
                 }}
             >
                 <Box padding={3} sx={{ mb: 10 }}>

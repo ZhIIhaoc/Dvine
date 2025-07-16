@@ -9,4 +9,5 @@ public interface UserService {
     UserQueryParam getUserProfileById(Long userId);
     void updateUserProfile(User user);
     List<User> getUserList();
+    void updateUserPermission(Long userId, Integer newPermission);
 }

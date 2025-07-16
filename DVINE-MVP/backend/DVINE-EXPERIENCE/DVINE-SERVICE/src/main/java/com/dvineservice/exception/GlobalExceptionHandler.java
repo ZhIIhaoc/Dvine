@@ -39,6 +39,13 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleIllegalStateException(IllegalStateException e) {
+        log.error("IllegalState:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
     /**
      * Handles database duplicate key exceptions.
      * <p>
@@ -86,7 +93,7 @@ public class GlobalExceptionHandler {
                 String entityName = referencedTable.substring(0, 1).toUpperCase() +
                                    referencedTable.substring(1, referencedTable.length() - 1);
 
-                return ReturnResult.error(entityName + " does not exist");
+                return ReturnResult.error(entityName + " not found");
             }
         }
 
@@ -134,5 +141,12 @@ public class GlobalExceptionHandler {
     public ReturnResult handleNotFoundException(NotFoundException e) {
         log.error("Resource not found error:", e);
         return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ExceptionHandler
+    public ReturnResult handleTourSubmittedException(TourSubmittedException e) {
+        log.info("Tour submitted for approval:", e);
+        return ReturnResult.success();
     }
 }

@@ -12,8 +12,6 @@ info:
 servers:
   - url: http://localhost:8080
     description: Development Server
-  - url: https://api.dvine.com
-    description: Production Server
 tags:
   - name: Authentication
     description: User authentication and authorization operations
@@ -24,7 +22,9 @@ tags:
   - name: Tours
     description: Tour management operations
   - name: Approvals
-    description: Tour approval management operations (DETAIL NOT DONE)
+    description: Tour approval workflow management operations for pending tour submissions
+  - name: Featured Tours
+    description: Main page featured tours management operations
 paths:
   /users/profile:
     get:
@@ -35,9 +35,9 @@ paths:
       operationId: getUserProfile
       responses:
         "401":
-          description: Unauthorized
+          description: Authentication failed - occurs when JWT token is missing, expired, or invalid in Authorization header
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
@@ -46,12 +46,12 @@ paths:
         "200":
           description: Profile retrieved successfully
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
                 data:
                   userId: 1
                   email: user@example.com
@@ -86,18 +86,18 @@ paths:
         required: true
       responses:
         "400":
-          description: Invalid user data
+          description: Bad Request - occurs when all profile fields are empty or null (at least one field must be provided for update)
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
                 msg: You should patch at least one field
         "409":
-          description: Conflict
+          description: Conflict - occurs when the new email already exists for another user
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
@@ -106,7 +106,7 @@ paths:
         "401":
           description: Unauthorized
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
@@ -115,12 +115,12 @@ paths:
         "200":
           description: Profile updated successfully
           content:
-            'Application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
 
       security:
         - bearerAuth: []
@@ -179,7 +179,9 @@ paths:
       summary: Create new tour
       description: "Create a new tour with catalogueId, title, destination, description,\
         \ price, primaryImageUrl, and images. Requires Partner level permission or\
-        \ higher. The tour will be automatically assigned to the current user as creator."
+        \ higher. The tour will be automatically assigned to the current user as creator.\
+        \ \n\n**Behavior:**\n- **Partners**: Tour is submitted for approval (202 ACCEPTED)\
+        \ \n- **Managers**: Tour is created directly (201 CREATED)"
       operationId: createTour
       requestBody:
         description: "Tour creation data. Note: Do not include 'createdBy' field - it will be automatically set to the current user."
@@ -204,6 +206,16 @@ paths:
                     - https://example.com/images/sydney2.jpg
         required: true
       responses:
+        "404":
+          description: Not Found - occurs when the specified catalogueId does not exist
+          content:
+            application/json:
+              examples:
+                Catalogue Not Found:
+                  description: Catalogue not found
+                  value:
+                    code: 1
+                    msg: Catalogue not found
         "401":
           description: Unauthorized - Invalid or missing token
           content:
@@ -224,8 +236,18 @@ paths:
                   value:
                     code: 1
                     msg: "Access denied: requires Partner level permission"
+        "202":
+          description: Tour submitted for approval (Partner users)
+          content:
+            application/json:
+              examples:
+                Tour Submitted Response:
+                  description: Tour submitted for approval
+                  value:
+                    code: 0
+                    msg: success
         "201":
-          description: Tour created successfully
+          description: Tour created successfully (Manager users)
           content:
             application/json:
               examples:
@@ -242,7 +264,9 @@ paths:
       summary: Update tour
       description: "Update an existing tour with tourId, catalogueId, title, destination,\
         \ description, price, primaryImageUrl, and images. Requires Partner level\
-        \ permission or higher. Partners can only update tours they created. Managers can update any tour."
+        \ permission or higher. Partners can only update tours they created. Managers can update any tour.\
+        \ \n\n**Behavior:**\n- **Partners**: Tour update is submitted for approval (202 ACCEPTED)\
+        \ \n- **Managers**: Tour is updated directly (200 OK)"
       operationId: updateTour
       requestBody:
         description: "Tour update data. Note: 'createdBy' field is read-only and cannot be modified."
@@ -270,15 +294,20 @@ paths:
         required: true
       responses:
         "404":
-          description: Tour not found
+          description: Not Found - occurs when the tour or catalogue doesn't exist
           content:
             application/json:
               examples:
-                Not Found Response:
-                  description: Not Found Response
+                Tour Not Found:
+                  description: Tour not found
                   value:
                     code: 1
                     msg: Tour not found
+                Catalogue Not Found:
+                  description: Catalogue not found
+                  value:
+                    code: 1
+                    msg: Catalogue not found
         "401":
           description: Unauthorized - Invalid or missing token
           content:
@@ -304,8 +333,18 @@ paths:
                   value:
                     code: 1
                     msg: "Partner can only modify the tour created by themselves"
+        "202":
+          description: Tour update submitted for approval (Partner users)
+          content:
+            application/json:
+              examples:
+                Tour Update Submitted Response:
+                  description: Tour update submitted for approval
+                  value:
+                    code: 0
+                    msg: success
         "200":
-          description: Tour updated successfully
+          description: Tour updated successfully (Manager users)
           content:
             application/json:
               examples:
@@ -320,8 +359,10 @@ paths:
       tags:
         - Tours
       summary: Delete tour
-      description: Delete a tour by providing tourId. Requires Partner level permission
-        or higher. Partners can only delete tours they created. Managers can delete any tour. This action cannot be undone.
+      description: "Delete a tour by providing tourId. Requires Partner level permission\
+        \ or higher. Partners can only delete tours they created. Managers can delete any tour. This action cannot be undone.\
+        \ \n\n**Behavior:**\n- **Partners**: Tour deletion is submitted for approval (202 ACCEPTED)\
+        \ \n- **Managers**: Tour is deleted directly (200 OK)"
       operationId: deleteTour
       parameters:
         - name: tourId
@@ -334,7 +375,7 @@ paths:
           example: 1
       responses:
         "404":
-          description: Tour not found
+          description: Not Found - occurs when the specified tour does not exist
           content:
             application/json:
               examples:
@@ -368,8 +409,18 @@ paths:
                   value:
                     code: 1
                     msg: "Partner can only modify the tour created by themselves"
+        "202":
+          description: Tour deletion submitted for approval (Partner users)
+          content:
+            application/json:
+              examples:
+                Tour Deletion Submitted Response:
+                  description: Tour deletion submitted for approval
+                  value:
+                    code: 0
+                    msg: success
         "200":
-          description: Tour deleted successfully
+          description: Tour deleted successfully (Manager users)
           content:
             application/json:
               examples:
@@ -497,6 +548,15 @@ paths:
             type: integer
             format: int64
       responses:
+        "404":
+          description: Catalogue not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Catalogue not found
         "401":
           description: Unauthorized
           content:
@@ -549,6 +609,21 @@ paths:
               lastName: Doe
         required: true
       responses:
+        "400":
+          description: Bad Request - occurs when required fields are null, empty, or contain only whitespace characters
+          content:
+            application/json:
+              examples:
+                Missing Required Fields:
+                  description: Required fields validation failure
+                  value:
+                    code: 1
+                    msg: Registration fields cannot be empty or contain only spaces
+                Empty Fields:
+                  description: Empty or whitespace-only fields
+                  value:
+                    code: 1
+                    msg: Registration fields cannot be empty or contain only spaces
         "409":
           description: Email already exists
           content:
@@ -585,14 +660,14 @@ paths:
         required: true
       responses:
         "400":
-          description: Missing refresh token
+          description: Bad Request - occurs when refresh token is missing or null in request body
           content:
             application/json:
               example:
                 code: 1
                 msg: Refresh token and user ID are required
         "401":
-          description: Invalid or expired refresh token
+          description: Authentication failed - occurs when refresh token is expired, malformed, or doesn't exist in Redis cache
           content:
             application/json:
               example:
@@ -681,7 +756,7 @@ paths:
         required: true
       responses:
         "401":
-          description: Invalid email or password
+          description: Authentication failed - occurs when provided email doesn't exist or password is incorrect
           content:
             application/json:
               example:
@@ -712,42 +787,42 @@ paths:
             type: integer
             format: int64
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
           description: Pending tour not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Tour rejected successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
       security:
         - bearerAuth: []
   /approvals/tours/{pendingTourId}/approve:
@@ -765,42 +840,50 @@ paths:
             type: integer
             format: int64
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
-          description: Pending tour not found
+          description: Pending tour not found / Tour not found (if tourId is not found)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Tour Not Found Response:
+                  description: Tour Not Found Response
+                  value:
+                    code: 1
+                    msg: Tour not found
+                Pending Tour Not Found Response:
+                  description: Pending Tour Not Found Response
+                  value:
+                    code: 1
+                    msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Tour approved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
       security:
         - bearerAuth: []
   /users/list:
@@ -837,7 +920,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 0
-                message: success
+                msg: success
                 data:
                   - userId: 1
                     email: user@example.com
@@ -860,6 +943,131 @@ paths:
 
       security:
         - bearerAuth: []
+  /users/permission:
+    put:
+      tags:
+        - Users
+      summary: Update user permission
+      description: |
+        Update a user's permission level with role-based access control.
+        
+        **Access Rules:**
+        - **Managers (3)**: Can only modify member-level permissions (Regular=0, Premium=1)
+        - **Owners (4)**: Can modify admin-level permissions (Partner=2, Manager=3) but cannot create other Owners
+        
+        **Permission Levels:**
+        - 0: Regular (Member)
+        - 1: Premium (Member) 
+        - 2: Partner (Admin)
+        - 3: Manager (Admin)
+        - 4: Owner (Admin - cannot be assigned to others)
+      operationId: updateUserPermission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - permission
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  description: ID of the target user whose permission level will be updated
+                  example: 1
+                permission:
+                  type: integer
+                  description: "New permission level to assign to the user. Note: Owner level (4) cannot be assigned."
+                  minimum: 0
+                  maximum: 4
+                  example: 1
+            example:
+              userId: 1
+              permission: 1
+        required: true
+      responses:
+        "400":
+          description: Bad Request - Invalid input data that fails client-side validation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Missing Required Fields:
+                  description: "Occurs when userId or permission fields are null/missing in request body"
+                  value:
+                    code: 1
+                    msg: User ID and permission cannot be null
+                Invalid Permission Value:
+                  description: "Occurs when permission value is outside valid range (0-4) or not an integer"
+                  value:
+                    code: 1
+                    msg: Invalid permission level
+        "401":
+          description: Unauthorized - Authentication failed or missing credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Missing JWT Token:
+                  description: "Occurs when Authorization header is missing or doesn't contain Bearer token"
+                  value:
+                    code: 1
+                    msg: User not logged in
+                Invalid JWT Token:
+                  description: "Occurs when JWT token is expired, malformed, or invalid"
+                  value:
+                    code: 1
+                    msg: Invalid or expired token
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Access Denied:
+                  description: Access Denied
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Manager"
+                Manager Limitation:
+                  description: Manager Limitation
+                  value:
+                    code: 1
+                    msg: Managers can only modify member-level permissions (Regular/Premium)
+                Insufficient Permissions:
+                  description: Insufficient Permissions
+                  value:
+                    code: 1
+                    msg: Insufficient permissions to modify user permissions
+                Owner Restriction:
+                  description: Owner Restriction
+                  value:
+                    code: 1
+                    msg: Cannot upgrade users to Owner level
+        "404":
+          description: Target user not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Target user not found
+        "200":
+          description: User permission updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
   /tours/{tourId}:
     get:
       tags:
@@ -878,66 +1086,44 @@ paths:
             format: int64
           example: 1
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
-          description: Tour not found
+          description: Not Found - occurs when tour or catalogue doesn't exist
           content:
             application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
               examples:
-                Not Found Response:
-                  description: Not Found Response
+                Tour Not Found:
+                  description: Tour not found
                   value:
                     code: 1
                     msg: Tour not found
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "200":
-          description: Tour found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-              examples:
-                Success Response:
-                  description: Success Response
+                Catalogue Not Found:
+                  description: Catalogue not found
                   value:
-                    code: 0
-                    msg: success
-                    data:
-                      tourId: 1
-                      catalogueId: 5
-                      title: Amazing Sydney Harbor Tour
-                      destination: "Sydney, Australia"
-                      description: Experience the breathtaking views of Sydney Harbor
-                        with our professional guided tour including Opera House and
-                        Harbor Bridge visits.
-                      price: 299.99
-                      createdBy: 123
-                      primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
-                      images:
-                        - https://example.com/images/sydney1.jpg
-                        - https://example.com/images/sydney2.jpg
+                    code: 1
+                    msg: Catalogue not found
+        "200":
+          description: Tour found successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  catalogueId: 5
+                  title: Amazing Sydney Harbor Tour
+                  destination: "Sydney, Australia"
+                  description: Experience the breathtaking views of Sydney Harbor with our professional guided tour including Opera House and Harbor Bridge visits.
+                  price: 299.99
+                  createdBy: 123
+                  primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                  images:
+                    - https://example.com/images/sydney1.jpg
+                    - https://example.com/images/sydney2.jpg
   /tours/page:
     get:
       tags:
@@ -1061,42 +1247,59 @@ paths:
             type: integer
             format: int64
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "404":
           description: Pending tour not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Pending tour not found
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Pending tour found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  pendingTourId: 1
+                  catalogueId: 1
+                  title: Amazing Sydney Harbor Tour
+                  destination: Sydney, Australia
+                  description: Experience the breathtaking views of Sydney Harbor with our professional
+                    guided tour including Opera House and Harbor Bridge visits.
+                  price: 299.99
+                  primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                  submittedBy: 3
+                  operationType: CREATE
+                  status: 0
+                  submissionTime: '2025-07-14T02:47:06'
+                  images:
+                    - https://example.com/images/sydney1.jpg
+                    - https://example.com/images/sydney2.jpg
+                  submitterName: partnerPro
       security:
         - bearerAuth: []
   /approvals/pending-tours:
@@ -1107,42 +1310,65 @@ paths:
       description: Get all tours awaiting approval (Manager permission required)
       operationId: getAllPendingTours
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "200":
           description: Pending tours retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - pendingTourId: 1
+                    catalogueId: 1
+                    title: Amazing Sydney Harbor Tour
+                    destination: Sydney, Australia
+                    description: Experience the breathtaking views of Sydney Harbor with our professional
+                      guided tour including Opera House and Harbor Bridge visits.
+                    price: 299.99
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:47:06'
+                    images:
+                      - https://example.com/images/sydney1.jpg
+                      - https://example.com/images/sydney2.jpg
+                    submitterName: partnerPro
+                  - pendingTourId: 2
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:49:05'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
       security:
         - bearerAuth: []
   /approvals/my-submissions:
@@ -1154,42 +1380,81 @@ paths:
         required)
       operationId: getMySubmissions
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Partner"
         "200":
           description: User submissions retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - pendingTourId: 3
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:49:08'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                  - pendingTourId: 2
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:49:05'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                  - pendingTourId: 1
+                    catalogueId: 1
+                    title: Amazing Sydney Harbor Tour
+                    destination: Sydney, Australia
+                    description: Experience the breathtaking views of Sydney Harbor with our professional
+                      guided tour including Opera House and Harbor Bridge visits.
+                    price: 299.99
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 0
+                    submissionTime: '2025-07-14T02:47:06'
+                    images:
+                      - https://example.com/images/sydney1.jpg
+                      - https://example.com/images/sydney2.jpg
+                    submitterName: partnerPro
+
       security:
         - bearerAuth: []
   /approvals/history:
@@ -1201,42 +1466,335 @@ paths:
         required)
       operationId: getApprovalHistory
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
         "403":
           description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
         "200":
           description: Approval history retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - pendingTourId: 2
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 1
+                    reviewedBy: 4
+                    submissionTime: '2025-07-14T02:49:05'
+                    reviewTime: '2025-07-14T03:54:04'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                    reviewerName: managerMan
+                  - pendingTourId: 3
+                    catalogueId: 1
+                    title: title 2222
+                    destination: Mel, Australia
+                    description: '2222222222222222222222'
+                    price: 500
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    submittedBy: 3
+                    operationType: CREATE
+                    status: 2
+                    reviewedBy: 4
+                    submissionTime: '2025-07-14T02:49:08'
+                    reviewTime: '2025-07-14T03:53:16'
+                    images:
+                      - https://22222222222222222.jpg
+                      - https://2222222222222222.jpg
+                    submitterName: partnerPro
+                    reviewerName: managerMan
+
+      security:
+        - bearerAuth: []
+  /featured-tours:
+    get:
+      tags:
+        - Featured Tours
+      summary: Get featured tours for main page
+      description: Get tours featured on the main page, ordered by display order. Public access - no authentication required.
+      operationId: getFeaturedToursForMainPage
+      responses:
+        "200":
+          description: Featured tours retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - tourId: 1
+                    catalogueId: 5
+                    title: Amazing Sydney Harbor Tour
+                    destination: "Sydney, Australia"
+                    description: Experience the breathtaking views of Sydney Harbor
+                    price: 299.99
+                    createdBy: 123
+                    primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
+                    images:
+                      - https://example.com/images/sydney1.jpg
+                      - https://example.com/images/sydney2.jpg
+    post:
+      tags:
+        - Featured Tours
+      summary: Add tour to featured list
+      description: Add a tour to the featured tours list (Manager permission required)
+      operationId: addFeaturedTour
+      parameters:
+        - name: tourId
+          in: query
+          description: ID of the tour to add to featured list
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour not found
+        "400":
+          description: Tour is already featured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour is already featured
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "201":
+          description: Tour added to featured list successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Featured Tours
+      summary: Remove tour from featured list
+      description: Remove a tour from the featured tours list (Manager permission required)
+      operationId: removeFeaturedTour
+      parameters:
+        - name: tourId
+          in: query
+          description: ID of the tour to remove from featured list
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "400":
+          description: Tour is not featured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour is not featured
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: Tour removed from featured list successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
+  /featured-tours/manage:
+    get:
+      tags:
+        - Featured Tours
+      summary: Get featured tours for management
+      description: Get all featured tour entries for management purposes (Manager permission required)
+      operationId: getAllFeaturedTours
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: Featured tours management data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - featuredTourId: 1
+                    tourId: 5
+                    displayOrder: 1
+                    createTime: '2025-07-15T10:30:00'
+                    updateTime: '2025-07-15T10:30:00'
+                  - featuredTourId: 2
+                    tourId: 8
+                    displayOrder: 2
+                    createTime: '2025-07-15T11:00:00'
+                    updateTime: '2025-07-15T11:00:00'
+      security:
+        - bearerAuth: []
+  /featured-tours/reorder:
+    put:
+      tags:
+        - Featured Tours
+      summary: Reorder featured tours
+      description: Update the display order of featured tours (Manager permission required)
+      operationId: reorderFeaturedTours
+      requestBody:
+        description: List of featured tours with new display orders
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeaturedTour"
+            example:
+              - tourId: 8
+                displayOrder: 1
+              - tourId: 5
+                displayOrder: 2
+              - tourId: 12
+                displayOrder: 3
+        required: true
+      responses:
+        "400":
+          description: Invalid reorder request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Order:
+                  description: Display orders must be consecutive starting from 1
+                  value:
+                    code: 1
+                    msg: Display orders must be consecutive starting from 1
+                Tour Not Featured:
+                  description: One or more tours are not currently featured
+                  value:
+                    code: 1
+                    msg: Tour 5 is not featured
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: Featured tours reordered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
       security:
         - bearerAuth: []
 components:
@@ -1257,6 +1815,9 @@ components:
         data:
           description: Response data (can be any object)
           example: {}
+      example:
+        code: 0
+        msg: success
     User:
       type: object
       properties:
@@ -1471,6 +2032,38 @@ components:
           format: double
           description: Maximum price filter
           example: 500.0
+    FeaturedTour:
+      type: object
+      description: Featured tour information for management
+      properties:
+        featuredTourId:
+          type: integer
+          format: int64
+          description: Unique featured tour identifier
+          example: 1
+        tourId:
+          type: integer
+          format: int64
+          description: ID of the tour that is featured
+          example: 5
+        displayOrder:
+          type: integer
+          format: int32
+          description: Display order on main page (1 = first)
+          example: 1
+        createTime:
+          type: string
+          format: date-time
+          description: When the tour was added to featured list
+          example: '2025-07-15T10:30:00'
+        updateTime:
+          type: string
+          format: date-time
+          description: When the featured tour entry was last updated
+          example: '2025-07-15T10:30:00'
+      required:
+        - tourId
+        - displayOrder
   securitySchemes:
     bearerAuth:
       type: http

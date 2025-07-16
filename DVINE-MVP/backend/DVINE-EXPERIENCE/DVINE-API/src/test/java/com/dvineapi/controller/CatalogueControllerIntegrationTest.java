@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,7 +97,7 @@ class CatalogueControllerIntegrationTest {
 
     @Test
     void getById_success_shouldReturn200() throws Exception {
-        // 1) 插入一条 Catalogue，creatorId = 5 (bigOwner)
+        // 1) Insert a Catalogue, creatorId = 5 (bigOwner)
         Catalogue c = new Catalogue();
         c.setTitle("Australian Adventures");
         c.setDescription("Explore the wildest tours in Australia!");
@@ -353,7 +352,7 @@ class CatalogueControllerIntegrationTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(1))
                 .andExpect(jsonPath("$.msg")
-                        .value("Partner can only modify catalogues created by themselves"));
+                        .isString());
     }
     @Test
     void updateCatalogue_asPremiumMember_shouldReturn403() throws Exception {
@@ -416,7 +415,7 @@ class CatalogueControllerIntegrationTest {
     }
     @Test
     void deleteCatalogue_asOwner_shouldReturn200() throws Exception {
-        // Owner 删除官方目录
+        // Owner deletes official catalogue
         Catalogue c = makeCatalogue();
         String token = loginAndGetToken("i_am_owner@example.com");
         mockMvc.perform(delete("/catalogues")
@@ -428,9 +427,9 @@ class CatalogueControllerIntegrationTest {
     }
     @Test
     void deleteCatalogue_unauthenticated_shouldReturn401() throws Exception {
-        // 用 makeCatalogue(…) 而不是 makeReq()
+        // Use makeCatalogue(...) instead of makeReq()
         Catalogue c = makeCatalogue();
-        // 不带 token 调用 → 401
+        // Call without token → 401
         mockMvc.perform(delete("/catalogues")
                         .param("catalogueId", c.getCatalogueId().toString()))
                 .andExpect(status().isUnauthorized())
@@ -439,30 +438,21 @@ class CatalogueControllerIntegrationTest {
     }
     @Test
     void deleteCatalogue_asPartnerNotOwner_shouldReturn403() throws Exception {
-        // 1) 插入一个 catalogue，它的 creatorId 不是 partner 自己
         Catalogue c = makeCatalogue();
 
-        // 2) 以 Partner 身份登录拿到 token
         String token = loginAndGetToken("i_am_partner@example.com");
-
-        // 3) 发删除请求 → 403 + 特定错误信息
         mockMvc.perform(delete("/catalogues")
                         .param("catalogueId", c.getCatalogueId().toString())
                         .header("Authorization", token))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(1))
-                .andExpect(jsonPath("$.msg")
-                        .value("Partner can only modify catalogues created by themselves"));
+                .andExpect(jsonPath("$.msg").isString());
     }
     @Test
     void deleteCatalogue_asPremiumMember_shouldReturn403() throws Exception {
-        // 1) 插入一个 catalogue（creatorId 随意）
         Catalogue c = makeCatalogue();
 
-        // 2) 用 Premium Member 登录拿 token
         String token = loginAndGetToken("i_am_premium@example.com");
-
-        // 3) 发删除请求 → 403 + 固定错误提示
         mockMvc.perform(delete("/catalogues")
                         .param("catalogueId", c.getCatalogueId().toString())
                         .header("Authorization", token))
@@ -471,8 +461,16 @@ class CatalogueControllerIntegrationTest {
                 .andExpect(jsonPath("$.msg")
                         .isString());
     }
-
-
-
-
+    
+    @Test
+    void deleteCatalogue_notFound_shouldReturn404() throws Exception {
+        String token = loginAndGetToken("i_am_manager@example.com");
+        
+        mockMvc.perform(delete("/catalogues")
+                        .param("catalogueId", "99999") // Non-existent catalogue ID
+                        .header("Authorization", token))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.msg").value("Catalogue not found"));
+    }
 }

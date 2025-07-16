@@ -47,6 +47,7 @@ public class TourConversionUtil {
         tour.setPrice(pendingTour.getPrice());
         tour.setPrimaryImageUrl(pendingTour.getPrimaryImageUrl());
         tour.setImages(pendingTour.getImages());
+        tour.setCreatedBy(pendingTour.getSubmittedBy());
         return tour;
     }
 

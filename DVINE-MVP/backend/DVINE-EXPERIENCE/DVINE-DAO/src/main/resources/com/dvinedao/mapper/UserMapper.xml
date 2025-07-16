@@ -79,6 +79,11 @@
             avatar,
             permission
         FROM users
-
     </select>
+
+    <update id="updateUserPermission">
+        UPDATE users 
+        SET permission = #{permission} 
+        WHERE userId = #{userId}
+    </update>
 </mapper>

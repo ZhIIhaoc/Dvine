@@ -1,17 +1,117 @@
 .swiper-button-next,
 .swiper-button-prev {
-    background-color: rgba(0, 0, 0, 0.6) !important;
-    color: white !important;
-    border-radius: 50% !important;
-    width: 40px !important;
-    height: 40px !important;
-    display: flex !important;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.swiper-button-next {
+    right: 20px;
+}
+
+.swiper-button-prev {
+    left: 20px;
 }
 
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 16px !important;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Ensure the container has proper positioning */
+.swiper {
+    position: relative;
+    overflow: visible;
+}
+
+/* Hide arrows when there's only one slide */
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+    opacity: 0.35;
+    cursor: auto;
+    pointer-events: none;
+}
+
+/* Hide adjacent slides to show only the current slide */
+.swiper-slide {
+    opacity: 0.3;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.9);
+}
+
+.swiper-slide-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Enhanced shadow for active slide */
+.swiper-slide-active .MuiCard-root {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* Custom pagination bullets */
+.swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    margin: 0 4px;
+}
+
+.swiper-pagination-bullet-active {
+    background: #1976d2;
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.4);
+}
+
+/* Enhanced focus states */
+.swiper-slide-active:focus-within {
+    outline: 2px solid #1976d2;
+    outline-offset: 4px;
+}
+
+/* Smooth transitions for specific elements */
+.swiper-slide .MuiCard-root,
+.swiper-slide .MuiCardMedia-root,
+.swiper-slide .MuiCardContent-root,
+.swiper-slide .MuiTypography-root {
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .swiper-button-next {
+        right: 10px;
+    }
+    
+    .swiper-button-prev {
+        left: 10px;
+    }
 }

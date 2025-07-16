@@ -47,4 +47,13 @@ public class UserController {
         List<User> userList = userService.getUserList();
         return ReturnResult.success(userList);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/permission")
+    @PermissionCheck(PermissionLevel.MANAGER)
+    public ReturnResult updateUserPermission(@RequestBody User user){
+        log.info("updateUserPermission: userId={}, permission={}", user.getUserId(), user.getPermission());
+        userService.updateUserPermission(user.getUserId(), user.getPermission());
+        return ReturnResult.success();
+    }
 }

@@ -15,4 +15,5 @@ public interface UserMapper {
     User selectUserByEmail(String email);
     Integer findPermissionById(Long userId);
     List<User> getUserList();
+    void updateUserPermission(Long userId, Integer permission);
 }
