@@ -7,7 +7,7 @@ import MessageAlert from "../components/MessageAlert.jsx";
 export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalogueList }) {
     const token = localStorage.getItem("accessToken");
     const [catalogueName, setCatalogueName] = useState("");
-    const [catalogueDescription, setCatalogueDescription] = useState("");
+    const [catalogueDiscription, setCatalogueDiscription] = useState("");
     const [catalogueCoverImage, setCatalogueCoverImage] = useState("");
     const [imagePreview, setImagePreview] = React.useState("");
     const [selectedCatalogue, setSelectedCatalogue] = useState(null);
@@ -101,8 +101,8 @@ export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalo
                 />
                 <TextField
                     label="Catalogue Description"
-                    value={catalogueDescription}
-                    onChange={(e) => setCatalogueDescription(e.target.value)}
+                    value={catalogueDiscription}
+                    onChange={(e) => setCatalogueDiscription(e.target.value)}
                     fullWidth
                 />
 
