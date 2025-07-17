@@ -26,38 +26,13 @@ export function Header() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const { token, logout } = useContext(AuthContext);
+    const { token, userInfo } = useContext(AuthContext);
     useEffect(() => {
-        UserPermission();
-        // console.log("im running");
-
-    }, []);
-
-
-    const UserPermission = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/users/profile', {
-                method: 'GET',
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const responseInfo = await response.json();
-            console.log("User Info Response:", responseInfo);
-
-            if (responseInfo.code === 0) {
-                if (responseInfo.data.permission === 2 || responseInfo.data.permission === 3 || responseInfo.data.permission === 4) {
-                    setIsAdmin(true);
-                }
-                console.log("User Info CAMERON HELLLLLLLLLOOOOOOO I am in the catalogue:", responseInfo.data);
-            }
-        } catch (error) {
-            console.error(error);
+        if (userInfo) {
+            setIsAdmin(userInfo.permission == 2 || userInfo.permission == 3 || userInfo.permission == 4);
         }
-        
-    }
+
+    }, [userInfo]);
 
     return (
         <AppBar
