@@ -1,6 +1,26 @@
 import React from "react";
-import { Box, Chip, CircularProgress, ListItem, ListItemText, List, Toolbar, Drawer, Typography, Grid, Card, CardMedia, CardContent, Tooltip, Button, Stack } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  CircularProgress,
+  ListItem,
+  ListItemText,
+  List,
+  Toolbar,
+  Drawer,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Tooltip,
+  Button,
+  Stack,
+  Chip,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
+
 
 const dummyData = [
     {
@@ -36,7 +56,12 @@ const statusLabels = {
 };
 export const AdminTourPage = () => {
     const [AdminTourInfo, setAdminTourInfo] = React.useState(null);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
     const navigate = useNavigate();
+
+    const toggleDrawer = (open) => () => {
+        setDrawerOpen(open);
+    }
 
 
     React.useEffect(() => {
@@ -74,29 +99,43 @@ export const AdminTourPage = () => {
     };
     return (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 4 }}>
-            <Drawer variant="permanent" anchor="left" sx={{ width: 240 }}>
+             <Drawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: 240,
+                            boxSizing: "border-box",
+                            mt: "96px",
+                        },
+                    },
+                }}>
                 <Toolbar />
-                <Box sx={{ width: 240 }}>
+                <Box sx={{ width: 240 }} onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
                     <List>
                         <ListItem button>
                             <ListItemText primary="Manage Tours" />
                         </ListItem>
-                        <ListItem button>
-                            <ListItemText primary="User Reports" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemText primary="Settings" />
-                        </ListItem>
                     </List>
                 </Box>
             </Drawer >
+            <Box display="flex" justifyContent="space-between" width="100%" px={2} mb={2}>
+                <IconButton
+                    onClick={toggleDrawer(true)}
+                    aria-label="menu"
+                >
+                    <MenuIcon />
+                </IconButton>
+            </Box>
             <Typography variant="h4" >
-                Tours and Experiences Pending Admin Approval
+                Manage Tours and Experiences
             </Typography>
             {/* {currentUserToursInfo ? ( */}
             <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
                 {dummyData.map((tour) => (
-                    <Grid item xs={12} sm={6} md={4} key={tour.id}>
+                    <Grid size={6} key={tour.id}>
                         <Card sx={{ boxShadow: 1 }}>
                             <CardMedia
                                 component="img"
