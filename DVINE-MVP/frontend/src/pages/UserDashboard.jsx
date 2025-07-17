@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../components/AuthContext.jsx";
 // import propTypes from "prop-types";
 // import axios from "axios";
 import { Header } from "../components/Header";
@@ -7,39 +8,9 @@ import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 
 export function UserDashboard() {
-    console.log("UserDashboard gettoken:", localStorage.getItem("accessToken"));
-    const token = localStorage.getItem("accessToken");
+    const { userInfo } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState(null);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
-    const fetchUserInfo = async () => {
-        try {
-            const response = await fetch(
-                "http://localhost:8080/users/profile",
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            const responseInfo = await response.json();
-            console.log("User Info Response:", responseInfo);
-
-            if (responseInfo.code === 0) {
-                setUserInfo(responseInfo.data);
-                console.log("User Info CAMERON:", responseInfo.data);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    useEffect(() => {
-        fetchUserInfo();
-        console.log("im running");
-    }, []);
 
     return (
         <>

@@ -1,4 +1,4 @@
-const CreateCatalogue = async (tourTitle, tourDescription, tourImage, token) => {
+const CreateCatalogue = async (token, title, description, image) => {
     const localHost = "http://localhost:8080";
     const response = await fetch(`${localHost}/catalogues`, {
         method: 'POST',
@@ -8,9 +8,9 @@ const CreateCatalogue = async (tourTitle, tourDescription, tourImage, token) => 
 
         },
         body: JSON.stringify({
-            title: tourTitle,
-            description: tourDescription,
-            coverImage: tourImage,
+            title: title,
+            description: description,
+            coverImage: image,
         })
     });
     return response;

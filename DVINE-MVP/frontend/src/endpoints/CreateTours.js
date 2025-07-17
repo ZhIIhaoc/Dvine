@@ -1,4 +1,4 @@
-const CreateTours = async (tourTitle, tourDescription, tourImage, tourPrice, tourDestination, tourPrimaryImageURL, imageList, token) => {
+const CreateTours = async (tourTitle, tourDescription, tourDestination, tourPrice, tourPrimaryImageURL, imageList, token) => {
     const localHost = "http://localhost:8080";
     const response = await fetch(`${localHost}/tours`, {
         method: 'POST',
@@ -8,7 +8,7 @@ const CreateTours = async (tourTitle, tourDescription, tourImage, tourPrice, tou
 
         },
         body: JSON.stringify({
-            catalogueId: 1, // Assuming a static catalogue ID for now
+            catalogueId: null, // Assuming a static catalogue ID for now
             title: tourTitle,
             destination: tourDestination,
             price: parseFloat(tourPrice),

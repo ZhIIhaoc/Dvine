@@ -77,6 +77,9 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
             <if test="maxPrice != null">
                 AND t.price &lt;= #{maxPrice}
             </if>
+            <if test="createdBy != null">
+                AND t.createdBy = #{createdBy}
+            </if>
         </where>
         ORDER BY t.updateTime
         LIMIT #{size} OFFSET #{offset}
@@ -109,6 +112,9 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
             </if>
             <if test="maxPrice != null">
                 AND t.price &lt;= #{maxPrice}
+            </if>
+            <if test="createdBy != null">
+                AND t.createdBy = #{createdBy}
             </if>
         </where>
     </select>

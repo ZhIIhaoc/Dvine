@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 export function Header() {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
     // code taken from https://mui.com/material-ui/react-menu/
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -25,7 +26,13 @@ export function Header() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const { token, logout } = useContext(AuthContext);
+    const { token, userInfo } = useContext(AuthContext);
+    useEffect(() => {
+        if (userInfo) {
+            setIsAdmin(userInfo.permission == 2 || userInfo.permission == 3 || userInfo.permission == 4);
+        }
+
+    }, [userInfo]);
 
     return (
         <AppBar
@@ -79,6 +86,19 @@ export function Header() {
                             pr: 10,
                         }}
                     >
+                    {isAdmin ? (
+                        <Button
+                            sx={{
+                                mt: 0,
+                                color: "black",
+                                mr: 3,
+                            }}
+                            onClick={() => navigate("/admin-dashboard")}
+                        >
+                            Admin Dashboard
+                        </Button>
+
+                    ) : (
                         <Button
                             sx={{
                                 mt: 0,
@@ -89,6 +109,8 @@ export function Header() {
                         >
                             User Dashboard
                         </Button>
+                    )}
+                        
                         <IconButton
                             sx={{ my: 2, mr: { xs: 2, sm: 4, md: 10 } }}
                             onClick={handleClick}
