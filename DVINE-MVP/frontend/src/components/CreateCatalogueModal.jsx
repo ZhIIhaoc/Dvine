@@ -7,7 +7,7 @@ import MessageAlert from "../components/MessageAlert.jsx";
 export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalogueList }) {
     const token = localStorage.getItem("accessToken");
     const [catalogueName, setCatalogueName] = useState("");
-    const [catalogueDiscription, setCatalogueDiscription] = useState("");
+    const [catalogueDescription, setCatalogueDescription] = useState("");
     const [catalogueCoverImage, setCatalogueCoverImage] = useState("");
     const [imagePreview, setImagePreview] = React.useState("");
     const [selectedCatalogue, setSelectedCatalogue] = useState(null);
