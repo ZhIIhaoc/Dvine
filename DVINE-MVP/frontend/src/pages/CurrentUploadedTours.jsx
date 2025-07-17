@@ -46,7 +46,7 @@ export const CurrentUploadedTours = () => {
     const [gottenMyTours, setGottenMyTours] = useState(false);
     const [gottenAllTours, setGottenAllTours] = useState(false);
     const [currentUserAllToursList, setCurrentUserAllToursList] = useState([]);
-    const live = 1;
+    const LIVE_STATUS_CODE = 1;
 
     useEffect(() => {
         if (userInfo?.userId && token) {
