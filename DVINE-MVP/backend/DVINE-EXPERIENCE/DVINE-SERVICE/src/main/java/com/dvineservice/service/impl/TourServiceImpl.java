@@ -71,7 +71,6 @@ public class TourServiceImpl implements TourService {
         } else {
             log.info("Partner submitting tour for approval");
             pendingTourService.submitTourCreation(tour, userId);
-            throw new TourSubmittedException();
         }
     }
 
@@ -86,7 +85,6 @@ public class TourServiceImpl implements TourService {
         } else {
             log.info("Partner submitting tour update for approval");
             pendingTourService.submitTourUpdate(tour, userId);
-            throw new TourSubmittedException();
         }
     }
 
@@ -101,7 +99,6 @@ public class TourServiceImpl implements TourService {
         } else {
             log.info("Partner submitting tour deletion for approval");
             pendingTourService.submitTourDeletion(tourId, userId);
-            throw new TourSubmittedException();
         }
     }
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class TourQueryParam {
     private Long tourId; // Tour ID
     private Long catalogueId; // Catalogue ID to which the tour belongs
+    private String catalogueName; // Catalogue name (e.g., "wine", "food") for tag-based filtering
     private String title; // Tour title
     private String destination; // Tour destination
     private Double minPrice; // Minimum price for the tour
