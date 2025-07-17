@@ -331,7 +331,7 @@ export function AdminDashboard() {
                                     <CreateCatalogueModal 
                                         open={catalogueModalOpen} 
                                         onClose={() => setCatalogueModalOpen(false)}
-                                        onCatalogueCreated={refreshCataogues}
+                                        onCatalogueCreated={refreshCatalogues}
                                         catalogueList={listOfCatalogues}
                                         
                                     />
