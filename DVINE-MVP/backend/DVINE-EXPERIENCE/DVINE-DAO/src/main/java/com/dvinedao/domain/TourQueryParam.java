@@ -15,6 +15,7 @@ public class TourQueryParam {
     private String destination; // Tour destination
     private Double minPrice; // Minimum price for the tour
     private Double maxPrice; // Maximum price for the tour
+    private Long createdBy; // Creator ID to filter tours by creator
 
     private Integer page = 0; // start from 0
     private Integer size = 10; // default size

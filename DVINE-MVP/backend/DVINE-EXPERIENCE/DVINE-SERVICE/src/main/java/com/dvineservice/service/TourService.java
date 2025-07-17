@@ -16,7 +16,8 @@ public interface TourService {
     boolean canPerformDirectOperation(Long userId);
     
     // Permission-aware methods (encapsulate business logic)
-    void createTourWithPermissionCheck(Tour tour);
-    void updateTourWithPermissionCheck(Tour tour);
-    void deleteTourWithPermissionCheck(Long tourId);
+    // Returns true if operation was performed directly, false if submitted for approval
+    boolean createTourWithPermissionCheck(Tour tour);
+    boolean updateTourWithPermissionCheck(Tour tour);
+    boolean deleteTourWithPermissionCheck(Long tourId);
 }

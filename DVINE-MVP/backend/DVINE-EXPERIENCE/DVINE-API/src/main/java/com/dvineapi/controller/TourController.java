@@ -8,6 +8,7 @@ import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvineservice.service.TourService;
+import com.dvineservice.exception.TourSubmittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,11 @@ public class TourController {
     @PostMapping
     @PermissionCheck(PermissionLevel.PARTNER)
     public ReturnResult createTour(@RequestBody Tour tour) {
-        tourService.createTourWithPermissionCheck(tour);
+        boolean isDirectOperation = tourService.createTourWithPermissionCheck(tour);
+        if (!isDirectOperation) {
+            // Return 202 Accepted to indicate the tour creation is pending approval
+            throw new TourSubmittedException();
+        }
         return ReturnResult.success();
     }
 
@@ -53,7 +58,11 @@ public class TourController {
     @PermissionCheck(PermissionLevel.PARTNER)
     @TourOwnerCheck
     public ReturnResult updateTour(@RequestBody Tour tour) {
-        tourService.updateTourWithPermissionCheck(tour);
+        boolean isDirectOperation = tourService.updateTourWithPermissionCheck(tour);
+        if (!isDirectOperation) {
+            // Return 202 Accepted to indicate the tour update is pending approval
+            throw new TourSubmittedException();
+        }
         return ReturnResult.success();
     }
 
@@ -62,7 +71,11 @@ public class TourController {
     @PermissionCheck(PermissionLevel.PARTNER)
     @TourOwnerCheck
     public ReturnResult deleteTour(Long tourId) {
-        tourService.deleteTourWithPermissionCheck(tourId);
+        boolean isDirectOperation = tourService.deleteTourWithPermissionCheck(tourId);
+        if (!isDirectOperation) {
+            // Return 202 Accepted to indicate the tour deletion is pending approval
+            throw new TourSubmittedException();
+        }
         return ReturnResult.success();
     }
 

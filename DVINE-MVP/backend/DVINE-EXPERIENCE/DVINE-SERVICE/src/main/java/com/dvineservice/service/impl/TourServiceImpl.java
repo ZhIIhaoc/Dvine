@@ -5,7 +5,6 @@ import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
 import com.dvinedao.mapper.UserMapper;
-import com.dvineservice.exception.TourSubmittedException;
 
 import java.util.List;
 import com.dvineservice.service.PendingTourService;
@@ -57,7 +56,7 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional
-    public void createTourWithPermissionCheck(Tour tour) {
+    public boolean createTourWithPermissionCheck(Tour tour) {
         Long userId = UserUtil.getCurrentUserId();
 
         // Ensure the tour has a catalogue ID, defaulting to 1 if not specified
@@ -68,37 +67,43 @@ public class TourServiceImpl implements TourService {
         if (canPerformDirectOperation(userId)) {
             log.info("Manager/Owner creating tour");
             tourOperationService.createTour(tour);
+            return true; // Direct operation completed
         } else {
             log.info("Partner submitting tour for approval");
             pendingTourService.submitTourCreation(tour, userId);
+            return false; // Submitted for approval
         }
     }
 
     @Override
     @Transactional
-    public void updateTourWithPermissionCheck(Tour tour) {
+    public boolean updateTourWithPermissionCheck(Tour tour) {
         Long userId = UserUtil.getCurrentUserId();
 
         if (canPerformDirectOperation(userId)) {
             log.info("Manager/Owner updating tour");
             tourOperationService.updateTour(tour);
+            return true; // Direct operation completed
         } else {
             log.info("Partner submitting tour update for approval");
             pendingTourService.submitTourUpdate(tour, userId);
+            return false; // Submitted for approval
         }
     }
 
     @Override
     @Transactional
-    public void deleteTourWithPermissionCheck(Long tourId) {
+    public boolean deleteTourWithPermissionCheck(Long tourId) {
         Long userId = UserUtil.getCurrentUserId();
 
         if (canPerformDirectOperation(userId)) {
             log.info("Manager/Owner deleting tour");
             tourOperationService.deleteTour(tourId);
+            return true; // Direct operation completed
         } else {
             log.info("Partner submitting tour deletion for approval");
             pendingTourService.submitTourDeletion(tourId, userId);
+            return false; // Submitted for approval
         }
     }
 }
