@@ -2032,6 +2032,11 @@ components:
           format: double
           description: Maximum price filter
           example: 500.0
+        createdBy:
+          type: integer
+          format: int64
+          description: Filter tours by creator ID
+          example: 123
     FeaturedTour:
       type: object
       description: Featured tour information for management
