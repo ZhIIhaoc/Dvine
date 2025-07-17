@@ -101,8 +101,8 @@ export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalo
                 />
                 <TextField
                     label="Catalogue Description"
-                    value={catalogueDiscription}
-                    onChange={(e) => setCatalogueDiscription(e.target.value)}
+                    value={catalogueDescription}
+                    onChange={(e) => setCatalogueDescription(e.target.value)}
                     fullWidth
                 />
 
