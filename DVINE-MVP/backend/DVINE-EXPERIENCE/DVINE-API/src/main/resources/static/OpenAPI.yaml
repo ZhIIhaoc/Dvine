@@ -1128,9 +1128,8 @@ paths:
     get:
       tags:
         - Tours
-      summary: Get tours paginated (will be modified in the future)
-      description: "Get tours with pagination support. Specify page number and size\
-        \ for pagination. Default page=0, size=10."
+      summary: Get tours with pagination and filtering
+      description: "Get tours with pagination and filtering support. Supports filtering by catalogue (ID or name), title, destination, and price range. Default page=0, size=10."
       operationId: searchWithPagination
       parameters:
         - name: tourQueryParam
@@ -1147,24 +1146,80 @@ paths:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               examples:
-                Success Response:
-                  description: Success Response
+                Default Pagination:
+                  description: Default pagination without filters
                   value:
                     code: 0
                     msg: success
                     data:
                       content:
                         - tourId: 1
-                          catalogueId: 5
+                          catalogueId: 1
                           title: Amazing Sydney Harbor Tour
                           destination: "Sydney, Australia"
                           price: 299.99
                           createdBy: 123
+                        - tourId: 2
+                          catalogueId: 2
+                          title: Kyoto Temple Journey
+                          destination: "Kyoto, Japan"
+                          price: 2200.0
+                          createdBy: 456
                       page: 0
                       size: 10
                       totalElements: 100
                       totalPages: 10
                       hasNext: true
+                      hasPrevious: false
+                Filter by Catalogue Name:
+                  description: Filtering tours by catalogue name
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      content:
+                        - tourId: 2
+                          catalogueId: 2
+                          title: Kyoto Temple Journey
+                          destination: "Kyoto, Japan"
+                          price: 2200.0
+                          createdBy: 456
+                        - tourId: 3
+                          catalogueId: 2
+                          title: Egyptian Pyramid Quest
+                          destination: "Cairo, Egypt"
+                          price: 2400.0
+                          createdBy: 789
+                      page: 0
+                      size: 10
+                      totalElements: 3
+                      totalPages: 1
+                      hasNext: false
+                      hasPrevious: false
+                Price Range Filter:
+                  description: Filtering tours by price range
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      content:
+                        - tourId: 2
+                          catalogueId: 2
+                          title: Kyoto Temple Journey
+                          destination: "Kyoto, Japan"
+                          price: 2200.0
+                          createdBy: 456
+                        - tourId: 3
+                          catalogueId: 2
+                          title: Egyptian Pyramid Quest
+                          destination: "Cairo, Egypt"
+                          price: 2400.0
+                          createdBy: 789
+                      page: 0
+                      size: 10
+                      totalElements: 2
+                      totalPages: 1
+                      hasNext: false
                       hasPrevious: false
   /catalogues/{catalogueId}:
     get:
@@ -2000,6 +2055,33 @@ components:
           format: int32
           description: Number of items per page
           example: 10
+        catalogueId:
+          type: integer
+          format: int64
+          description: Filter tours by catalogue ID
+          example: 5
+        catalogueName:
+          type: string
+          description: Filter tours by catalogue name (exact match)
+          example: Adventure Tours
+        title:
+          type: string
+          description: Search tours by title (partial match)
+          example: Sydney
+        destination:
+          type: string
+          description: Search tours by destination (partial match)
+          example: Australia
+        minPrice:
+          type: number
+          format: double
+          description: Minimum price filter
+          example: 100.0
+        maxPrice:
+          type: number
+          format: double
+          description: Maximum price filter
+          example: 500.0
     TourQueryParam:
       type: object
       description: Tour search and filter parameters
