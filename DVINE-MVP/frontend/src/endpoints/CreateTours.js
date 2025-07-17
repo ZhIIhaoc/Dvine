@@ -1,4 +1,4 @@
-const CreateTours = async (tourTitle, tourDescription, tourImage, tourPrice, tourDestination, tourPrimaryImageURL, imageList, token) => {
+const CreateTours = async (tourTitle, tourDescription, tourDestination, tourPrice, tourPrimaryImageURL, imageList, token) => {
     const localHost = "http://localhost:8080";
     const response = await fetch(`${localHost}/tours`, {
         method: 'POST',

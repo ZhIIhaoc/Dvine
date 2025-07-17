@@ -27,21 +27,11 @@ export function CreateTourModal({ open, onClose }) {
     };
     const createTours = async () => {
         try {
-            // TODO: come back to this in sprint 2
-            // const response = await CreateCatalogue(
-            //     tourTitle,
-            //     tourDescription,
-            //     tourImage,
-            //     accessToken,
-
-            // );
-
             const response = await CreateTours(
                 tourTitle, 
                 tourDescription, 
-                tourImage, 
-                tourPrice, 
                 tourDestination,
+                tourPrice, 
                 "placeholder_primary_image_url", // Placeholder for primary image URL
                 [], // Placeholder for image list, can be updated later
                 accessToken

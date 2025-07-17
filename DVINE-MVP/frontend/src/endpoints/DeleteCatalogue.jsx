@@ -1,7 +1,7 @@
 const DeleteCatalogue = async (token, catalogueId) => {
     const localHost = "http://localhost:8080";
     const response = await fetch(`${localHost}/catalogues?catalogueId=${catalogueId}`, {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
             Authorization: `${token}`,
             'Content-Type': 'application/json'

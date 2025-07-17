@@ -23,8 +23,10 @@ export function AdminDashboard() {
     const [listOfCatalogues, setListOfCatalogues] = useState([]);
     const [catalogueModalOpen, setCatalogueModalOpen] = useState(false);
 
-    const [adminApprovals, setAdminApprovals] = useState([]);
+    const [adminApprovalsList, setAdminApprovalsList] = useState([]);
     const [adminApprovalsLoading, setAdminApprovalsLoading] = useState(true);
+
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const refreshCataogues = () => {
         getCatalogueInfo();
@@ -44,6 +46,9 @@ export function AdminDashboard() {
 
             if (responseInfo.code === 0) {
                 setUserInfo(responseInfo.data);
+                if (responseInfo.data.permission === 3 || responseInfo.data.permission === 4) {
+                    setIsAdmin(true);
+                }
                 console.log("User Info CAMERON:", responseInfo.data);
             }
         } catch (error) {
@@ -97,7 +102,7 @@ export function AdminDashboard() {
             if (responseInfo.code === 0) {
                 // Handle the admin dashboard data if needed
                 console.log("Admin Dashboard Data:", responseInfo.data);
-                setAdminApprovals(responseInfo.data);
+                setAdminApprovalsList(responseInfo.data);
                 setAdminApprovalsLoading(false);
             } else {
                 console.error("Failed to fetch admin dashboard data:", responseInfo.msg);
@@ -128,8 +133,8 @@ export function AdminDashboard() {
                     } else {
                         setUsersError(data.msg || "Failed to fetch users.");
                     }
-                } catch (err) {
-                    setUsersError("Network error. Please try again.");
+                } catch (error) {
+                    setUsersError("Network error. Please try again. " + error.message);
                 } finally {
                     setUsersLoading(false);
                 }
@@ -240,26 +245,32 @@ export function AdminDashboard() {
                                         </Box>
                                     </Modal>
                                 )}
-                                {adminApprovalsLoading ? (//
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 120 }}>
-                                        <CircularProgress />
-                                    </Box>
-                                ) : (
-
-                                    <Button
-                                        variant="contained"
-                                        onClick={() => navigate("/admin-tour-approval")} 
+                                {!adminApprovalsLoading && (
+                                    <Box
+                                        sx={{
+                                            border: "2px black solid",
+                                            borderRadius: "16px",
+                                            backgroundColor: "white",
+                                            padding: 2,
+                                            mb: 3,
+                                            textAlign: "center",
+                                        }}
                                     >
-                                        <Badge
-                                            badgeContent={adminApprovals.length}
-                                            color="error"
-                                            invisible={adminApprovals.length === 0}
-                                            overlap="rectangular"
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => navigate("/admin-tour-approval")} 
                                         >
-                                            <ApprovalIcon style={{ marginRight: 8 }} />
-                                            Pending Approvals
-                                        </Badge>
-                                    </Button>
+                                            <Badge
+                                                badgeContent={adminApprovalsList.length}
+                                                color="error"
+                                                invisible={adminApprovalsList.length === 0}
+                                                overlap="rectangular"
+                                            >
+                                                <ApprovalIcon style={{ marginRight: 8 }} />
+                                                Pending Approvals
+                                            </Badge>
+                                        </Button>
+                                    </Box>
                                 )}
 
                                 <Box
@@ -303,25 +314,29 @@ export function AdminDashboard() {
                                         }}
                                     />
                                 </Box>
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Button onClick={() => setCatalogueModalOpen(true)}><Typography>Create Catalogue</Typography></Button>
-                                </Box>
-                                <CreateCatalogueModal 
-                                    open={catalogueModalOpen} 
-                                    onClose={() => setCatalogueModalOpen(false)}
-                                    onCatalogueCreated={refreshCataogues}
-                                    catalogueList={listOfCatalogues}
-                                    
-                                />
+                                {isAdmin && (
+                                    <>
+                                    <Box
+                                        sx={{
+                                            border: "2px black solid",
+                                            borderRadius: "16px",
+                                            backgroundColor: "white",
+                                            padding: 2,
+                                            mb: 3,
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        <Button onClick={() => setCatalogueModalOpen(true)}><Typography>Create/Delete Catalogues</Typography></Button>
+                                    </Box>
+                                    <CreateCatalogueModal 
+                                        open={catalogueModalOpen} 
+                                        onClose={() => setCatalogueModalOpen(false)}
+                                        onCatalogueCreated={refreshCataogues}
+                                        catalogueList={listOfCatalogues}
+                                        
+                                    />
+                                    </>
+                                )}
                             </Grid>
                         </Grid>
                     </Box>

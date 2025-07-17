@@ -47,15 +47,14 @@ export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalo
             const response = await deleteCatalogue(token, selectedCatalogue.catalogueId);
             const result = await response.json();
             if (result.code === 0) {
-                showSnackbar(result.message, "success");
+                showSnackbar(`${result.msg} Deleted Successfully`, "success");
                 onCatalogueCreated(); // Refresh the list in the parent
                 setSelectedCatalogue(null); // Reset selection
             } else {
-                showSnackbar(result.message, "error");
+                showSnackbar(`${result.msg} Error Occurred`, "error");
             }
         } catch (error) {
-            console.error("Delete error:", error);
-            alert("Something went wrong while deleting.");
+            showSnackbar("Something went wrong while deleting", error);
         }
     }
 
@@ -108,7 +107,7 @@ export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalo
                 />
 
                 <Button variant="outlined" component="label" sx={{ mb: 3 }}>
-                    Upload Tour Image
+                    Upload Catalogue Cover Image
                     <input
                         type="file"
                         accept="image/*"
@@ -116,7 +115,7 @@ export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalo
                         onChange={handleImageUpload}
                     />
                 </Button>
-                <Typography fontWeight="bold" mt={2}>Browse Existing Catalogues</Typography>
+                <Typography fontWeight="bold" mt={2}>Browse Existing Catalogues Click to delete</Typography>
                 <Autocomplete
                     options={catalogueList}
                     getOptionLabel={(option) => option.title || ""}
