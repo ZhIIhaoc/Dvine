@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 // import propTypes from "prop-types";
 // import axios from "axios";
 import { Box, Typography, Badge, Button, Grid, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Modal, CircularProgress } from "@mui/material";
@@ -7,13 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { CreateTourModal } from "../components/CreateTourModal.jsx";
 import { CreateCatalogueModal } from "../components/CreateCatalogueModal.jsx";
 import ApprovalIcon from '@mui/icons-material/Approval';
+import { AuthContext } from "../components/AuthContext.jsx";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
 export function AdminDashboard() {
-    const token = localStorage.getItem("accessToken");
+    const { token, userInfo} = useContext(AuthContext);
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
     const [users, setUsers] = useState([]);
@@ -32,38 +32,17 @@ export function AdminDashboard() {
     const refreshCatalogues = () => {
         getCatalogueInfo();
     };
-    const fetchUserInfo = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/users/profile', {
-                method: 'GET',
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const responseInfo = await response.json();
-            console.log("User Info Response:", responseInfo);
-
-            if (responseInfo.code === 0) {
-                setUserInfo(responseInfo.data);
-                if (responseInfo.data.permission === 2) {
-                    setIsPartner(true);
-                }
-                if (responseInfo.data.permission === 3 || responseInfo.data.permission === 4) {
-                    setIsAdmin(true);
-                }
-                console.log("User Info CAMERON:", responseInfo.data);
-            }
-        } catch (error) {
-            console.error(error);
+    
+     useEffect(() => {
+        if (userInfo) {
+            setIsPartner(userInfo.permission === 2);
+            setIsAdmin(userInfo.permission === 3 || userInfo.permission === 4);
         }
-    };
+    }, [userInfo]);
     useEffect(() => {
-        fetchUserInfo();
-        // console.log("im running");
-        
         getCatalogueInfo();
+    }, []);
+    useEffect(() => {
         if (isAdmin) {
             fetchAdminApprovals();
             const interval = setInterval(() => {
@@ -71,7 +50,7 @@ export function AdminDashboard() {
             }, 10000); // Fetch every 10 seconds for testing
             return () => clearInterval(interval); // Cleanup on unmount
         }
-    }, []);
+    }, [isAdmin]);
 
     
     const getCatalogueInfo = async () => {

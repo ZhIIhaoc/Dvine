@@ -46,8 +46,17 @@ export const CurrentUploadedTours = () => {
 
   React.useEffect(() => {
     fetchCurrentUserSubmissions();
-  }, []);
 
+    const interval = setInterval(() => {
+        fetchCurrentUserSubmissions();
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval); // Clean up on unmount
+  }, []);
+  
+  const fetchAllToursByUser = async () => {
+
+  }
   const fetchCurrentUserSubmissions = async () => {
     try {
       const response = await fetch("http://localhost:8080/approvals/my-submissions", {
@@ -61,8 +70,6 @@ export const CurrentUploadedTours = () => {
       const responseInfo = await response.json();
 
       if (responseInfo.code === 0) {
-        console.log("Fetched tours:", responseInfo);
-        console.log("Tour count:", responseInfo.data.length);
         setCurrentUserToursList(responseInfo.data);
         setGottenTours(true);
       } else {
@@ -99,7 +106,6 @@ export const CurrentUploadedTours = () => {
                       onClick={() => navigate(`/tour/${tour.pendingTourId}`)}
                     />
                     <CardContent>
-                      <Typography variant="body1" fontWeight="bold">
                         <Tooltip title={statusLabels[statusKey] || "Unknown status"}>
                           <Chip
                             label={`Admin Approval: ${statusKey}`}
@@ -109,7 +115,6 @@ export const CurrentUploadedTours = () => {
                         </Tooltip>
                         <br />
                         {tour.title}
-                      </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
