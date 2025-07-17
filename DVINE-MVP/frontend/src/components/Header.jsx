@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 export function Header() {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
     // code taken from https://mui.com/material-ui/react-menu/
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -26,6 +27,37 @@ export function Header() {
         setAnchorEl(null);
     };
     const { token, logout } = useContext(AuthContext);
+    useEffect(() => {
+        UserPermission();
+        // console.log("im running");
+
+    }, []);
+
+
+    const UserPermission = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/users/profile', {
+                method: 'GET',
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const responseInfo = await response.json();
+            console.log("User Info Response:", responseInfo);
+
+            if (responseInfo.code === 0) {
+                if (responseInfo.data.permission === 2 || responseInfo.data.permission === 3 || responseInfo.data.permission === 4) {
+                    setIsAdmin(true);
+                }
+                console.log("User Info CAMERON HELLLLLLLLLOOOOOOO I am in the catalogue:", responseInfo.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        
+    }
 
     return (
         <AppBar
@@ -79,6 +111,19 @@ export function Header() {
                             pr: 10,
                         }}
                     >
+                    {isAdmin ? (
+                        <Button
+                            sx={{
+                                mt: 0,
+                                color: "black",
+                                mr: 3,
+                            }}
+                            onClick={() => navigate("/admin-dashboard")}
+                        >
+                            Admin Dashboard
+                        </Button>
+
+                    ) : (
                         <Button
                             sx={{
                                 mt: 0,
@@ -89,6 +134,8 @@ export function Header() {
                         >
                             User Dashboard
                         </Button>
+                    )}
+                        
                         <IconButton
                             sx={{ my: 2, mr: { xs: 2, sm: 4, md: 10 } }}
                             onClick={handleClick}
