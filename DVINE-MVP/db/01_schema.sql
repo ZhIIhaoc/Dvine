@@ -93,6 +93,15 @@ CREATE TABLE IF NOT EXISTS featured_tours (
 -- Index for efficient ordering on main page
 CREATE INDEX idx_featured_tours_order ON featured_tours (displayOrder);
 
+-- FAQ table for frequently asked questions
+CREATE TABLE IF NOT EXISTS faqs (
+    faqId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Insert default catalogue for tours not assigned to any catalogue
 INSERT INTO catalogues
 (title, description, coverImage)
@@ -101,3 +110,12 @@ VALUES
      'Build-in catalogue for the tours not assigned to any catalogue',
      'https://this-is-image-cover.jpg'
     );
+
+-- Insert sample FAQ data
+INSERT INTO faqs (question, answer)
+VALUES
+    ('How do I book a tour?', 'You can book a tour by browsing our catalogue, selecting your preferred tour, and following the booking process. Payment can be made securely online.'),
+    ('What is your cancellation policy?', 'Tours can be cancelled up to 48 hours before the scheduled date for a full refund. Cancellations within 48 hours are subject to a 50% cancellation fee.'),
+    ('Are tours suitable for children?', 'Most of our tours are family-friendly. Please check the specific tour details for age recommendations and any restrictions.'),
+    ('What should I bring on a tour?', 'We recommend comfortable walking shoes, weather-appropriate clothing, a camera, and any personal items you may need. Specific requirements will be listed in your tour confirmation.'),
+    ('How do I become a tour partner?', 'To become a tour partner, please contact our partnership team through the contact form. We will review your application and get back to you within 5 business days.');
