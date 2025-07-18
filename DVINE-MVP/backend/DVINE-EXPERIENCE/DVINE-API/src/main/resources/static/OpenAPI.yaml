@@ -132,7 +132,7 @@ paths:
         - Tours
       summary: Filter tours
       description: "Filter tours based on query parameters including tourId, catalogueId,\
-        \ title, destination, and price range. All parameters are optional."
+        \ title, destination, and price range (regularPrice and premiumPrice). All parameters are optional."
       operationId: search
       parameters:
         - name: tourQueryParam
@@ -170,7 +170,8 @@ paths:
                         title: Amazing Sydney Harbor Tour
                         destination: "Sydney, Australia"
                         description: Experience the breathtaking views...
-                        price: 299.99
+                        regularPrice: 299.99
+                        premiumPrice: 269.99
                         createdBy: 123
                         primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                         images:
@@ -201,7 +202,8 @@ paths:
                   description: Experience the breathtaking views of Sydney Harbor
                     with our professional guided tour including Opera House and Harbor
                     Bridge visits.
-                  price: 299.99
+                  regularPrice: 299.99
+                  premiumPrice: 269.99
                   primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                   images:
                     - https://example.com/images/sydney1.jpg
@@ -287,7 +289,8 @@ paths:
                   description: Experience the breathtaking views of Sydney Harbor
                     with our professional guided tour including Opera House and Harbor
                     Bridge visits.
-                  price: 349.99
+                  regularPrice: 349.99
+                  premiumPrice: 314.99
                   createdBy: 123
                   primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                   images:
@@ -1120,7 +1123,8 @@ paths:
                   title: Amazing Sydney Harbor Tour
                   destination: "Sydney, Australia"
                   description: Experience the breathtaking views of Sydney Harbor with our professional guided tour including Opera House and Harbor Bridge visits.
-                  price: 299.99
+                  regularPrice: 299.99
+                  premiumPrice: 269.99
                   createdBy: 123
                   primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                   images:
@@ -1159,13 +1163,15 @@ paths:
                           catalogueId: 1
                           title: Amazing Sydney Harbor Tour
                           destination: "Sydney, Australia"
-                          price: 299.99
+                          regularPrice: 299.99
+                          premiumPrice: 269.99
                           createdBy: 123
                         - tourId: 2
                           catalogueId: 2
                           title: Kyoto Temple Journey
                           destination: "Kyoto, Japan"
-                          price: 2200.0
+                          regularPrice: 2200.0
+                          premiumPrice: 1980.0
                           createdBy: 456
                       page: 0
                       size: 10
@@ -1184,13 +1190,15 @@ paths:
                           catalogueId: 2
                           title: Kyoto Temple Journey
                           destination: "Kyoto, Japan"
-                          price: 2200.0
+                          regularPrice: 2200.0
+                          premiumPrice: 1980.0
                           createdBy: 456
                         - tourId: 3
                           catalogueId: 2
                           title: Egyptian Pyramid Quest
                           destination: "Cairo, Egypt"
-                          price: 2400.0
+                          regularPrice: 2400.0
+                          premiumPrice: 2160.0
                           createdBy: 789
                       page: 0
                       size: 10
@@ -1209,13 +1217,15 @@ paths:
                           catalogueId: 2
                           title: Kyoto Temple Journey
                           destination: "Kyoto, Japan"
-                          price: 2200.0
+                          regularPrice: 2200.0
+                          premiumPrice: 1980.0
                           createdBy: 456
                         - tourId: 3
                           catalogueId: 2
                           title: Egyptian Pyramid Quest
                           destination: "Cairo, Egypt"
-                          price: 2400.0
+                          regularPrice: 2400.0
+                          premiumPrice: 2160.0
                           createdBy: 789
                       page: 0
                       size: 10
@@ -1347,7 +1357,8 @@ paths:
                   destination: Sydney, Australia
                   description: Experience the breathtaking views of Sydney Harbor with our professional
                     guided tour including Opera House and Harbor Bridge visits.
-                  price: 299.99
+                  regularPrice: 299.99
+                  premiumPrice: 269.99
                   primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                   submittedBy: 3
                   operationType: CREATE
@@ -1401,7 +1412,8 @@ paths:
                     destination: Sydney, Australia
                     description: Experience the breathtaking views of Sydney Harbor with our professional
                       guided tour including Opera House and Harbor Bridge visits.
-                    price: 299.99
+                    regularPrice: 299.99
+                    premiumPrice: 269.99
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1416,7 +1428,8 @@ paths:
                     title: title 2222
                     destination: Mel, Australia
                     description: '2222222222222222222222'
-                    price: 500
+                    regularPrice: 500
+                    premiumPrice: 450
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1470,7 +1483,8 @@ paths:
                     title: title 2222
                     destination: Mel, Australia
                     description: '2222222222222222222222'
-                    price: 500
+                    regularPrice: 500
+                    premiumPrice: 450
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1485,7 +1499,8 @@ paths:
                     title: title 2222
                     destination: Mel, Australia
                     description: '2222222222222222222222'
-                    price: 500
+                    regularPrice: 500
+                    premiumPrice: 450
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1501,7 +1516,8 @@ paths:
                     destination: Sydney, Australia
                     description: Experience the breathtaking views of Sydney Harbor with our professional
                       guided tour including Opera House and Harbor Bridge visits.
-                    price: 299.99
+                    regularPrice: 299.99
+                    premiumPrice: 269.99
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1556,7 +1572,8 @@ paths:
                     title: title 2222
                     destination: Mel, Australia
                     description: '2222222222222222222222'
-                    price: 500
+                    regularPrice: 500
+                    premiumPrice: 450
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1574,7 +1591,8 @@ paths:
                     title: title 2222
                     destination: Mel, Australia
                     description: '2222222222222222222222'
-                    price: 500
+                    regularPrice: 500
+                    premiumPrice: 450
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     submittedBy: 3
                     operationType: CREATE
@@ -1613,7 +1631,8 @@ paths:
                     title: Amazing Sydney Harbor Tour
                     destination: "Sydney, Australia"
                     description: Experience the breathtaking views of Sydney Harbor
-                    price: 299.99
+                    regularPrice: 299.99
+                    premiumPrice: 269.99
                     createdBy: 123
                     primaryImageUrl: https://example.com/images/sydney-harbor-main.jpg
                     images:
@@ -2154,11 +2173,16 @@ components:
           description: Detailed tour description
           example: Experience the breathtaking views of Sydney Harbor with our professional
             guided tour including Opera House and Harbor Bridge visits.
-        price:
+        regularPrice:
           type: number
           format: double
-          description: Tour price in AUD
+          description: Tour price in AUD for regular members (permission level 0)
           example: 299.99
+        premiumPrice:
+          type: number
+          format: double
+          description: Tour price in AUD for premium members (permission level 1+)
+          example: 269.99
         primaryImageUrl:
           type: string
           description: URL of the primary tour image
