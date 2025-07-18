@@ -23,6 +23,14 @@ jwt:
   access-token-expiration: 3600000 # 1 hour
   refresh-token-expiration: 604800000 # 7 days
 
+stripe:
+  secret:
+    key: ${STRIPE_SECRET_KEY:sk_test_your_stripe_secret_key_here}
+  webhook:
+    secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret_here}
+  public:
+    key: ${STRIPE_PUBLIC_KEY:pk_test_your_stripe_public_key_here}
+
 springdoc:
   swagger-ui:
     url: /OpenAPI.yaml
