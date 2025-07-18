@@ -430,7 +430,7 @@ public class TourControllerTest {
         mockMvc.perform(delete("/tours")
                         .header("Authorization", partnerToken)
                         .param("tourId", partnerTour.getTourId().toString()))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
 
@@ -554,7 +554,7 @@ public class TourControllerTest {
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
 
@@ -648,7 +648,7 @@ public class TourControllerTest {
                         .header("Authorization", partnerToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateReq)))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.msg").value("success"));
 
