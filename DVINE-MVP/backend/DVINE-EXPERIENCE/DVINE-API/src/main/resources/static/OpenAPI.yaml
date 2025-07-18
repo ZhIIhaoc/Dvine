@@ -25,6 +25,8 @@ tags:
     description: Tour approval workflow management operations for pending tour submissions
   - name: Featured Tours
     description: Main page featured tours management operations
+  - name: FAQ
+    description: Frequently Asked Questions management operations
 paths:
   /users/profile:
     get:
@@ -1852,6 +1854,231 @@ paths:
                 msg: success
       security:
         - bearerAuth: []
+  /faqs:
+    get:
+      tags:
+        - FAQ
+      summary: Get all FAQs
+      description: Retrieve all frequently asked questions. Public access - no authentication required.
+      operationId: findAllFaqs
+      responses:
+        "200":
+          description: FAQs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - faqId: 1
+                    question: What is DVINE?
+                    answer: DVINE is a comprehensive tour experience management platform that connects travelers with amazing destinations and experiences.
+                    createTime: '2025-07-18T10:00:00'
+                    updateTime: '2025-07-18T10:00:00'
+                  - faqId: 2
+                    question: How do I book a tour?
+                    answer: You can browse our tours, select your preferred tour, and follow the booking process. Authentication is required for booking.
+                    createTime: '2025-07-18T10:30:00'
+                    updateTime: '2025-07-18T10:30:00'
+    post:
+      tags:
+        - FAQ
+      summary: Create new FAQ
+      description: Create a new frequently asked question (Manager permission required)
+      operationId: createFaq
+      requestBody:
+        description: FAQ creation data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Faq"
+            example:
+              question: What payment methods do you accept?
+              answer: We accept all major credit cards, PayPal, and bank transfers for tour bookings.
+        required: true
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "201":
+          description: FAQ created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - FAQ
+      summary: Update FAQ
+      description: Update an existing frequently asked question (Manager permission required)
+      operationId: updateFaq
+      requestBody:
+        description: FAQ update data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Faq"
+            example:
+              faqId: 1
+              question: What is DVINE Experience Platform?
+              answer: DVINE is a comprehensive tour experience management platform that connects travelers with amazing destinations and experiences worldwide.
+        required: true
+      responses:
+        "404":
+          description: FAQ not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: FAQ not found
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: FAQ updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
+  /faqs/{faqId}:
+    get:
+      tags:
+        - FAQ
+      summary: Get FAQ by ID
+      description: Retrieve a specific frequently asked question by its ID. Public access - no authentication required.
+      operationId: findFaqById
+      parameters:
+        - name: faqId
+          in: path
+          description: FAQ ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "404":
+          description: FAQ not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: FAQ not found
+        "200":
+          description: FAQ found successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  faqId: 1
+                  question: What is DVINE?
+                  answer: DVINE is a comprehensive tour experience management platform that connects travelers with amazing destinations and experiences.
+                  createTime: '2025-07-18T10:00:00'
+                  updateTime: '2025-07-18T10:00:00'
+    delete:
+      tags:
+        - FAQ
+      summary: Delete FAQ
+      description: Delete a frequently asked question (Manager permission required)
+      operationId: deleteFaq
+      parameters:
+        - name: faqId
+          in: path
+          description: FAQ ID to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "404":
+          description: FAQ not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: FAQ not found
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "200":
+          description: FAQ deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+      security:
+        - bearerAuth: []
 components:
   schemas:
     ReturnResult:
@@ -2151,6 +2378,38 @@ components:
       required:
         - tourId
         - displayOrder
+    Faq:
+      type: object
+      description: Frequently Asked Question information
+      properties:
+        faqId:
+          type: integer
+          format: int64
+          description: Unique FAQ identifier
+          example: 1
+        question:
+          type: string
+          description: FAQ question text
+          example: What is DVINE?
+        answer:
+          type: string
+          description: FAQ answer text
+          example: DVINE is a comprehensive tour experience management platform that connects travelers with amazing destinations and experiences.
+        createTime:
+          type: string
+          format: date-time
+          description: When the FAQ was created
+          example: '2025-07-18T10:00:00'
+          readOnly: true
+        updateTime:
+          type: string
+          format: date-time
+          description: When the FAQ was last updated
+          example: '2025-07-18T10:00:00'
+          readOnly: true
+      required:
+        - question
+        - answer
   securitySchemes:
     bearerAuth:
       type: http
