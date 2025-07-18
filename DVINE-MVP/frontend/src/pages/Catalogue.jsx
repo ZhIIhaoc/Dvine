@@ -44,6 +44,7 @@ import { useAuth } from "../components/AuthContext";
 import {
     fetchCatalogues,
     fetchAllTours,
+    fetchFeaturedTours,
     createCatalogue,
     updateCatalogue,
     deleteCatalogue,
@@ -114,6 +115,7 @@ const mockCatalogues = [
 export function Catalogue() {
     const [catalogues, setCatalogues] = useState([]);
     const [tours, setTours] = useState([]);
+    const [featuredTours, setFeaturedTours] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [selectedCatalogue, setSelectedCatalogue] = useState(null);
@@ -167,9 +169,26 @@ export function Catalogue() {
         }
     };
 
+    // Fetch featured tours from API
+    const fetchFeaturedToursData = async () => {
+        try {
+            const result = await fetchFeaturedTours(token);
+            if (result.code === 0) {
+                setFeaturedTours(result.data);
+            } else {
+                // Fallback to first 6 tours if no featured tours
+                setFeaturedTours([]);
+            }
+        } catch (error) {
+            console.error("Error fetching featured tours:", error);
+            setFeaturedTours([]);
+        }
+    };
+
     useEffect(() => {
         fetchCataloguesData();
         fetchToursData();
+        fetchFeaturedToursData();
     }, []);
 
     // Create new catalogue
@@ -424,7 +443,7 @@ export function Catalogue() {
 
             {/* Featured Tours Carousel */}
             <FeaturedCarousel 
-                tours={tours.slice(0, 6)} // Show first 6 tours as featured
+                tours={featuredTours.length > 0 ? featuredTours : tours.slice(0, 6)}
                 onTourClick={(tourId) => navigate(`/tour/${tourId}`)}
             />
 

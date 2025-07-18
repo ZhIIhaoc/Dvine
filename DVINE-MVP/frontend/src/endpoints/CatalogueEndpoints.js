@@ -206,3 +206,88 @@ export const searchTours = async (searchParams, token = null) => {
         throw error;
     }
 };
+
+// Get featured tours for main page
+export const fetchFeaturedTours = async (token = null) => {
+    try {
+        const response = await fetch(`${BASE_URL}/featured-tours`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { Authorization: token }),
+            },
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching featured tours:", error);
+        throw error;
+    }
+};
+
+// Get all featured tours for management (Manager only)
+export const fetchAllFeaturedTours = async (token) => {
+    try {
+        const response = await fetch(`${BASE_URL}/featured-tours/manage`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching all featured tours:", error);
+        throw error;
+    }
+};
+
+// Add tour to featured list (Manager only)
+export const addFeaturedTour = async (tourId, token) => {
+    try {
+        const response = await fetch(`${BASE_URL}/featured-tours?tourId=${tourId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error adding featured tour:", error);
+        throw error;
+    }
+};
+
+// Remove tour from featured list (Manager only)
+export const removeFeaturedTour = async (tourId, token) => {
+    try {
+        const response = await fetch(`${BASE_URL}/featured-tours?tourId=${tourId}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: token,
+            },
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error removing featured tour:", error);
+        throw error;
+    }
+};
+
+// Reorder featured tours (Manager only)
+export const reorderFeaturedTours = async (reorderedTours, token) => {
+    try {
+        const response = await fetch(`${BASE_URL}/featured-tours/reorder`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+            body: JSON.stringify(reorderedTours),
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error reordering featured tours:", error);
+        throw error;
+    }
+};
