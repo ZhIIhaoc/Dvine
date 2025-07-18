@@ -8,7 +8,7 @@ const CreateTours = async (tourTitle, tourDescription, tourDestination, tourPric
 
         },
         body: JSON.stringify({
-            catalogueId: 1, // Assuming a static catalogue ID for now
+            catalogueId: null, // Assuming a static catalogue ID for now
             title: tourTitle,
             destination: tourDestination,
             price: parseFloat(tourPrice),
