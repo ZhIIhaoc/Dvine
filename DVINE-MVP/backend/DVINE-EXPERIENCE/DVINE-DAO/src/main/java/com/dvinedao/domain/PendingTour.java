@@ -19,7 +19,8 @@ public class PendingTour {
     private String title;
     private String destination;
     private String description;
-    private Double price;
+    private Double regularPrice;
+    private Double premiumPrice;
     private String primaryImageUrl;
     private Long submittedBy; // User ID who submitted
     private OperationType operationType; // CREATE, UPDATE, DELETE

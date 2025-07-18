@@ -6,8 +6,8 @@
 
     <insert id="createTour" parameterType="com.dvinedao.domain.Tour"
             useGeneratedKeys="true" keyProperty="tourId" keyColumn="tourId">
-INSERT INTO tours (title, description, destination, catalogueId, price, createdBy)
-        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price}, #{createdBy})
+INSERT INTO tours (title, description, destination, catalogueId, regularPrice, premiumPrice, createdBy)
+        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{regularPrice}, #{premiumPrice}, #{createdBy})
     </insert>
 
     <update id="updateTour">
@@ -25,8 +25,11 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
             <if test="catalogueId != null">
                 catalogueId = #{catalogueId},
             </if>
-            <if test="price != null">
-                price = #{price},
+            <if test="regularPrice != null">
+                regularPrice = #{regularPrice},
+            </if>
+            <if test="premiumPrice != null">
+                premiumPrice = #{premiumPrice},
             </if>
         </set>
         WHERE tourId = #{tourId}
@@ -44,7 +47,8 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
             t.title,
             t.destination,
             t.description,
-            t.price,
+            t.regularPrice,
+            t.premiumPrice,
             t.createdBy,
             (SELECT i.imageUrl
              FROM images i
@@ -72,10 +76,10 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
                 AND t.destination LIKE CONCAT('%', #{destination}, '%')
             </if>
             <if test="minPrice != null">
-                AND t.price &gt;= #{minPrice}
+                AND (t.regularPrice &gt;= #{minPrice} OR t.premiumPrice &gt;= #{minPrice})
             </if>
             <if test="maxPrice != null">
-                AND t.price &lt;= #{maxPrice}
+                AND (t.regularPrice &lt;= #{maxPrice} OR t.premiumPrice &lt;= #{maxPrice})
             </if>
             <if test="createdBy != null">
                 AND t.createdBy = #{createdBy}
@@ -108,10 +112,10 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
                 AND t.destination LIKE CONCAT('%', #{destination}, '%')
             </if>
             <if test="minPrice != null">
-                AND t.price &gt;= #{minPrice}
+                AND (t.regularPrice &gt;= #{minPrice} OR t.premiumPrice &gt;= #{minPrice})
             </if>
             <if test="maxPrice != null">
-                AND t.price &lt;= #{maxPrice}
+                AND (t.regularPrice &lt;= #{maxPrice} OR t.premiumPrice &lt;= #{maxPrice})
             </if>
             <if test="createdBy != null">
                 AND t.createdBy = #{createdBy}
@@ -125,7 +129,8 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
             t.title,
             t.destination,
             t.description,
-            t.price,
+            t.regularPrice,
+            t.premiumPrice,
             t.createdBy
         FROM
             tours t
@@ -139,7 +144,8 @@ INSERT INTO tours (title, description, destination, catalogueId, price, createdB
             t.title,
             t.destination,
             t.description,
-            t.price,
+            t.regularPrice,
+            t.premiumPrice,
             t.createdBy
         FROM
             tours t

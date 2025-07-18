@@ -116,7 +116,8 @@ public class TourControllerTest {
         t.setTitle(title);
         t.setDestination(destination);
         t.setDescription(description);
-        t.setPrice(price);
+        t.setRegularPrice(price);
+        t.setPremiumPrice(price * 0.9); // 10% discount for premium
         t.setPrimaryImageUrl(primaryImageUrl);
         t.setCreatedBy(createdBy);
         // After insertion, t.getTourId() will be auto-filled
@@ -150,7 +151,8 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.data[0].title").value("Sydney Coastal Walk"))
                 .andExpect(jsonPath("$.data[0].destination").value("Sydney, Australia"))
                 .andExpect(jsonPath("$.data[0].description").value("See the cliffs and beaches."))
-                .andExpect(jsonPath("$.data[0].price").value(129.99))
+                .andExpect(jsonPath("$.data[0].regularPrice").value(129.99))
+                .andExpect(jsonPath("$.data[0].premiumPrice").value(116.99))
                 .andExpect(jsonPath("$.data[0].primaryImageUrl")
                                 .isString())
                 // Validate second record
@@ -158,7 +160,8 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.data[1].title").value("Outback Adventure"))
                 .andExpect(jsonPath("$.data[1].destination").value("Northern Territory, Australia"))
                 .andExpect(jsonPath("$.data[1].description").value("Explore the heart of Australia."))
-                .andExpect(jsonPath("$.data[1].price").value(499.99))
+                .andExpect(jsonPath("$.data[1].regularPrice").value(499.99))
+                .andExpect(jsonPath("$.data[1].premiumPrice").value(449.99))
                 .andExpect(jsonPath("$.data[1].primaryImageUrl")
                         .isString());
     }
@@ -199,7 +202,8 @@ public class TourControllerTest {
                 .andExpect(jsonPath("$.data.title").value("Sydney Coastal Walk"))
                 .andExpect(jsonPath("$.data.destination").value("Sydney, Australia"))
                 .andExpect(jsonPath("$.data.description").value("See the cliffs and beaches."))
-                .andExpect(jsonPath("$.data.price").value(129.99))
+                .andExpect(jsonPath("$.data.regularPrice").value(129.99))
+                .andExpect(jsonPath("$.data.premiumPrice").value(116.99))
                 // images is an array of length 2
                 .andExpect(jsonPath("$.data.images", hasSize(2)))
                 .andExpect(jsonPath("$.data.images[0]").isString())
@@ -216,7 +220,8 @@ public class TourControllerTest {
         req.setTitle("Great Barrier Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Explore the underwater wonders of the reef.");
-        req.setPrice(299.99);
+        req.setRegularPrice(299.99);
+        req.setPremiumPrice(269.99);
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         // Remember to assign values to images field too
         req.setImages(List.of(
@@ -241,7 +246,8 @@ public class TourControllerTest {
         PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
         assertThat(latestPending.getTitle()).isEqualTo("Great Barrier Reef Adventure");
         assertThat(latestPending.getDestination()).isEqualTo("Cairns, Australia");
-        assertThat(latestPending.getPrice()).isEqualTo(299.99);
+        assertThat(latestPending.getRegularPrice()).isEqualTo(299.99);
+        assertThat(latestPending.getPremiumPrice()).isEqualTo(269.99);
         assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.CREATE);
         assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
     }
@@ -256,7 +262,8 @@ public class TourControllerTest {
         req.setTitle("Great Barrier Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Explore the underwater wonders of the reef.");
-        req.setPrice(299.99);
+        req.setRegularPrice(299.99);
+        req.setPremiumPrice(269.99);
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of(
                 "https://your-cdn.com/tour101_1.jpg",
@@ -280,7 +287,8 @@ public class TourControllerTest {
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
-        req.setPrice(299.99);
+        req.setRegularPrice(299.99);
+        req.setPremiumPrice(269.99);
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
 
@@ -306,7 +314,8 @@ public class TourControllerTest {
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
-        req.setPrice(299.99);
+        req.setRegularPrice(299.99);
+        req.setPremiumPrice(269.99);
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
 
@@ -330,7 +339,8 @@ public class TourControllerTest {
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
-        req.setPrice(299.99);
+        req.setRegularPrice(299.99);
+        req.setPremiumPrice(269.99);
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
 
@@ -456,7 +466,8 @@ public class TourControllerTest {
         req.setTitle("Updated Title");
         req.setDestination("Updated Destination");
         req.setDescription("Updated Description");
-        req.setPrice(199.99);
+        req.setRegularPrice(199.99);
+        req.setPremiumPrice(179.99);
         req.setPrimaryImageUrl("https://your-cdn.com/updated.jpg");
         req.setImages(List.of(
                 "https://your-cdn.com/updated1.jpg",
@@ -477,7 +488,8 @@ public class TourControllerTest {
         assertThat(updatedTour.getTitle()).isEqualTo("Updated Title");
         assertThat(updatedTour.getDestination()).isEqualTo("Updated Destination");
         assertThat(updatedTour.getDescription()).isEqualTo("Updated Description");
-        assertThat(updatedTour.getPrice()).isEqualTo(199.99);
+        assertThat(updatedTour.getRegularPrice()).isEqualTo(199.99);
+        assertThat(updatedTour.getPremiumPrice()).isEqualTo(179.99);
         
         // Verify this update didn't create pending_tours record (Owner/Admin direct update)
         List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
@@ -548,7 +560,8 @@ public class TourControllerTest {
         req.setTitle("Updated by Partner");
         req.setDestination("Updated Destination");
 
-        req.setPrice(399.99);
+        req.setRegularPrice(399.99);
+        req.setPremiumPrice(359.99);
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
@@ -566,7 +579,8 @@ public class TourControllerTest {
         PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
         assertThat(latestPending.getTitle()).isEqualTo("Updated by Partner");
         assertThat(latestPending.getDestination()).isEqualTo("Updated Destination");
-        assertThat(latestPending.getPrice()).isEqualTo(399.99);
+        assertThat(latestPending.getRegularPrice()).isEqualTo(399.99);
+        assertThat(latestPending.getPremiumPrice()).isEqualTo(359.99);
         assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.UPDATE);
         assertThat(latestPending.getOriginalTourId()).isEqualTo(testTour.getTourId()); // Points to the tour being updated
         assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
@@ -581,7 +595,8 @@ public class TourControllerTest {
         req.setTitle("This tour doesn't exist");
         req.setDestination("Nowhere");
         req.setDescription("This should fail");
-        req.setPrice(999.99);
+        req.setRegularPrice(999.99);
+        req.setPremiumPrice(899.99);
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
@@ -642,7 +657,8 @@ public class TourControllerTest {
         updateReq.setTitle("Updated Partner Tour");
         updateReq.setDestination("Updated Destination");
         updateReq.setDescription("Updated by partner for approval");
-        updateReq.setPrice(399.99);
+        updateReq.setRegularPrice(399.99);
+        updateReq.setPremiumPrice(359.99);
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", partnerToken)
@@ -660,7 +676,8 @@ public class TourControllerTest {
         PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
         assertThat(latestPending.getTitle()).isEqualTo("Updated Partner Tour");
         assertThat(latestPending.getDestination()).isEqualTo("Updated Destination");
-        assertThat(latestPending.getPrice()).isEqualTo(399.99);
+        assertThat(latestPending.getRegularPrice()).isEqualTo(399.99);
+        assertThat(latestPending.getPremiumPrice()).isEqualTo(359.99);
         assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.UPDATE);
         assertThat(latestPending.getOriginalTourId()).isEqualTo(partnerTour.getTourId());
         assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
@@ -700,7 +717,8 @@ public class TourControllerTest {
         updateReq.setTitle("Partner trying to update Owner's tour");
         updateReq.setDestination("Unauthorized update");
         updateReq.setDescription("This should be forbidden");
-        updateReq.setPrice(999.99);
+        updateReq.setRegularPrice(999.99);
+        updateReq.setPremiumPrice(899.99);
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", partnerToken)
