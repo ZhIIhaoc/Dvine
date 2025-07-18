@@ -28,7 +28,7 @@ export function AdminDashboard() {
 
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const refreshCataogues = () => {
+    const refreshCatalogues = () => {
         getCatalogueInfo();
     };
     const fetchUserInfo = async () => {
