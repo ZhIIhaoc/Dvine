@@ -114,6 +114,14 @@ export function Footer() {
                     >
                         DVINE Moments
                     </Link>
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/faq")}
+                        underline="hover"
+                        sx={{ color: "black" }}
+                    >
+                        FAQ
+                    </Link>
                 </Grid>
                 <Grid
                     item

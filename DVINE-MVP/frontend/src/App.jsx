@@ -7,6 +7,7 @@ import { UserDashboard } from "./pages/UserDashboard.jsx";
 import { AdminDashboard } from "./pages/AdminDashboard.jsx";
 import { Catalogue } from "./pages/Catalogue.jsx";
 import { DvineMoments } from "./pages/DvineMoments.jsx";
+import { FAQ } from "./pages/FAQ.jsx";
 import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import {CurrentUploadedTours} from "./pages/CurrentUploadedTours.jsx";
@@ -58,6 +59,7 @@ function App() {
                     />
                     <Route path="/catalogue" element={<Catalogue />} />
                     <Route path="/dvine-moments" element={<DvineMoments />} />
+                    <Route path="/faq" element={<FAQ />} />
                     <Route path="/user-dashboard" element={<UserDashboard />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/user/settings" element={<UserSettings />} />
