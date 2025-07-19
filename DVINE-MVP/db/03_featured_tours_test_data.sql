@@ -12,22 +12,22 @@ VALUES
     ('Cultural Heritage', 'Discover rich cultural heritage and historical sites.', 'https://example.com/culture-cover.jpg');
 
 -- Insert test tours
-INSERT INTO tours (catalogueId, title, destination, description, price, createdBy)
+INSERT INTO tours (catalogueId, title, destination, description, regularPrice, premiumPrice, createdBy)
 VALUES
     -- Tours for catalogue 1 (Premium Destinations)
-    (1, 'Luxury Tokyo Experience', 'Tokyo, Japan', 'Experience Tokyo like never before with luxury accommodations, private guides, and exclusive access to hidden gems.', 3500.00, 4),
-    (1, 'Paris Elite Tour', 'Paris, France', 'A sophisticated journey through Paris including Michelin-starred dining, private museum tours, and luxury shopping.', 4200.00, 4),
-    (1, 'Swiss Alps Retreat', 'Swiss Alps, Switzerland', 'Ultimate luxury mountain retreat with helicopter tours, spa treatments, and world-class skiing.', 5800.00, 3),
+    (1, 'Luxury Tokyo Experience', 'Tokyo, Japan', 'Experience Tokyo like never before with luxury accommodations, private guides, and exclusive access to hidden gems.', 3500.00, 3150.00, 4),
+    (1, 'Paris Elite Tour', 'Paris, France', 'A sophisticated journey through Paris including Michelin-starred dining, private museum tours, and luxury shopping.', 4200.00, 3780.00, 4),
+    (1, 'Swiss Alps Retreat', 'Swiss Alps, Switzerland', 'Ultimate luxury mountain retreat with helicopter tours, spa treatments, and world-class skiing.', 5800.00, 5220.00, 3),
     
     -- Tours for catalogue 2 (Adventure Tours)  
-    (2, 'Amazon Jungle Expedition', 'Amazon Rainforest, Brazil', 'Deep jungle exploration with wildlife spotting, indigenous culture encounters, and river adventures.', 2100.00, 3),
-    (2, 'Himalayan Base Camp Trek', 'Everest Region, Nepal', 'Epic trekking adventure to Everest Base Camp with experienced guides and stunning mountain views.', 2800.00, 3),
-    (2, 'African Safari Adventure', 'Serengeti, Tanzania', 'Witness the Great Migration and Big Five wildlife in luxury safari camps.', 3200.00, 4),
+    (2, 'Amazon Jungle Expedition', 'Amazon Rainforest, Brazil', 'Deep jungle exploration with wildlife spotting, indigenous culture encounters, and river adventures.', 2100.00, 1890.00, 3),
+    (2, 'Himalayan Base Camp Trek', 'Everest Region, Nepal', 'Epic trekking adventure to Everest Base Camp with experienced guides and stunning mountain views.', 2800.00, 2520.00, 3),
+    (2, 'African Safari Adventure', 'Serengeti, Tanzania', 'Witness the Great Migration and Big Five wildlife in luxury safari camps.', 3200.00, 2880.00, 4),
     
     -- Tours for catalogue 3 (Cultural Heritage)
-    (3, 'Ancient Rome Discovery', 'Rome, Italy', 'Explore ancient Roman history with expert archaeologists and exclusive access to historical sites.', 1800.00, 3),
-    (3, 'Kyoto Temple Journey', 'Kyoto, Japan', 'Immerse yourself in traditional Japanese culture with temple visits, tea ceremonies, and zen gardens.', 2200.00, 4),
-    (3, 'Egyptian Pyramid Quest', 'Giza, Egypt', 'Uncover the mysteries of ancient Egypt with guided pyramid tours and museum visits.', 2500.00, 3);
+    (3, 'Ancient Rome Discovery', 'Rome, Italy', 'Explore ancient Roman history with expert archaeologists and exclusive access to historical sites.', 1800.00, 1620.00, 3),
+    (3, 'Kyoto Temple Journey', 'Kyoto, Japan', 'Immerse yourself in traditional Japanese culture with temple visits, tea ceremonies, and zen gardens.', 2200.00, 1980.00, 4),
+    (3, 'Egyptian Pyramid Quest', 'Giza, Egypt', 'Uncover the mysteries of ancient Egypt with guided pyramid tours and museum visits.', 2500.00, 2250.00, 3);
 
 -- Insert test images for tours
 INSERT INTO images (tourId, imageUrl, isPrimary)

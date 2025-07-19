@@ -26,7 +26,8 @@ public class TourConversionUtil {
         pendingTour.setTitle(tour.getTitle());
         pendingTour.setDestination(tour.getDestination());
         pendingTour.setDescription(tour.getDescription());
-        pendingTour.setPrice(tour.getPrice());
+        pendingTour.setRegularPrice(tour.getRegularPrice());
+        pendingTour.setPremiumPrice(tour.getPremiumPrice());
         pendingTour.setPrimaryImageUrl(tour.getPrimaryImageUrl());
         pendingTour.setSubmittedBy(submittedBy);
         return pendingTour;
@@ -44,7 +45,8 @@ public class TourConversionUtil {
         tour.setTitle(pendingTour.getTitle());
         tour.setDestination(pendingTour.getDestination());
         tour.setDescription(pendingTour.getDescription());
-        tour.setPrice(pendingTour.getPrice());
+        tour.setRegularPrice(pendingTour.getRegularPrice());
+        tour.setPremiumPrice(pendingTour.getPremiumPrice());
         tour.setPrimaryImageUrl(pendingTour.getPrimaryImageUrl());
         tour.setImages(pendingTour.getImages());
         tour.setCreatedBy(pendingTour.getSubmittedBy());
