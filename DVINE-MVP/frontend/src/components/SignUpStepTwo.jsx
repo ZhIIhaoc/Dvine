@@ -98,7 +98,7 @@ const SignUpStepTwo = (props) => {
                         width: "70%",
                         height: "56px",
                     }}
-                    onClick={props.registerButton}
+                    onClick={props.confirmEmail}
                 >
                     Sign Up
                 </Button>
@@ -125,5 +125,5 @@ SignUpStepTwo.propTypes = {
     changeState: PropTypes.func.isRequired,
     userInfo: PropTypes.object.isRequired,
     pageBack: PropTypes.func.isRequired,
-    registerButton: PropTypes.func.isRequired,
+    confirmEmail: PropTypes.func.isRequired,
 };

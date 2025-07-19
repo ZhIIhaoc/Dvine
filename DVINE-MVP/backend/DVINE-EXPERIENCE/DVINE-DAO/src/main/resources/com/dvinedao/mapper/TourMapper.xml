@@ -86,7 +86,6 @@ INSERT INTO tours (title, description, destination, catalogueId, regularPrice, p
             </if>
         </where>
         ORDER BY t.updateTime
-        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countSearch" resultType="long">
