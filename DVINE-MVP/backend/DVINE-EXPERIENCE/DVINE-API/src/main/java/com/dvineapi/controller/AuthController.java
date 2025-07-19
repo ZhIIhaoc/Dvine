@@ -1,5 +1,6 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.domain.RegisterWithVerificationRequest;
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.TokenRefreshRequest;
 import com.dvinedao.domain.TokenResponse;
@@ -20,6 +21,26 @@ public class AuthController {
     
     @Autowired
     private AuthService authService;
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/send-verification-code")
+    public ReturnResult sendVerificationCode(@RequestParam String email) {
+        log.info("Send verification code to email: {}", email);
+        boolean success = authService.sendVerificationCode(email);
+        if (success) {
+            return ReturnResult.success("Verification code sent successfully");
+        } else {
+            return ReturnResult.error("Failed to send verification code");
+        }
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/register-with-verification")
+    public ReturnResult registerWithVerification(@RequestBody RegisterWithVerificationRequest request) {
+        log.info("User Register with verification: {}", request.getUser().getEmail());
+        TokenResponse tokens = authService.registerWithEmailVerification(request);
+        return ReturnResult.success(tokens);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
