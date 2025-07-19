@@ -6,9 +6,9 @@
 
     <insert id="createPendingTour" parameterType="com.dvinedao.domain.PendingTour"
             useGeneratedKeys="true" keyProperty="pendingTourId" keyColumn="pendingTourId">
-        INSERT INTO pending_tours (catalogueId, title, destination, description, price, primaryImageUrl, 
+        INSERT INTO pending_tours (catalogueId, title, destination, description, regularPrice, premiumPrice, primaryImageUrl, 
                                   submittedBy, operationType, originalTourId, status)
-        VALUES (#{catalogueId}, #{title}, #{destination}, #{description}, #{price}, #{primaryImageUrl},
+        VALUES (#{catalogueId}, #{title}, #{destination}, #{description}, #{regularPrice}, #{premiumPrice}, #{primaryImageUrl},
                 #{submittedBy}, #{operationType}, #{originalTourId}, #{status})
     </insert>
 
@@ -19,7 +19,8 @@
             pt.title,
             pt.destination,
             pt.description,
-            pt.price,
+            pt.regularPrice,
+            pt.premiumPrice,
             pt.primaryImageUrl,
             pt.submittedBy,
             pt.operationType,
@@ -43,7 +44,8 @@
             pt.title,
             pt.destination,
             pt.description,
-            pt.price,
+            pt.regularPrice,
+            pt.premiumPrice,
             pt.primaryImageUrl,
             pt.submittedBy,
             pt.operationType,
@@ -68,7 +70,8 @@
             pt.title,
             pt.destination,
             pt.description,
-            pt.price,
+            pt.regularPrice,
+            pt.premiumPrice,
             pt.primaryImageUrl,
             pt.submittedBy,
             pt.operationType,
@@ -93,7 +96,8 @@
             pt.title,
             pt.destination,
             pt.description,
-            pt.price,
+            pt.regularPrice,
+            pt.premiumPrice,
             pt.primaryImageUrl,
             pt.submittedBy,
             pt.operationType,
@@ -118,7 +122,8 @@
             pt.title,
             pt.destination,
             pt.description,
-            pt.price,
+            pt.regularPrice,
+            pt.premiumPrice,
             pt.primaryImageUrl,
             pt.submittedBy,
             pt.operationType,

@@ -84,7 +84,8 @@ public class ApprovalControllerTest {
         tour.setTitle("Test Tour for Approval");
         tour.setDestination("Test Destination");
         tour.setDescription("Test tour for approval testing");
-        tour.setPrice(199.99);
+        tour.setRegularPrice(199.99);
+        tour.setPremiumPrice(179.99);
         tour.setPrimaryImageUrl("https://cdn/test-tour.jpg");
         tour.setCreatedBy(3L); // Partner user ID
         tourMapper.createTour(tour);
@@ -97,7 +98,8 @@ public class ApprovalControllerTest {
         pendingTour.setTitle("Pending Tour for Testing");
         pendingTour.setDestination("Pending Destination");
         pendingTour.setDescription("Pending tour for testing");
-        pendingTour.setPrice(299.99);
+        pendingTour.setRegularPrice(299.99);
+        pendingTour.setPremiumPrice(269.99);
         pendingTour.setPrimaryImageUrl("https://cdn/pending-tour.jpg");
         pendingTour.setOperationType(PendingTour.OperationType.UPDATE);
         pendingTour.setSubmittedBy(3L); // Partner user ID
@@ -124,7 +126,8 @@ public class ApprovalControllerTest {
                 .andExpect(jsonPath("$.data[0].title").value("Pending Tour for Testing"))
                 .andExpect(jsonPath("$.data[0].destination").value("Pending Destination"))
                 .andExpect(jsonPath("$.data[0].description").value("Pending tour for testing"))
-                .andExpect(jsonPath("$.data[0].price").value(299.99))
+                .andExpect(jsonPath("$.data[0].regularPrice").value(299.99))
+                .andExpect(jsonPath("$.data[0].premiumPrice").value(269.99))
                 .andExpect(jsonPath("$.data[0].primaryImageUrl").value("https://cdn/pending-tour.jpg"))
                 .andExpect(jsonPath("$.data[0].operationType").value("UPDATE"))
                 .andExpect(jsonPath("$.data[0].submittedBy").value(3)) // Partner user ID
@@ -193,7 +196,8 @@ public class ApprovalControllerTest {
                 .andExpect(jsonPath("$.data.pendingTourId").value(testPendingTour.getPendingTourId().intValue()))
                 .andExpect(jsonPath("$.data.title").value("Pending Tour for Testing"))
                 .andExpect(jsonPath("$.data.destination").value("Pending Destination"))
-                .andExpect(jsonPath("$.data.price").value(299.99));
+                .andExpect(jsonPath("$.data.regularPrice").value(299.99))
+                .andExpect(jsonPath("$.data.premiumPrice").value(269.99));
     }
 
     @Test
