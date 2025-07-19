@@ -17,7 +17,7 @@ export const Register = () => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const { setToken } = useContext(AuthContext);
-    const [userInfo, setUsersInfo] = React.useState({
+    const [userInfo, setUserInfo] = React.useState({
         email: "",
         password: "",
         confirmPassword: "",
@@ -60,7 +60,7 @@ export const Register = () => {
     const pageNext = () => setPage(prevPage => prevPage + 1);
     const pageBack = () => setPage(prevPage => prevPage - 1);
     const changeState = (value) => (event) => {
-        setUsersInfo({
+        setUserInfo({
             ...userInfo,
             [value]: event.target.value,
         });
