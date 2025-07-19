@@ -59,7 +59,7 @@ const mockTours = [
         title: "Coffs Harbour Adventure",
         destination: "Coffs Harbour, NSW",
         description: "Experience the stunning coastline and vibrant marine life of Coffs Harbour.",
-        price: 299.99,
+        regularPrice: 299.99,
         primaryImageUrl: "/src/assets/coffs_harbour.png",
         catalogueId: 1,
         catalogueTitle: "Adventure Collection",
@@ -70,7 +70,7 @@ const mockTours = [
         title: "Port Macquarie Sights Tour",
         destination: "Port Macquarie, NSW",
         description: "Discover the historic landmarks and beautiful beaches of Port Macquarie.",
-        price: 199.99,
+        regularPrice: 199.99,
         primaryImageUrl: "/src/assets/port_macquarie.jpg",
         catalogueId: 1,
         catalogueTitle: "Adventure Collection",
@@ -81,7 +81,7 @@ const mockTours = [
         title: "VIP EXPERIENCE – The Ultimate Luxury Getaway",
         destination: "Multiple Locations",
         description: "Exclusive luxury experience with premium accommodations and personalized service.",
-        price: 1299.99,
+        regularPrice: 1299.99,
         primaryImageUrl: "/src/assets/vip_experience.jpg",
         catalogueId: 1,
         catalogueTitle: "Luxury Collection",
@@ -301,7 +301,7 @@ export function Catalogue() {
 
         // Filter by price range
         filtered = filtered.filter(tour => 
-            tour.price >= filters.priceRange[0] && tour.price <= filters.priceRange[1]
+            tour.regularPrice >= filters.priceRange[0] && tour.regularPrice <= filters.priceRange[1]
         );
 
         // Filter by location (destination)
@@ -503,7 +503,7 @@ export function Catalogue() {
                                         <Box sx={{ display: "flex", alignItems: "center" }}>
                                             <PriceIcon sx={{ fontSize: 16, mr: 0.5, color: "primary.main" }} />
                                             <Typography variant="h6" color="primary" fontWeight="bold">
-                                                ${tour.price}
+                                                ${tour.regularPrice}
                                             </Typography>
                                         </Box>
                                         <Rating value={4.5} readOnly size="small" />
@@ -657,7 +657,7 @@ export function Catalogue() {
                                         </Typography>
                                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                             <Typography variant="h6" color="primary" fontWeight="bold">
-                                                ${tour.price}
+                                                ${tour.regularPrice}
                                             </Typography>
                                             <Rating value={4.5} readOnly size="small" />
                                         </Box>

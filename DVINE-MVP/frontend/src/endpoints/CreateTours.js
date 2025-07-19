@@ -12,7 +12,8 @@ const CreateTours = async (tourTitle, tourDescription, tourDestination, tourPric
             catalogueId: chosenCatalogueId, // Assuming a static catalogue ID for now
             title: tourTitle,
             destination: tourDestination,
-            price: parseFloat(tourPrice),
+            regularPrice: parseFloat(tourPrice),
+            premiumPrice: 3,
             description: tourDescription,
             primaryImageUrl: tourPrimaryImageURL,
             images: imageList
