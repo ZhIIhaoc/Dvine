@@ -11,7 +11,7 @@ spring:
       host: localhost
       port: 6379
   jackson:
-    default-property-inclusion: non_null # ignore null value in response
+    default-property-inclusion: NON_NULL # ignore null value in response
 
 mybatis:
   configuration:
@@ -22,6 +22,18 @@ jwt:
   secret: KG0z7ycKfE7cHQJxPgW9WwO19o9I8y2tx7Gy3aJ9B4k=
   access-token-expiration: 3600000 # 1 hour
   refresh-token-expiration: 604800000 # 7 days
+
+aws:
+  ses:
+    access-key: AKIAYAF3XLATNGLF4YO4
+    secret-key: 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
+    region: ap-southeast-2
+    from-email: vxyu82505@gmail.com
+
+email:
+  verification:
+    code-length: 6
+    expiration-minutes: 10
 
 springdoc:
   swagger-ui:
