@@ -58,7 +58,8 @@ const mockTours = [
         tourId: 1,
         title: "Coffs Harbour Adventure",
         destination: "Coffs Harbour, NSW",
-        description: "Experience the stunning coastline and vibrant marine life of Coffs Harbour.",
+        description:
+            "Experience the stunning coastline and vibrant marine life of Coffs Harbour.",
         price: 299.99,
         primaryImageUrl: "/src/assets/coffs_harbour.png",
         catalogueId: 1,
@@ -69,7 +70,8 @@ const mockTours = [
         tourId: 2,
         title: "Port Macquarie Sights Tour",
         destination: "Port Macquarie, NSW",
-        description: "Discover the historic landmarks and beautiful beaches of Port Macquarie.",
+        description:
+            "Discover the historic landmarks and beautiful beaches of Port Macquarie.",
         price: 199.99,
         primaryImageUrl: "/src/assets/port_macquarie.jpg",
         catalogueId: 1,
@@ -80,7 +82,8 @@ const mockTours = [
         tourId: 3,
         title: "VIP EXPERIENCE – The Ultimate Luxury Getaway",
         destination: "Multiple Locations",
-        description: "Exclusive luxury experience with premium accommodations and personalized service.",
+        description:
+            "Exclusive luxury experience with premium accommodations and personalized service.",
         price: 1299.99,
         primaryImageUrl: "/src/assets/vip_experience.jpg",
         catalogueId: 1,
@@ -130,7 +133,7 @@ export function Catalogue() {
     const [editingCatalogue, setEditingCatalogue] = useState(null);
     const [filteredTours, setFilteredTours] = useState([]);
     const [searchFilters, setSearchFilters] = useState({});
-    
+
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
     const token = localStorage.getItem("accessToken");
@@ -197,7 +200,12 @@ export function Catalogue() {
             const result = await createCatalogue(catalogueForm, token);
             if (result.code === 0) {
                 setCreateCatalogueOpen(false);
-                setCatalogueForm({ title: "", description: "", coverImage: "", type: 1 });
+                setCatalogueForm({
+                    title: "",
+                    description: "",
+                    coverImage: "",
+                    type: 1,
+                });
                 fetchCataloguesData(); // Refresh the list
             } else {
                 setError("Failed to create catalogue");
@@ -211,14 +219,22 @@ export function Catalogue() {
     // Update catalogue
     const handleUpdateCatalogue = async () => {
         try {
-            const result = await updateCatalogue({
-                ...catalogueForm,
-                catalogueId: editingCatalogue.catalogueId,
-            }, token);
+            const result = await updateCatalogue(
+                {
+                    ...catalogueForm,
+                    catalogueId: editingCatalogue.catalogueId,
+                },
+                token
+            );
             if (result.code === 0) {
                 setEditCatalogueOpen(false);
                 setEditingCatalogue(null);
-                setCatalogueForm({ title: "", description: "", coverImage: "", type: 1 });
+                setCatalogueForm({
+                    title: "",
+                    description: "",
+                    coverImage: "",
+                    type: 1,
+                });
                 fetchCataloguesData(); // Refresh the list
             } else {
                 setError("Failed to update catalogue");
@@ -231,7 +247,11 @@ export function Catalogue() {
 
     // Delete catalogue
     const handleDeleteCatalogue = async (catalogueId) => {
-        if (!window.confirm("Are you sure you want to delete this catalogue? All tours in this catalogue will also be deleted.")) {
+        if (
+            !window.confirm(
+                "Are you sure you want to delete this catalogue? All tours in this catalogue will also be deleted."
+            )
+        ) {
             return;
         }
 
@@ -263,7 +283,7 @@ export function Catalogue() {
 
     // Filter tours by catalogue
     const getToursByCatalogue = (catalogueId) => {
-        return tours.filter(tour => tour.catalogueId === catalogueId);
+        return tours.filter((tour) => tour.catalogueId === catalogueId);
     };
 
     // Get catalogue type label
@@ -283,35 +303,52 @@ export function Catalogue() {
 
         // Filter by search term
         if (filters.searchTerm) {
-            filtered = filtered.filter(tour =>
-                tour.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-                tour.destination.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-                tour.description.toLowerCase().includes(filters.searchTerm.toLowerCase())
+            filtered = filtered.filter(
+                (tour) =>
+                    tour.title
+                        .toLowerCase()
+                        .includes(filters.searchTerm.toLowerCase()) ||
+                    tour.destination
+                        .toLowerCase()
+                        .includes(filters.searchTerm.toLowerCase()) ||
+                    tour.description
+                        .toLowerCase()
+                        .includes(filters.searchTerm.toLowerCase())
             );
         }
 
         // Filter by catalogue
         if (filters.catalogueId) {
-            filtered = filtered.filter(tour => tour.catalogueId === parseInt(filters.catalogueId));
+            filtered = filtered.filter(
+                (tour) => tour.catalogueId === parseInt(filters.catalogueId)
+            );
         }
 
         // Filter by price range
-        filtered = filtered.filter(tour => 
-            tour.price >= filters.priceRange[0] && tour.price <= filters.priceRange[1]
+        filtered = filtered.filter(
+            (tour) =>
+                tour.price >= filters.priceRange[0] &&
+                tour.price <= filters.priceRange[1]
         );
 
         // Filter by location (destination)
         if (filters.location) {
-            filtered = filtered.filter(tour =>
-                tour.destination && tour.destination.toLowerCase().includes(filters.location.toLowerCase())
+            filtered = filtered.filter(
+                (tour) =>
+                    tour.destination &&
+                    tour.destination
+                        .toLowerCase()
+                        .includes(filters.location.toLowerCase())
             );
         }
 
         // Filter by duration (if available)
         if (filters.duration && tour.duration) {
             const durationDays = parseInt(filters.duration);
-            filtered = filtered.filter(tour => {
-                const tourDuration = tour.duration ? parseInt(tour.duration.split(' ')[0]) : 1;
+            filtered = filtered.filter((tour) => {
+                const tourDuration = tour.duration
+                    ? parseInt(tour.duration.split(" ")[0])
+                    : 1;
                 return tourDuration >= durationDays;
             });
         }
@@ -326,38 +363,54 @@ export function Catalogue() {
 
     if (loading) {
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "50vh",
+                }}
+            >
                 <CircularProgress />
             </Box>
         );
     }
 
     return (
-        <Box sx={{ minHeight: "100vh", py: 4, px: { xs: 2, sm: 4, md: 8 } }}>
-            {/* Header */}
-            <Box sx={{ mb: 4, textAlign: "center" }}>
-                <Typography variant="h2" color="primary" gutterBottom>
-                    DVINE Catalogue
-                </Typography>
-                <Typography variant="h6" color="text.secondary">
-                    Discover amazing tours and experiences
-                </Typography>
-            </Box>
-
+        <Box
+            sx={{
+                minHeight: "100vh",
+                py: 4,
+                px: { xs: 2, sm: 4, md: 8 },
+                maxWidth: "100vw",
+                overflowX: "hidden",
+            }}
+        >
             {/* Error Alert */}
             {error && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+                <Alert
+                    severity="error"
+                    sx={{ mb: 2 }}
+                    onClose={() => setError("")}
+                >
                     {error}
                 </Alert>
             )}
 
             {/* Catalogue Management for Admin/Partners */}
-            {isAuthenticated && (user?.permission >= 2) && (
+            {isAuthenticated && user?.permission >= 2 && (
                 <Box sx={{ mb: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 2,
+                        }}
+                    >
                         <Typography variant="h5" fontWeight="bold">
                             Manage Catalogues
-                    </Typography>
+                        </Typography>
                         <Tooltip title="Create New Catalogue">
                             <Fab
                                 color="primary"
@@ -373,61 +426,144 @@ export function Catalogue() {
                     {/* Catalogue Cards */}
                     <Grid container spacing={3}>
                         {catalogues.map((catalogue) => (
-                            <Grid item xs={12} sm={6} md={4} key={catalogue.catalogueId}>
-                                <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                                        <CardMedia
-                                            component="img"
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                key={catalogue.catalogueId}
+                            >
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
                                         height="200"
-                                        image={catalogue.coverImage || "/src/assets/logo.png"}
+                                        image={
+                                            catalogue.coverImage ||
+                                            "/src/assets/logo.png"
+                                        }
                                         alt={catalogue.title}
                                         sx={{ objectFit: "cover" }}
                                     />
                                     <CardContent sx={{ flexGrow: 1 }}>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1 }}>
-                                            <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1 }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "flex-start",
+                                                mb: 1,
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="h6"
+                                                fontWeight="bold"
+                                                sx={{ flexGrow: 1 }}
+                                            >
                                                 {catalogue.title}
                                             </Typography>
                                             <Chip
-                                                label={getCatalogueTypeLabel(catalogue.type)}
-                                                color={getCatalogueTypeColor(catalogue.type)}
+                                                label={getCatalogueTypeLabel(
+                                                    catalogue.type
+                                                )}
+                                                color={getCatalogueTypeColor(
+                                                    catalogue.type
+                                                )}
                                                 size="small"
                                             />
-                    </Box>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                        </Box>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{ mb: 2 }}
+                                        >
                                             {catalogue.description}
                                         </Typography>
-                                        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                            <PersonIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
-                                            <Typography variant="caption" color="text.secondary">
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                mb: 1,
+                                            }}
+                                        >
+                                            <PersonIcon
+                                                sx={{
+                                                    fontSize: 16,
+                                                    mr: 0.5,
+                                                    color: "text.secondary",
+                                                }}
+                                            />
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                            >
                                                 {catalogue.creatorNickName}
                                             </Typography>
-                </Box>
-                                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            <CategoryIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
-                                            <Typography variant="caption" color="text.secondary">
-                                                {getToursByCatalogue(catalogue.catalogueId).length} tours
-                    </Typography>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <CategoryIcon
+                                                sx={{
+                                                    fontSize: 16,
+                                                    mr: 0.5,
+                                                    color: "text.secondary",
+                                                }}
+                                            />
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                            >
+                                                {
+                                                    getToursByCatalogue(
+                                                        catalogue.catalogueId
+                                                    ).length
+                                                }{" "}
+                                                tours
+                                            </Typography>
                                         </Box>
                                     </CardContent>
-                                    <CardActions sx={{ justifyContent: "space-between", p: 2 }}>
+                                    <CardActions
+                                        sx={{
+                                            justifyContent: "space-between",
+                                            p: 2,
+                                        }}
+                                    >
                                         <Button
                                             size="small"
                                             startIcon={<ViewIcon />}
-                                            onClick={() => setSelectedCatalogue(catalogue)}
+                                            onClick={() =>
+                                                setSelectedCatalogue(catalogue)
+                                            }
                                         >
                                             View Tours
                                         </Button>
                                         <Box>
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleEditCatalogue(catalogue)}
+                                                onClick={() =>
+                                                    handleEditCatalogue(
+                                                        catalogue
+                                                    )
+                                                }
                                                 color="primary"
                                             >
                                                 <EditIcon />
                                             </IconButton>
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleDeleteCatalogue(catalogue.catalogueId)}
+                                                onClick={() =>
+                                                    handleDeleteCatalogue(
+                                                        catalogue.catalogueId
+                                                    )
+                                                }
                                                 color="error"
                                             >
                                                 <DeleteIcon />
@@ -442,84 +578,156 @@ export function Catalogue() {
             )}
 
             {/* Featured Tours Carousel */}
-            <FeaturedCarousel 
-                tours={featuredTours.length > 0 ? featuredTours : tours.slice(0, 6)}
+            <FeaturedCarousel
+                tours={
+                    featuredTours.length > 0 ? featuredTours : tours.slice(0, 6)
+                }
                 onTourClick={(tourId) => navigate(`/tour/${tourId}`)}
             />
 
             {/* Search and Filter Section */}
-            <CatalogueSearch onSearch={handleSearch} onClear={handleClearSearch} />
+            <CatalogueSearch
+                onSearch={handleSearch}
+                onClear={handleClearSearch}
+            />
 
             {/* All Tours Section */}
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
-                    {Object.keys(searchFilters).length > 0 && filteredTours.length > 0 
+                    {Object.keys(searchFilters).length > 0 &&
+                    filteredTours.length > 0
                         ? `Search Results (${filteredTours.length} tours found)`
-                        : "All Available Tours"
-                    }
+                        : "All Available Tours"}
                 </Typography>
                 <Grid container spacing={3} justifyContent="center">
-                    {(filteredTours.length > 0 ? filteredTours : tours).map((tour) => (
-                        <Grid item xs={12} sm={6} md={4} key={tour.tourId}>
-                            <Card 
-                sx={{
-                                    height: "100%", 
-                    display: "flex",
-                    flexDirection: "column",
-                                    cursor: "pointer",
-                                    transition: "transform 0.2s, box-shadow 0.2s",
-                                    "&:hover": {
-                                        transform: "translateY(-4px)",
-                                        boxShadow: 4,
+                    {(filteredTours.length > 0 ? filteredTours : tours).map(
+                        (tour) => (
+                            <Grid item xs={12} sm={6} md={4} key={tour.tourId}>
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        cursor: "pointer",
+                                        transition:
+                                            "transform 0.2s, box-shadow 0.2s",
+                                        "&:hover": {
+                                            transform: "translateY(-4px)",
+                                            boxShadow: 4,
+                                        },
+                                    }}
+                                    onClick={() =>
+                                        navigate(`/tour/${tour.tourId}`)
                                     }
-                                }}
-                                onClick={() => navigate(`/tour/${tour.tourId}`)}
-                            >
-                                <CardMedia
-                                    component="img"
-                                    height="200"
-                                    image={tour.primaryImageUrl || tour.image || "/src/assets/logo.png"}
-                                    alt={tour.title}
-                                    sx={{ objectFit: "cover" }}
-                                />
-                                <CardContent sx={{ flexGrow: 1 }}>
-                                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                        {tour.title}
-                                    </Typography>
-                                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                        <LocationIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
-                                        <Typography variant="body2" color="text.secondary">
-                                            {tour.destination}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        height="200"
+                                        image={
+                                            tour.primaryImageUrl ||
+                                            tour.image ||
+                                            "/src/assets/logo.png"
+                                        }
+                                        alt={tour.title}
+                                        sx={{ objectFit: "cover" }}
+                                    />
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        <Typography
+                                            variant="h6"
+                                            fontWeight="bold"
+                                            gutterBottom
+                                        >
+                                            {tour.title}
                                         </Typography>
-                                    </Box>
-                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                        {tour.description}
-                                    </Typography>
-                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            <PriceIcon sx={{ fontSize: 16, mr: 0.5, color: "primary.main" }} />
-                                            <Typography variant="h6" color="primary" fontWeight="bold">
-                                                ${tour.price}
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                mb: 1,
+                                            }}
+                                        >
+                                            <LocationIcon
+                                                sx={{
+                                                    fontSize: 16,
+                                                    mr: 0.5,
+                                                    color: "text.secondary",
+                                                }}
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                            >
+                                                {tour.destination}
                                             </Typography>
                                         </Box>
-                                        <Rating value={4.5} readOnly size="small" />
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{ mb: 2 }}
+                                        >
+                                            {tour.description}
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <PriceIcon
+                                                    sx={{
+                                                        fontSize: 16,
+                                                        mr: 0.5,
+                                                        color: "primary.main",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    variant="h6"
+                                                    color="primary"
+                                                    fontWeight="bold"
+                                                >
+                                                    ${tour.price}
+                                                </Typography>
+                                            </Box>
+                                            <Rating
+                                                value={4.5}
+                                                readOnly
+                                                size="small"
+                                            />
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )
+                    )}
                 </Grid>
             </Box>
 
             {/* Create Catalogue Dialog */}
-            <Dialog open={createCatalogueOpen} onClose={() => setCreateCatalogueOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog
+                open={createCatalogueOpen}
+                onClose={() => setCreateCatalogueOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
                 <DialogTitle>Create New Catalogue</DialogTitle>
                 <DialogContent>
                     <TextField
                         fullWidth
                         label="Catalogue Title"
                         value={catalogueForm.title}
-                        onChange={(e) => setCatalogueForm({ ...catalogueForm, title: e.target.value })}
+                        onChange={(e) =>
+                            setCatalogueForm({
+                                ...catalogueForm,
+                                title: e.target.value,
+                            })
+                        }
                         margin="normal"
                         required
                     />
@@ -527,7 +735,12 @@ export function Catalogue() {
                         fullWidth
                         label="Description"
                         value={catalogueForm.description}
-                        onChange={(e) => setCatalogueForm({ ...catalogueForm, description: e.target.value })}
+                        onChange={(e) =>
+                            setCatalogueForm({
+                                ...catalogueForm,
+                                description: e.target.value,
+                            })
+                        }
                         margin="normal"
                         multiline
                         rows={3}
@@ -536,14 +749,24 @@ export function Catalogue() {
                         fullWidth
                         label="Cover Image URL"
                         value={catalogueForm.coverImage}
-                        onChange={(e) => setCatalogueForm({ ...catalogueForm, coverImage: e.target.value })}
+                        onChange={(e) =>
+                            setCatalogueForm({
+                                ...catalogueForm,
+                                coverImage: e.target.value,
+                            })
+                        }
                         margin="normal"
                     />
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Catalogue Type</InputLabel>
                         <Select
                             value={catalogueForm.type}
-                            onChange={(e) => setCatalogueForm({ ...catalogueForm, type: e.target.value })}
+                            onChange={(e) =>
+                                setCatalogueForm({
+                                    ...catalogueForm,
+                                    type: e.target.value,
+                                })
+                            }
                             label="Catalogue Type"
                         >
                             <MenuItem value={0}>Official Catalogue</MenuItem>
@@ -552,20 +775,34 @@ export function Catalogue() {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setCreateCatalogueOpen(false)}>Cancel</Button>
-                    <Button onClick={handleCreateCatalogue} variant="contained">Create</Button>
+                    <Button onClick={() => setCreateCatalogueOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleCreateCatalogue} variant="contained">
+                        Create
+                    </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Edit Catalogue Dialog */}
-            <Dialog open={editCatalogueOpen} onClose={() => setEditCatalogueOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog
+                open={editCatalogueOpen}
+                onClose={() => setEditCatalogueOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
                 <DialogTitle>Edit Catalogue</DialogTitle>
                 <DialogContent>
                     <TextField
                         fullWidth
                         label="Catalogue Title"
                         value={catalogueForm.title}
-                        onChange={(e) => setCatalogueForm({ ...catalogueForm, title: e.target.value })}
+                        onChange={(e) =>
+                            setCatalogueForm({
+                                ...catalogueForm,
+                                title: e.target.value,
+                            })
+                        }
                         margin="normal"
                         required
                     />
@@ -573,7 +810,12 @@ export function Catalogue() {
                         fullWidth
                         label="Description"
                         value={catalogueForm.description}
-                        onChange={(e) => setCatalogueForm({ ...catalogueForm, description: e.target.value })}
+                        onChange={(e) =>
+                            setCatalogueForm({
+                                ...catalogueForm,
+                                description: e.target.value,
+                            })
+                        }
                         margin="normal"
                         multiline
                         rows={3}
@@ -582,14 +824,24 @@ export function Catalogue() {
                         fullWidth
                         label="Cover Image URL"
                         value={catalogueForm.coverImage}
-                        onChange={(e) => setCatalogueForm({ ...catalogueForm, coverImage: e.target.value })}
+                        onChange={(e) =>
+                            setCatalogueForm({
+                                ...catalogueForm,
+                                coverImage: e.target.value,
+                            })
+                        }
                         margin="normal"
                     />
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Catalogue Type</InputLabel>
                         <Select
                             value={catalogueForm.type}
-                            onChange={(e) => setCatalogueForm({ ...catalogueForm, type: e.target.value })}
+                            onChange={(e) =>
+                                setCatalogueForm({
+                                    ...catalogueForm,
+                                    type: e.target.value,
+                                })
+                            }
                             label="Catalogue Type"
                         >
                             <MenuItem value={0}>Official Catalogue</MenuItem>
@@ -598,73 +850,135 @@ export function Catalogue() {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setEditCatalogueOpen(false)}>Cancel</Button>
-                    <Button onClick={handleUpdateCatalogue} variant="contained">Update</Button>
+                    <Button onClick={() => setEditCatalogueOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleUpdateCatalogue} variant="contained">
+                        Update
+                    </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Selected Catalogue Tours Dialog */}
-            <Dialog 
-                open={!!selectedCatalogue} 
-                onClose={() => setSelectedCatalogue(null)} 
-                maxWidth="lg" 
+            <Dialog
+                open={!!selectedCatalogue}
+                onClose={() => setSelectedCatalogue(null)}
+                maxWidth="lg"
                 fullWidth
             >
                 <DialogTitle>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="h6">{selectedCatalogue?.title} - Tours</Typography>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Typography variant="h6">
+                            {selectedCatalogue?.title} - Tours
+                        </Typography>
                         <Chip
-                            label={selectedCatalogue ? getCatalogueTypeLabel(selectedCatalogue.type) : ""}
-                            color={selectedCatalogue ? getCatalogueTypeColor(selectedCatalogue.type) : "default"}
+                            label={
+                                selectedCatalogue
+                                    ? getCatalogueTypeLabel(
+                                          selectedCatalogue.type
+                                      )
+                                    : ""
+                            }
+                            color={
+                                selectedCatalogue
+                                    ? getCatalogueTypeColor(
+                                          selectedCatalogue.type
+                                      )
+                                    : "default"
+                            }
                         />
                     </Box>
                 </DialogTitle>
                 <DialogContent>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 3 }}
+                    >
                         {selectedCatalogue?.description}
                     </Typography>
                     <Grid container spacing={2}>
-                        {selectedCatalogue && getToursByCatalogue(selectedCatalogue.catalogueId).map((tour) => (
-                            <Grid item xs={12} sm={6} key={tour.tourId}>
-                                <Card 
-                                    sx={{ 
-                                        cursor: "pointer",
-                                        transition: "transform 0.2s",
-                                        "&:hover": { transform: "scale(1.02)" }
-                                    }}
-                                    onClick={() => {
-                                        navigate(`/tour/${tour.tourId}`);
-                                        setSelectedCatalogue(null);
-                                    }}
-                                >
-                                    <CardMedia
-                                        component="img"
-                                        height="150"
-                                        image={tour.primaryImageUrl || tour.image || "/src/assets/logo.png"}
-                                        alt={tour.title}
-                                        sx={{ objectFit: "cover" }}
-                                    />
-                                    <CardContent>
-                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                            {tour.title}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                            {tour.destination}
-                                        </Typography>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <Typography variant="h6" color="primary" fontWeight="bold">
-                                                ${tour.price}
+                        {selectedCatalogue &&
+                            getToursByCatalogue(
+                                selectedCatalogue.catalogueId
+                            ).map((tour) => (
+                                <Grid item xs={12} sm={6} key={tour.tourId}>
+                                    <Card
+                                        sx={{
+                                            cursor: "pointer",
+                                            transition: "transform 0.2s",
+                                            "&:hover": {
+                                                transform: "scale(1.02)",
+                                            },
+                                        }}
+                                        onClick={() => {
+                                            navigate(`/tour/${tour.tourId}`);
+                                            setSelectedCatalogue(null);
+                                        }}
+                                    >
+                                        <CardMedia
+                                            component="img"
+                                            height="150"
+                                            image={
+                                                tour.primaryImageUrl ||
+                                                tour.image ||
+                                                "/src/assets/logo.png"
+                                            }
+                                            alt={tour.title}
+                                            sx={{ objectFit: "cover" }}
+                                        />
+                                        <CardContent>
+                                            <Typography
+                                                variant="h6"
+                                                fontWeight="bold"
+                                                gutterBottom
+                                            >
+                                                {tour.title}
                                             </Typography>
-                                            <Rating value={4.5} readOnly size="small" />
-                                        </Box>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        ))}
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                                sx={{ mb: 1 }}
+                                            >
+                                                {tour.destination}
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    justifyContent:
+                                                        "space-between",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <Typography
+                                                    variant="h6"
+                                                    color="primary"
+                                                    fontWeight="bold"
+                                                >
+                                                    ${tour.price}
+                                                </Typography>
+                                                <Rating
+                                                    value={4.5}
+                                                    readOnly
+                                                    size="small"
+                                                />
+                                            </Box>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setSelectedCatalogue(null)}>Close</Button>
+                    <Button onClick={() => setSelectedCatalogue(null)}>
+                        Close
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>
