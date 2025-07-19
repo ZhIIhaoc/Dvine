@@ -94,6 +94,7 @@ export default function UserListModal({ open, onClose }) {
             return await response.json();
         } catch (err) {
             console.error("Error updating user permission:", err);
+            showSnackbar("Failed to update user permission. Please try again later.", "error");
         }
     }
     // Fetch users when modal opens
