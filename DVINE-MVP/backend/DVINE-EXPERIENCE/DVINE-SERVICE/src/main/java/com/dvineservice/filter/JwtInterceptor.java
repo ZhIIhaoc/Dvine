@@ -34,6 +34,8 @@ public class JwtInterceptor implements HandlerInterceptor {
     private static final List<String> ANY_METHOD_WHITELIST = List.of(
             "/auth/login",
             "/auth/register",
+            "/auth/register-with-verification",
+            "/auth/send-verification-code",
             "/auth/refresh",
             // OpenAPI/Swagger endpoints
             "/swagger-ui.html",
