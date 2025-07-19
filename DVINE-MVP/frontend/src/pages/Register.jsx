@@ -216,7 +216,7 @@ export const Register = () => {
                         {page === 2 && (
                             <SignUpStepThree
                                 verificationCode={verificationCode}
-                                setVerificationCode={setVerificationCode}d
+                                setVerificationCode={setVerificationCode}
                                 registerButton={registerButton}
                                 resendCode={resendCode} // ← pass this in
                             />

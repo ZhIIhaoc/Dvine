@@ -3,7 +3,7 @@ const SubmitEmailRegistration = async (email) => {
     const response = await fetch(`${localHost}/auth/send-verification-code?email=${email}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
             },
     });
     return response;
