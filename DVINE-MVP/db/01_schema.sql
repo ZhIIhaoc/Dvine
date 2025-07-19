@@ -121,3 +121,46 @@ VALUES
     ('Are tours suitable for children?', 'Most of our tours are family-friendly. Please check the specific tour details for age recommendations and any restrictions.'),
     ('What should I bring on a tour?', 'We recommend comfortable walking shoes, weather-appropriate clothing, a camera, and any personal items you may need. Specific requirements will be listed in your tour confirmation.'),
     ('How do I become a tour partner?', 'To become a tour partner, please contact our partnership team through the contact form. We will review your application and get back to you within 5 business days.');
+
+-- Booking and Payment tables for tour payment system
+CREATE TABLE IF NOT EXISTS bookings (
+    bookingId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    userId BIGINT NULL COMMENT "User who made the booking (NULL for guest bookings)",
+    tourId BIGINT NOT NULL COMMENT "Tour being booked",
+    bookingReference VARCHAR(20) UNIQUE NOT NULL COMMENT "Human-readable booking reference (e.g., DVINE-2024-001234) for customer service",
+    quantity INT NOT NULL DEFAULT 1 COMMENT "Number of people/participants in this booking",
+    unitPrice DECIMAL(10,2) NOT NULL COMMENT "Price per person at time of booking (regular or premium based on user permission)",
+    totalAmount DECIMAL(10,2) NOT NULL COMMENT "Total amount to be paid (quantity * unitPrice)",
+    currency VARCHAR(3) DEFAULT 'AUD' COMMENT "Currency code (ISO 4217) - future-proof for international expansion",
+    travelDate DATE NOT NULL COMMENT "Date when the tour takes place - different from booking date",
+    status ENUM('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED') DEFAULT 'PENDING' COMMENT "PENDING=awaiting payment, CONFIRMED=paid, CANCELLED=user/system cancelled, COMPLETED=tour finished",
+    customerNotes TEXT COMMENT "Special requests from customer (dietary requirements, accessibility needs, etc.)",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "When booking was created",
+    updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Last modification time",
+    FOREIGN KEY (userId) REFERENCES users(userId),
+    FOREIGN KEY (tourId) REFERENCES tours(tourId)
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+    paymentId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    bookingId BIGINT NOT NULL COMMENT "Links to the booking this payment is for",
+    stripeSessionId VARCHAR(255) UNIQUE COMMENT "Stripe Checkout Session ID for tracking payment flow",
+    stripePaymentIntentId VARCHAR(255) COMMENT "Stripe Payment Intent ID after successful payment - used for refunds",
+    amount DECIMAL(10,2) NOT NULL COMMENT "Amount in dollars (e.g., 99.50 for $99.50)",
+    currency VARCHAR(3) DEFAULT 'AUD' COMMENT "Currency code matching booking currency",
+    status ENUM('PENDING', 'PROCESSING', 'SUCCEEDED', 'FAILED', 'CANCELLED', 'REFUNDED') DEFAULT 'PENDING' COMMENT "PENDING=session created, PROCESSING=user paying, SUCCEEDED=payment complete, FAILED=payment declined, CANCELLED=session expired, REFUNDED=money returned",
+    paymentMethod VARCHAR(50) COMMENT "Payment method used (card, bank_transfer, apple_pay, etc.) - populated by Stripe",
+    stripeCustomerId VARCHAR(255) COMMENT "Stripe Customer ID for future payments and customer management",
+    failureReason TEXT COMMENT "Detailed error message if payment failed (card declined, insufficient funds, etc.)",
+    refundAmount DECIMAL(10,2) DEFAULT 0.00 COMMENT "Amount refunded if partial or full refund processed",
+    paidAt DATETIME NULL COMMENT "Timestamp when payment was successfully completed",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "When payment record was created",
+    updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Last status update time",
+    FOREIGN KEY (bookingId) REFERENCES bookings(bookingId)
+);
+
+-- Performance indexes for payment system
+CREATE INDEX idx_bookings_user_date ON bookings (userId, createTime DESC);
+CREATE INDEX idx_bookings_tour_status ON bookings (tourId, status);
+CREATE INDEX idx_payments_status ON payments (status, createTime);
+CREATE INDEX idx_payments_stripe_session ON payments (stripeSessionId);

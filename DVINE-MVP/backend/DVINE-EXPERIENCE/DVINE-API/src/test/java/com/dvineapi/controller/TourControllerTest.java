@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -88,7 +89,7 @@ public class TourControllerTest {
                 "Sydney Coastal Walk",
                 "Sydney, Australia",
                 "See the cliffs and beaches.",
-                129.99,
+                new BigDecimal("129.99"),
                 "https://your-cdn.com/tour101.jpg",
                 5L  // Owner user ID
         );
@@ -97,7 +98,7 @@ public class TourControllerTest {
                 "Outback Adventure",
                 "Northern Territory, Australia",
                 "Explore the heart of Australia.",
-                499.99,
+                new BigDecimal("499.99"),
                 "https://your-cdn.com/tour102.jpg",
                 5L  // Owner user ID
         );
@@ -108,7 +109,7 @@ public class TourControllerTest {
                           String title,
                           String destination,
                           String description,
-                          double price,
+                          BigDecimal price,
                           String primaryImageUrl,
                           Long createdBy) {
         Tour t = new Tour();
@@ -117,7 +118,7 @@ public class TourControllerTest {
         t.setDestination(destination);
         t.setDescription(description);
         t.setRegularPrice(price);
-        t.setPremiumPrice(price * 0.9); // 10% discount for premium
+        t.setPremiumPrice(price.multiply(new BigDecimal("0.9")).setScale(2, java.math.RoundingMode.HALF_UP)); // 10% discount for premium
         t.setPrimaryImageUrl(primaryImageUrl);
         t.setCreatedBy(createdBy);
         // After insertion, t.getTourId() will be auto-filled
@@ -220,8 +221,8 @@ public class TourControllerTest {
         req.setTitle("Great Barrier Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Explore the underwater wonders of the reef.");
-        req.setRegularPrice(299.99);
-        req.setPremiumPrice(269.99);
+        req.setRegularPrice(new BigDecimal("299.99"));
+        req.setPremiumPrice(new BigDecimal("269.99"));
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         // Remember to assign values to images field too
         req.setImages(List.of(
@@ -246,8 +247,8 @@ public class TourControllerTest {
         PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
         assertThat(latestPending.getTitle()).isEqualTo("Great Barrier Reef Adventure");
         assertThat(latestPending.getDestination()).isEqualTo("Cairns, Australia");
-        assertThat(latestPending.getRegularPrice()).isEqualTo(299.99);
-        assertThat(latestPending.getPremiumPrice()).isEqualTo(269.99);
+        assertThat(latestPending.getRegularPrice()).isEqualTo(new BigDecimal("299.99"));
+        assertThat(latestPending.getPremiumPrice()).isEqualTo(new BigDecimal("269.99"));
         assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.CREATE);
         assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
     }
@@ -262,8 +263,8 @@ public class TourControllerTest {
         req.setTitle("Great Barrier Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Explore the underwater wonders of the reef.");
-        req.setRegularPrice(299.99);
-        req.setPremiumPrice(269.99);
+        req.setRegularPrice(new BigDecimal("299.99"));
+        req.setPremiumPrice(new BigDecimal("269.99"));
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of(
                 "https://your-cdn.com/tour101_1.jpg",
@@ -287,8 +288,8 @@ public class TourControllerTest {
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
-        req.setRegularPrice(299.99);
-        req.setPremiumPrice(269.99);
+        req.setRegularPrice(new BigDecimal("299.99"));
+        req.setPremiumPrice(new BigDecimal("269.99"));
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
 
@@ -314,8 +315,8 @@ public class TourControllerTest {
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
-        req.setRegularPrice(299.99);
-        req.setPremiumPrice(269.99);
+        req.setRegularPrice(new BigDecimal("299.99"));
+        req.setPremiumPrice(new BigDecimal("269.99"));
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
 
@@ -339,8 +340,8 @@ public class TourControllerTest {
         req.setTitle("Reef Adventure");
         req.setDestination("Cairns, Australia");
         req.setDescription("Underwater wonders.");
-        req.setRegularPrice(299.99);
-        req.setPremiumPrice(269.99);
+        req.setRegularPrice(new BigDecimal("299.99"));
+        req.setPremiumPrice(new BigDecimal("269.99"));
         req.setPrimaryImageUrl("https://your-cdn.com/reef.jpg");
         req.setImages(List.of("https://your-cdn.com/tour101_1.jpg"));
 
@@ -431,7 +432,7 @@ public class TourControllerTest {
                 "Partner's Tour to Delete",
                 "Partner Destination",
                 "Tour created by partner for deletion test",
-                299.99,
+                new BigDecimal("299.99"),
                 "https://cdn/partner-tour-delete.jpg",
                 3L  // Partner user ID
         );
@@ -466,8 +467,8 @@ public class TourControllerTest {
         req.setTitle("Updated Title");
         req.setDestination("Updated Destination");
         req.setDescription("Updated Description");
-        req.setRegularPrice(199.99);
-        req.setPremiumPrice(179.99);
+        req.setRegularPrice(new BigDecimal("199.99"));
+        req.setPremiumPrice(new BigDecimal("179.99"));
         req.setPrimaryImageUrl("https://your-cdn.com/updated.jpg");
         req.setImages(List.of(
                 "https://your-cdn.com/updated1.jpg",
@@ -488,8 +489,8 @@ public class TourControllerTest {
         assertThat(updatedTour.getTitle()).isEqualTo("Updated Title");
         assertThat(updatedTour.getDestination()).isEqualTo("Updated Destination");
         assertThat(updatedTour.getDescription()).isEqualTo("Updated Description");
-        assertThat(updatedTour.getRegularPrice()).isEqualTo(199.99);
-        assertThat(updatedTour.getPremiumPrice()).isEqualTo(179.99);
+        assertThat(updatedTour.getRegularPrice()).isEqualTo(new BigDecimal("199.99"));
+        assertThat(updatedTour.getPremiumPrice()).isEqualTo(new BigDecimal("179.99"));
         
         // Verify this update didn't create pending_tours record (Owner/Admin direct update)
         List<PendingTour> pendingTours = pendingTourMapper.findByStatus(0); // 0 = PENDING status
@@ -546,7 +547,7 @@ public class TourControllerTest {
                 "Original Tour",
                 "Original Destination",
                 "Original Description",
-                199.99,
+                new BigDecimal("199.99"),
                 "https://cdn/original-tour.jpg",
                 3L  // Partner user ID
         );
@@ -560,8 +561,8 @@ public class TourControllerTest {
         req.setTitle("Updated by Partner");
         req.setDestination("Updated Destination");
 
-        req.setRegularPrice(399.99);
-        req.setPremiumPrice(359.99);
+        req.setRegularPrice(new BigDecimal("399.99"));
+        req.setPremiumPrice(new BigDecimal("359.99"));
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
@@ -579,8 +580,8 @@ public class TourControllerTest {
         PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
         assertThat(latestPending.getTitle()).isEqualTo("Updated by Partner");
         assertThat(latestPending.getDestination()).isEqualTo("Updated Destination");
-        assertThat(latestPending.getRegularPrice()).isEqualTo(399.99);
-        assertThat(latestPending.getPremiumPrice()).isEqualTo(359.99);
+        assertThat(latestPending.getRegularPrice()).isEqualTo(new BigDecimal("399.99"));
+        assertThat(latestPending.getPremiumPrice()).isEqualTo(new BigDecimal("359.99"));
         assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.UPDATE);
         assertThat(latestPending.getOriginalTourId()).isEqualTo(testTour.getTourId()); // Points to the tour being updated
         assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
@@ -595,8 +596,8 @@ public class TourControllerTest {
         req.setTitle("This tour doesn't exist");
         req.setDestination("Nowhere");
         req.setDescription("This should fail");
-        req.setRegularPrice(999.99);
-        req.setPremiumPrice(899.99);
+        req.setRegularPrice(new BigDecimal("999.99"));
+        req.setPremiumPrice(new BigDecimal("899.99"));
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", token)
@@ -645,7 +646,7 @@ public class TourControllerTest {
                 "Partner's Tour in Owner Catalogue",
                 "Partner Destination",
                 "Tour created by partner and already approved",
-                299.99,
+                new BigDecimal("299.99"),
                 "https://cdn/partner-tour.jpg",
                 3L  // Partner user ID
         );
@@ -657,8 +658,8 @@ public class TourControllerTest {
         updateReq.setTitle("Updated Partner Tour");
         updateReq.setDestination("Updated Destination");
         updateReq.setDescription("Updated by partner for approval");
-        updateReq.setRegularPrice(399.99);
-        updateReq.setPremiumPrice(359.99);
+        updateReq.setRegularPrice(new BigDecimal("399.99"));
+        updateReq.setPremiumPrice(new BigDecimal("359.99"));
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", partnerToken)
@@ -676,8 +677,8 @@ public class TourControllerTest {
         PendingTour latestPending = pendingTours.get(pendingTours.size() - 1);
         assertThat(latestPending.getTitle()).isEqualTo("Updated Partner Tour");
         assertThat(latestPending.getDestination()).isEqualTo("Updated Destination");
-        assertThat(latestPending.getRegularPrice()).isEqualTo(399.99);
-        assertThat(latestPending.getPremiumPrice()).isEqualTo(359.99);
+        assertThat(latestPending.getRegularPrice()).isEqualTo(new BigDecimal("399.99"));
+        assertThat(latestPending.getPremiumPrice()).isEqualTo(new BigDecimal("359.99"));
         assertThat(latestPending.getOperationType()).isEqualTo(PendingTour.OperationType.UPDATE);
         assertThat(latestPending.getOriginalTourId()).isEqualTo(partnerTour.getTourId());
         assertThat(latestPending.getStatus()).isEqualTo(0); // PENDING status
@@ -703,7 +704,7 @@ public class TourControllerTest {
                 "Owner's Tour",
                 "Owner Destination",
                 "Tour created by owner",
-                199.99,
+                new BigDecimal("199.99"),
                 "https://cdn/owner-tour.jpg",
                 5L  // Owner user ID
         );
@@ -717,8 +718,8 @@ public class TourControllerTest {
         updateReq.setTitle("Partner trying to update Owner's tour");
         updateReq.setDestination("Unauthorized update");
         updateReq.setDescription("This should be forbidden");
-        updateReq.setRegularPrice(999.99);
-        updateReq.setPremiumPrice(899.99);
+        updateReq.setRegularPrice(new BigDecimal("999.99"));
+        updateReq.setPremiumPrice(new BigDecimal("899.99"));
 
         mockMvc.perform(put("/tours")
                         .header("Authorization", partnerToken)

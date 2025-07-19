@@ -35,6 +35,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             "/auth/login",
             "/auth/register",
             "/auth/refresh",
+            "/bookings/create-session",
             // OpenAPI/Swagger endpoints
             "/swagger-ui.html",
             "/swagger-ui/**",

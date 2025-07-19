@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -84,8 +85,8 @@ public class ApprovalControllerTest {
         tour.setTitle("Test Tour for Approval");
         tour.setDestination("Test Destination");
         tour.setDescription("Test tour for approval testing");
-        tour.setRegularPrice(199.99);
-        tour.setPremiumPrice(179.99);
+        tour.setRegularPrice(new BigDecimal("199.99"));
+        tour.setPremiumPrice(new BigDecimal("179.99"));
         tour.setPrimaryImageUrl("https://cdn/test-tour.jpg");
         tour.setCreatedBy(3L); // Partner user ID
         tourMapper.createTour(tour);
@@ -98,8 +99,8 @@ public class ApprovalControllerTest {
         pendingTour.setTitle("Pending Tour for Testing");
         pendingTour.setDestination("Pending Destination");
         pendingTour.setDescription("Pending tour for testing");
-        pendingTour.setRegularPrice(299.99);
-        pendingTour.setPremiumPrice(269.99);
+        pendingTour.setRegularPrice(new BigDecimal("299.99"));
+        pendingTour.setPremiumPrice(new BigDecimal("269.99"));
         pendingTour.setPrimaryImageUrl("https://cdn/pending-tour.jpg");
         pendingTour.setOperationType(PendingTour.OperationType.UPDATE);
         pendingTour.setSubmittedBy(3L); // Partner user ID

@@ -1,6 +1,7 @@
 package com.dvinedao.domain;
 
 public final class PermissionLevel {
+    public static final int GUEST    = -1; // guest users (not authenticated)
     public static final int REGULAR  = 0;
     public static final int PREMIUM  = 1;
     public static final int PARTNER  = 2;  // lowest admin
@@ -11,9 +12,12 @@ public final class PermissionLevel {
 
     /** quick helper to validate */
     public static boolean isValid(int code) {
-        return code >= REGULAR && code <= OWNER;
+        return code >= GUEST && code <= OWNER;
     }
 
+    public static boolean isGuest(Integer code) {
+        return code == GUEST;
+    }
     public static boolean isPartner(Integer code) {
         return code == PARTNER ;
     }
