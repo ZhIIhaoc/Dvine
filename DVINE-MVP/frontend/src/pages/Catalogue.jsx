@@ -38,7 +38,7 @@ import {
     Person as PersonIcon,
     Category as CategoryIcon,
 } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import {
@@ -190,6 +190,10 @@ export function Catalogue() {
         fetchToursData();
         fetchFeaturedToursData();
     }, []);
+    useEffect(() => {
+        console.log("Catalogues:", catalogues);
+        console.log("Tours:", tours);
+    }, [catalogues, tours]);
 
     // Create new catalogue
     const handleCreateCatalogue = async () => {
