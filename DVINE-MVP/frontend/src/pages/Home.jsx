@@ -6,11 +6,13 @@ import {
     Grid,
     Typography,
     Link,
+    Button,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import homepageImage from "/src/assets/homepage_pic.png";
+import { ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
 
 const tours = [
     {
@@ -71,6 +73,7 @@ export const Home = () => {
                         },
                         lineHeight: 1.2,
                         textAlign: "left",
+                        mt: -12,
                         mx: "auto",
                         position: "relative",
                     }}
@@ -115,6 +118,37 @@ export const Home = () => {
                         DVINE
                     </Box>
                 </Typography>
+                <Box>
+                    <Button
+                        onClick={() => navigate("/catalogue")}
+                        variant="contained"
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                            position: "absolute",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            borderRadius: 10,
+                            fontWeight: "bold",
+                            px: 5,
+                            py: 1.5,
+                            mt: 16,
+                            color: "black",
+                            // backgroundColor: "background.default",
+                            backgroundImage: `linear-gradient(to right, #6F146F 0%, #6F146F 50%, white 50%, white 100%)`,
+                            backgroundSize: "200% 100%",
+                            backgroundPosition: "right center",
+                            transition: "all 0.1s linear",
+                            opacity: 0.85,
+                            fontSize: "1.1rem",
+                            "&:hover": {
+                                backgroundPosition: "left center",
+                                color: "white",
+                            },
+                        }}
+                    >
+                        EXPLORE NOW
+                    </Button>
+                </Box>
             </Box>
             <Box
                 sx={{
