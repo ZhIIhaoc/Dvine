@@ -14,6 +14,7 @@ import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import {CurrentUploadedTours} from "./pages/CurrentUploadedTours.jsx";
 import {AdminTourPage} from "./pages/AdminTourPage.jsx";
+import ForgottenPassword from "./pages/ForgottenPassword.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
 import "./components/RouterDomColour.css";
@@ -44,6 +45,7 @@ function App() {
                     <Route path="/uploaded-tours" element={<CurrentUploadedTours />} />
                     <Route path="/booking/success/:id" element={<TourPurchasesSuccess />} />
                     <Route path="/booking/cancel/:id" element={<TourPurchaseFail />} />
+                    <Route path="/password-reset" element={<ForgottenPassword />} />
                     <Route path="admin-tour-approval" element={<AdminTourPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
