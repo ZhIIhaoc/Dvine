@@ -104,7 +104,7 @@ export function Footer() {
                         underline="hover"
                         sx={{ color: "black" }}
                     >
-                        DVINE Experiences Catalog
+                        DVINE Experiences Catalogue
                     </Link>
                     <Link
                         component="button"
@@ -113,6 +113,14 @@ export function Footer() {
                         sx={{ color: "black" }}
                     >
                         DVINE Moments
+                    </Link>
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/faq")}
+                        underline="hover"
+                        sx={{ color: "black" }}
+                    >
+                        FAQ
                     </Link>
                 </Grid>
                 <Grid

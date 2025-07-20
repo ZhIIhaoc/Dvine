@@ -8,18 +8,16 @@ import { CreateTourModal } from "../components/CreateTourModal.jsx";
 import { CreateCatalogueModal } from "../components/CreateCatalogueModal.jsx";
 import ApprovalIcon from '@mui/icons-material/Approval';
 import { AuthContext } from "../components/AuthContext.jsx";
+import UserListModal from "../components/UserListModal.jsx";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
 export function AdminDashboard() {
-    const { token, userInfo} = useContext(AuthContext);
+    const { token, userInfo } = useContext(AuthContext);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
-    const [users, setUsers] = useState([]);
     const [userListModalOpen, setUserListModalOpen] = useState(false);
-    const [usersLoading, setUsersLoading] = useState(false);
-    const [usersError, setUsersError] = useState("");
     const [listOfCatalogues, setListOfCatalogues] = useState([]);
     const [catalogueModalOpen, setCatalogueModalOpen] = useState(false);
 
@@ -32,8 +30,8 @@ export function AdminDashboard() {
     const refreshCatalogues = () => {
         getCatalogueInfo();
     };
-    
-     useEffect(() => {
+
+    useEffect(() => {
         if (userInfo) {
             setIsPartner(userInfo.permission === 2);
             setIsAdmin(userInfo.permission === 3 || userInfo.permission === 4);
@@ -52,7 +50,7 @@ export function AdminDashboard() {
         }
     }, [isAdmin]);
 
-    
+
     const getCatalogueInfo = async () => {
         try {
             const response = await fetch('http://localhost:8080/catalogues/list', {
@@ -98,39 +96,7 @@ export function AdminDashboard() {
         }
     };
 
-    // Fetch users when modal opens
-    useEffect(() => {
-        if (userListModalOpen) {
-            const fetchUsers = async () => {
-                setUsersLoading(true);
-                setUsersError("");
-                try {
-                    const token = localStorage.getItem("accessToken");
-                    const response = await fetch("http://localhost:8080/users/list", {
-                        method: "GET",
-                        headers: {
-                            Authorization: token,
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                    const data = await response.json();
-                    if (data.code === 0) {
-                        setUsers(data.data);
-                    } else {
-                        setUsersError(data.msg || "Failed to fetch users.");
-                    }
-                } catch (error) {
-                    setUsersError("Network error. Please try again. " + error.message);
-                } finally {
-                    setUsersLoading(false);
-                }
-            };
-            fetchUsers();
-        }
-    }, [userListModalOpen]);
-
-    // Only show user list modal for Manager (3) and Owner (4)
-    const canViewUserList = userInfo && (userInfo.permission === 3 || userInfo.permission === 4);
+    
 
     return (
         <>
@@ -151,25 +117,38 @@ export function AdminDashboard() {
                                         textAlign: "center",
                                     }}
                                 >
-                                    <Button fullWidth onClick={() => navigate("/members")}>Upgrade Members</Button>
-                                </Box>
-
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
-                                    }}
-                                >
                                     <Button onClick={() => setModalOpen(true)}><Typography>Create Tour</Typography></Button>
                                 </Box>
-                                <CreateTourModal open={modalOpen} onClose={() => setModalOpen(false)} />
+                                <CreateTourModal
+                                    open={modalOpen}
+                                    onClose={() => setModalOpen(false)}
+                                    catalogueList={listOfCatalogues}
+                                />
 
                                 {/* Button to open Users List Modal (only for Manager/Owner) */}
-                                {canViewUserList && (
+                                {isAdmin && (
+                                    <>
+                                        <Box
+                                            sx={{
+                                                border: "2px black solid",
+                                                borderRadius: "16px",
+                                                backgroundColor: "white",
+                                                padding: 2,
+                                                mb: 3,
+                                                textAlign: "center",
+                                            }}
+                                        >
+                                            <Button fullWidth onClick={() => setUserListModalOpen(true)}>
+                                                View Registered Users
+                                            </Button>
+                                        </Box>
+                                        <UserListModal
+                                            open={userListModalOpen}
+                                            onClose={() => setUserListModalOpen(false)}
+                                        />
+                                    </>
+                                )}
+                                {isPartner && (
                                     <Box
                                         sx={{
                                             border: "2px black solid",
@@ -180,68 +159,6 @@ export function AdminDashboard() {
                                             textAlign: "center",
                                         }}
                                     >
-                                        <Button fullWidth onClick={() => setUserListModalOpen(true)}>
-                                            View Registered Users
-                                        </Button>
-                                    </Box>
-                                )}
-                                {canViewUserList && (
-                                    <Modal
-                                        open={userListModalOpen}
-                                        onClose={() => setUserListModalOpen(false)}
-                                    >
-                                        <Box sx={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '50%',
-                                            transform: 'translate(-50%, -50%)',
-                                            width: "50%",
-                                            bgcolor: 'background.paper',
-                                            boxShadow: 24,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            p: 4,
-                                            borderRadius: 2,
-                                        }}>
-                                            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                                                Registered Users
-                                            </Typography>
-                                            <Box sx={{ maxHeight: 300, overflow: 'auto', mb: 2 }}>
-                                                {usersLoading ? (
-                                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 120 }}>
-                                                        <span>Loading...</span>
-                                                    </Box>
-                                                ) : usersError ? (
-                                                    <Typography color="error" sx={{ textAlign: 'center' }}>{usersError}</Typography>
-                                                ) : (
-                                                    <List>
-                                                        {users.map((user) => (
-                                                            <ListItem key={user.userId}>
-                                                                <ListItemText primary={user.nickName || user.firstName || user.email || `User #${user.userId}`} secondary={user.email} />
-                                                            </ListItem>
-                                                        ))}
-                                                    </List>
-                                                )}
-                                            </Box>
-                                            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                                                <Button variant="outlined" onClick={() => setUserListModalOpen(false)}>
-                                                    Close
-                                                </Button>
-                                            </Box>
-                                        </Box>
-                                    </Modal>
-                                )}
-                                {isPartner && (
-                                    <Box
-                                        sx={{
-                                                border: "2px black solid",
-                                                borderRadius: "16px",
-                                                backgroundColor: "white",
-                                                padding: 2,
-                                                mb: 3,
-                                                textAlign: "center",
-                                            }}
-                                    >
                                         <Button
                                             variant="contained"
                                             onClick={() => navigate("/uploaded-tours")}
@@ -249,10 +166,7 @@ export function AdminDashboard() {
                                             <Typography>View Your Uploaded Tours</Typography>
                                         </Button>
                                     </Box>
-                                
-                                
-                                
-                                
+
                                 )}
                                 {!adminApprovalsLoading && (
                                     <Box
@@ -267,7 +181,7 @@ export function AdminDashboard() {
                                     >
                                         <Button
                                             variant="contained"
-                                            onClick={() => navigate("/admin-tour-approval")} 
+                                            onClick={() => navigate("/admin-tour-approval")}
                                         >
                                             <Badge
                                                 badgeContent={adminApprovalsList.length}
@@ -325,25 +239,25 @@ export function AdminDashboard() {
                                 </Box>
                                 {isAdmin && (
                                     <>
-                                    <Box
-                                        sx={{
-                                            border: "2px black solid",
-                                            borderRadius: "16px",
-                                            backgroundColor: "white",
-                                            padding: 2,
-                                            mb: 3,
-                                            textAlign: "center",
-                                        }}
-                                    >
-                                        <Button onClick={() => setCatalogueModalOpen(true)}><Typography>Create/Delete Catalogues</Typography></Button>
-                                    </Box>
-                                    <CreateCatalogueModal 
-                                        open={catalogueModalOpen} 
-                                        onClose={() => setCatalogueModalOpen(false)}
-                                        onCatalogueCreated={refreshCatalogues}
-                                        catalogueList={listOfCatalogues}
-                                        
-                                    />
+                                        <Box
+                                            sx={{
+                                                border: "2px black solid",
+                                                borderRadius: "16px",
+                                                backgroundColor: "white",
+                                                padding: 2,
+                                                mb: 3,
+                                                textAlign: "center",
+                                            }}
+                                        >
+                                            <Button onClick={() => setCatalogueModalOpen(true)}><Typography>Create/Delete Catalogues</Typography></Button>
+                                        </Box>
+                                        <CreateCatalogueModal
+                                            open={catalogueModalOpen}
+                                            onClose={() => setCatalogueModalOpen(false)}
+                                            onCatalogueCreated={refreshCatalogues}
+                                            catalogueList={listOfCatalogues}
+
+                                        />
                                     </>
                                 )}
                             </Grid>

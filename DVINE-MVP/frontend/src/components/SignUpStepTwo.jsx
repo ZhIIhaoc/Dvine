@@ -98,11 +98,21 @@ const SignUpStepTwo = (props) => {
                         width: "70%",
                         height: "56px",
                     }}
-                    onClick={props.registerButton}
+                    onClick={props.confirmEmail}
                 >
                     Sign Up
                 </Button>
             </Box>
+            <Typography variant="body2" align="center">
+                <Link
+                    underline="hover"
+                    color="secondary"
+                    sx={{ cursor: "pointer", ml: 2 }}
+                    onClick={() => navigate("/password-reset")}
+                >
+                    Forgot Password?
+                </Link>
+            </Typography>
 
             <Typography variant="body2" align="center">
                 Already have an account?{" "}
@@ -125,5 +135,5 @@ SignUpStepTwo.propTypes = {
     changeState: PropTypes.func.isRequired,
     userInfo: PropTypes.object.isRequired,
     pageBack: PropTypes.func.isRequired,
-    registerButton: PropTypes.func.isRequired,
+    confirmEmail: PropTypes.func.isRequired,
 };

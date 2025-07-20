@@ -597,6 +597,106 @@ paths:
                 msg: success
       security:
         - bearerAuth: []
+  /auth/send-verification-code:
+    post:
+      tags:
+        - Authentication
+      summary: Send email verification code
+      description: Send a verification code to the specified email address for user registration
+      operationId: sendVerificationCode
+      requestBody:
+        description: Email address to send verification code to
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address to send verification code to
+              required:
+                - email
+            example:
+              email: newUser@example.com
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when email parameter is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Failed to send verification code
+        "200":
+          description: Verification code sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: Verification code sent successfully
+  /auth/register-with-verification:
+    post:
+      tags:
+        - Authentication
+      summary: Register user with email verification
+      description: Register a new user account using email verification code
+      operationId: registerWithVerification
+      requestBody:
+        description: User registration data with verification code
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterWithVerificationRequest"
+            example:
+              user:
+                email: newUser@example.com
+                phone: "+61412345678"
+                password: SecurePassword12!
+                postcode: "2017"
+                firstName: new
+                lastName: user
+              verificationCode: "123456"
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when verification code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Verification Code:
+                  description: Verification code validation failure
+                  value:
+                    code: 1
+                    msg: Invalid or expired verification code
+                Missing Required Fields:
+                  description: Required fields validation failure
+                  value:
+                    code: 1
+                    msg: Registration fields cannot be empty or contain only spaces
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: The email already exists
+        "201":
+          description: User registered successfully with verification
+          content:
+            application/json:
+              example:
+                code: 0
+                msg: success
+                data:
+                  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   /auth/register:
     post:
       tags:
@@ -783,6 +883,105 @@ paths:
                 data:
                   accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                   refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  /auth/send-password-reset-code:
+    post:
+      tags:
+        - Authentication
+      summary: Send password reset verification code
+      description: Send a verification code to the user's email for password reset.
+      operationId: sendPasswordResetCode
+      requestBody:
+        description: User's email address
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+              required:
+                - email
+            example:
+              email: user@example.com
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when user with email doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User with this email does not exist
+        "200":
+          description: Password reset code sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: Password reset code sent successfully
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset user password
+      description: Reset user password using email verification code. The verification code must be valid and not expired.
+      operationId: resetPassword
+      requestBody:
+        description: Password reset request with email, verification code, and new password
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+            example:
+              email: user@example.com
+              verificationCode: "123456"
+              newPassword: NewSecurePassword12!
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when validation fails
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Input:
+                  description: Missing required fields
+                  value:
+                    code: 1
+                    msg: Email, verification code, and new password are required
+                User Not Found:
+                  description: User with email doesn't exist
+                  value:
+                    code: 1
+                    msg: User with this email does not exist
+                Invalid Code:
+                  description: Verification code is invalid or expired
+                  value:
+                    code: 1
+                    msg: Invalid or expired verification code
+                Same Password:
+                  description: New password is the same as current password
+                  value:
+                    code: 1
+                    msg: New password cannot be the same as current password
+        "200":
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: Password reset successfully
   /approvals/tours/{pendingTourId}/reject:
     post:
       tags:
@@ -3352,6 +3551,40 @@ components:
         - firstName
         - lastName
         - password
+    RegisterWithVerificationRequest:
+      type: object
+      description: User registration request with email verification code
+      properties:
+        user:
+          $ref: "#/components/schemas/UserRegistrationRequest"
+        verificationCode:
+          type: string
+          description: Email verification code
+          example: "123456"
+      required:
+        - user
+        - verificationCode
+    ResetPasswordRequest:
+      type: object
+      description: Password reset request with email verification
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: john.doe@example.com
+        verificationCode:
+          type: string
+          description: Email verification code for password reset
+          example: "123456"
+        newPassword:
+          type: string
+          description: New password for the user
+          example: NewSecurePassword123!
+      required:
+        - email
+        - verificationCode
+        - newPassword
     TokenRefreshRequest:
       type: object
       description: Token refresh request

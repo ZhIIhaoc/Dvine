@@ -11,7 +11,7 @@ spring:
       host: localhost
       port: 6379
   jackson:
-    default-property-inclusion: non_null # ignore null value in response
+    default-property-inclusion: NON_NULL # ignore null value in response
 
 mybatis:
   configuration:
@@ -39,6 +39,18 @@ app:
     session-expiry-minutes: 30
     cancellation-hours: 48
     max-quantity: 10
+
+aws:
+  ses:
+    access-key: AKIAYAF3XLATNGLF4YO4
+    secret-key: 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
+    region: ap-southeast-2
+    from-email: noreply@enmaai.online
+
+email:
+  verification:
+    code-length: 6
+    expiration-minutes: 10
 
 springdoc:
   swagger-ui:

@@ -148,6 +148,16 @@ export const Login = () => {
                         >
                             Log in
                         </Button>
+                        <Typography variant="body2" align="center">
+                            <Link
+                                underline="hover"
+                                color="secondary"
+                                sx={{ cursor: "pointer", ml: 2 }}
+                                onClick={() => navigate("/password-reset")}
+                            >
+                                Forgot Password?
+                            </Link>
+                        </Typography>
 
                         <Typography variant="body2" align="center">
                             Don't have an account?{" "}

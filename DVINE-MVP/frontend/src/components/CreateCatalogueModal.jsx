@@ -60,7 +60,7 @@ export function CreateCatalogueModal({ open, onClose, onCatalogueCreated, catalo
 
     const createCatalogue = async () => {
         try {
-            const response = await createNewCatalogue(token, catalogueName, catalogueDiscription, catalogueCoverImage);
+            const response = await createNewCatalogue(token, catalogueName, catalogueDescription, catalogueCoverImage);
             const responseInfo = await response.json();
             console.log(responseInfo);
 

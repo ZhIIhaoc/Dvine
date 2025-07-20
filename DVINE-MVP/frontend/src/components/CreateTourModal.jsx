@@ -1,9 +1,9 @@
 import React from "react";
-import { Box, Button, Typography, Modal, TextField } from "@mui/material";
+import { Box, Button, Typography, Modal, TextField, Autocomplete } from "@mui/material";
 // import CreateCatalogue from "../endpoints/CreateCatalogue"; change back to this in sprint 2
 import CreateTours from "../endpoints/CreateTours";
 
-export function CreateTourModal({ open, onClose }) {
+export function CreateTourModal({ open, onClose, catalogueList }) {
     const [tourTitle, setTourTitle] = React.useState("");
     const [tourDescription, setTourDescription] = React.useState("");
     const [tourImage, setTourImage] = React.useState(""); // Assuming you want to handle images later
@@ -12,14 +12,15 @@ export function CreateTourModal({ open, onClose }) {
     // const [tourPrimaryImageURL, setTourPrimaryImageURL] = React.useState("");
     // const [imageList, setImageList] = React.useState([]);  = [] // Assuming you
     const [imagePreview, setImagePreview] = React.useState("");
+    const [selectedCatalogue, setSelectedCatalogue] = React.useState(null);
     const accessToken = localStorage.getItem("accessToken");
 
     const handleImageUpload = (event) => {
-        const file = event.target.files[0]; 
+        const file = event.target.files[0];
         if (!file) return;
-        
+
         const reader = new FileReader();
-        reader.onloadend = () => { 
+        reader.onloadend = () => {
             setTourImage(reader.result);
             setImagePreview(reader.result);
         }
@@ -28,30 +29,31 @@ export function CreateTourModal({ open, onClose }) {
     const createTours = async () => {
         try {
             const response = await CreateTours(
-                tourTitle, 
-                tourDescription, 
+                tourTitle,
+                tourDescription,
                 tourDestination,
-                tourPrice, 
+                tourPrice,
                 "placeholder_primary_image_url", // Placeholder for primary image URL
                 [], // Placeholder for image list, can be updated later
-                accessToken
+                accessToken,
+                selectedCatalogue?.catalogueId || null // Use selected catalogue ID or null if not selected
             );
-                
+
             const responseInfo = await response.json();
             console.log(responseInfo);
-            
+
             if (responseInfo.code === 0) {
                 console.log("Tour created successfully:", responseInfo.message);
                 // Success case
                 onClose(); // Close the modal
-                } else {
-                    console.log("Error creating tour:", responseInfo.message);
-                }
-            } catch{
-                // Error case
-                
+            } else {
+                console.log("Error creating tour:", responseInfo.message);
+            }
+        } catch {
+            // Error case
+
         }
-        
+
     };
     return (
         <Modal
@@ -75,7 +77,7 @@ export function CreateTourModal({ open, onClose }) {
                     Create New Tour
                 </Typography>
                 <Box sx={{ mt: 2 }}>
-                     <TextField
+                    <TextField
                         label="Tour Title"
                         placeholder="Tour Title"
                         sx={{ mb: 4, width: "100%" }}
@@ -107,22 +109,15 @@ export function CreateTourModal({ open, onClose }) {
                         value={tourDestination}
                         onChange={(e) => setTourDestination(e.target.value)}
                     />
-                    {/* <TextField
-                        label="Tour Description"
-                        placeholder="Tour Description"
-                        fullWidth
-                        sx={{ mb: 6, width: "100%" }}
-                        value={tourDescription}
-                        onChange={(e) => setTourDescription(e.target.value)}
+                    <Autocomplete
+                        options={catalogueList}
+                        getOptionLabel={(option) => option.title || ""}
+                        value={selectedCatalogue}
+                        onChange={(event, newValue) => setSelectedCatalogue(newValue)}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Select Catalogue" fullWidth sx={{ mb: 3 }} />
+                        )}
                     />
-                    <TextField
-                        label="Tour Description"
-                        placeholder="Tour Description"
-                        fullWidth
-                        sx={{ mb: 6, width: "100%" }}
-                        value={tourDescription}
-                        onChange={(e) => setTourDescription(e.target.value)}
-                    /> */}
                 </Box>
                 <Button variant="outlined" component="label" sx={{ mb: 3 }}>
                     Upload Tour Image

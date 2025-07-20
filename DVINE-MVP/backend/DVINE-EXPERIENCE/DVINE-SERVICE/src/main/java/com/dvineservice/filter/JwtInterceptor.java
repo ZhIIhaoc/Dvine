@@ -27,13 +27,18 @@ public class JwtInterceptor implements HandlerInterceptor {
     private static final List<String> GET_WHITELIST = List.of(
             "/catalogues/**",    // /catalogues/list  |  /catalogues/123
             "/tours/**",          // /tours?catalogueId=3  |  /tours/101
-            "/featured-tours"
+            "/featured-tours",
+            "/faqs/**"           // /faqs  |  /faqs/123
     );
 
     /** URLs that skip JWT for all verbs (login, register, refresh…) */
     private static final List<String> ANY_METHOD_WHITELIST = List.of(
             "/auth/login",
             "/auth/register",
+            "/auth/register-with-verification",
+            "/auth/send-verification-code",
+            "/auth/send-password-reset-code",
+            "/auth/reset-password",
             "/auth/refresh",
             "/webhooks/stripe", // Stripe webhook endpoint
             // OpenAPI/Swagger endpoints

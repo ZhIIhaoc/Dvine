@@ -55,10 +55,12 @@ public class TourOperationServiceImpl implements TourOperationService {
     @Override
     public List<Tour> search(TourQueryParam tourQueryParam) {
         // If no catalogueId or catalogueName is provided, default to catalogue ID 1 (Default Catalogue)
-        if (tourQueryParam.getCatalogueId() == null && 
-            (tourQueryParam.getCatalogueName() == null || tourQueryParam.getCatalogueName().trim().isEmpty())) {
-            tourQueryParam.setCatalogueId(1L);
-        }
+//        if (tourQueryParam.getCatalogueId() == null &&
+//            (tourQueryParam.getCatalogueName() == null || tourQueryParam.getCatalogueName().trim().isEmpty())) {
+//            tourQueryParam.setCatalogueId(1L);
+//        }
+
+//        tourQueryParam.setPage(1000);
         
         List<Tour> tour = tourMapper.search(tourQueryParam);
         if (tour.isEmpty()) {

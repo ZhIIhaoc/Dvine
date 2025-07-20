@@ -187,6 +187,9 @@ export default function TourDetails() {
         fetchTourDetails();
     }, [id]);
 
+
+    
+
     // Handle booking submission
     const handleBooking = async () => {
         try {
