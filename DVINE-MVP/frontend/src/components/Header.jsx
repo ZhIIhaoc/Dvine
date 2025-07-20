@@ -14,6 +14,7 @@ import {
     MenuItem,
     Switch,
     Typography,
+    useTheme,
 } from "@mui/material";
 
 export function Header({ isDarkMode, setIsDarkMode }) {
@@ -38,11 +39,12 @@ export function Header({ isDarkMode, setIsDarkMode }) {
             );
         }
     }, [userInfo]);
+    const theme = useTheme();
 
     return (
         <AppBar
             sx={{
-                backgroundColor: "background.default",
+                backgroundColor: theme.palette.header.main,
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
             }}

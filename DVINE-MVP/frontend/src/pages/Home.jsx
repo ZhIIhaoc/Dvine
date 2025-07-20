@@ -76,6 +76,7 @@ export const Home = () => {
                         mt: -12,
                         mx: "auto",
                         position: "relative",
+                        color: "#fbf9f5",
                     }}
                 >
                     Experience the extraordinary
@@ -176,6 +177,7 @@ export const Home = () => {
                             variant="h5"
                             fontWeight="bold"
                             sx={{ mb: 2 }}
+                            color="text.primary"
                         >
                             Explore your next all inclusive tour
                         </Typography>

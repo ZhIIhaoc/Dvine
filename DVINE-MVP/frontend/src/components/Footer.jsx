@@ -16,7 +16,7 @@ export function Footer() {
         <Box
             component="footer"
             sx={{
-                backgroundColor: "#EDE9E3",
+                backgroundColor: "background.secondary",
                 mt: "auto",
                 minHeight: 400,
                 padding: 4,
@@ -94,7 +94,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         Home
                     </Link>
@@ -102,7 +102,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/catalogue")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         DVINE Experiences Catalogue
                     </Link>
@@ -110,7 +110,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/dvine-moments")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         DVINE Moments
                     </Link>
@@ -118,7 +118,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/faq")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         FAQ
                     </Link>
