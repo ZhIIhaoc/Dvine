@@ -124,7 +124,7 @@ const ForgottenPassword = () => {
                     </Typography>
 
                     <Typography variant="body1" align="center" sx={{ maxWidth: 400, mb: 4 }}>
-                        If you’ve forgotten your password, enter your email and we’ll send you a reset link.
+                        If you’ve forgotten your password, enter your email and we’ll send you a reset code to your email.
                     </Typography>
                     <TextField
                         label="Email"
