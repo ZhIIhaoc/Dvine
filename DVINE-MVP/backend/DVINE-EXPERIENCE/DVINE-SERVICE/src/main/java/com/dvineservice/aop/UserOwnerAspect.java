@@ -40,7 +40,7 @@ public class UserOwnerAspect {
         // Users can only access their own data OR have Partner+ permission
         if (!Objects.equals(targetUserId, currentUser.getUserId()) && 
             currentUser.getPermission() < PermissionLevel.PARTNER) {
-            throw new PermissionDeniedException("You can only view your own bookings");
+            throw new PermissionDeniedException("You can only view your own info");
         }
         
         log.debug("User ownership validated for targetUserId: {} by user: {}", 

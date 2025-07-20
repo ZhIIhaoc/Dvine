@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dvinedao.mapper.PaymentMapper">
+
+    <!-- Result Map for Payment -->
+    <resultMap id="PaymentResultMap" type="com.dvinedao.domain.Payment">
+        <id property="paymentId" column="paymentId"/>
+        <result property="userId" column="userId"/>
+        <result property="bookingId" column="bookingId"/>
+        <result property="stripeSessionId" column="stripeSessionId"/>
+        <result property="stripePaymentIntentId" column="stripePaymentIntentId"/>
+        <result property="amount" column="amount"/>
+        <result property="currency" column="currency"/>
+        <result property="status" column="status"/>
+        <result property="paymentMethod" column="paymentMethod"/>
+        <result property="stripeCustomerId" column="stripeCustomerId"/>
+        <result property="failureReason" column="failureReason"/>
+        <result property="refundAmount" column="refundAmount"/>
+        <result property="paidAt" column="paidAt"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <!-- Additional fields for joined queries -->
+        <result property="bookingReference" column="bookingReference"/>
+        <result property="userEmail" column="userEmail"/>
+    </resultMap>
+
+    <!-- Create payment -->
+    <insert id="createPayment" parameterType="com.dvinedao.domain.Payment" useGeneratedKeys="true" keyProperty="paymentId">
+        INSERT INTO payments (
+            userId, bookingId, stripeSessionId, stripePaymentIntentId, amount, currency, 
+            status, paymentMethod, stripeCustomerId, failureReason, refundAmount, paidAt
+        ) VALUES (
+            #{userId}, #{bookingId}, #{stripeSessionId}, #{stripePaymentIntentId}, #{amount}, #{currency},
+            #{status}, #{paymentMethod}, #{stripeCustomerId}, #{failureReason}, #{refundAmount}, #{paidAt}
+        )
+    </insert>
+
+    <!-- Find payment by ID -->
+    <select id="findById" resultMap="PaymentResultMap">
+        SELECT 
+            p.*,
+            b.bookingReference,
+            u.email as userEmail
+        FROM payments p
+        LEFT JOIN bookings b ON p.bookingId = b.bookingId
+        LEFT JOIN users u ON p.userId = u.userId
+        WHERE p.paymentId = #{paymentId}
+    </select>
+
+    <!-- Find payment by booking ID -->
+    <select id="findByBookingId" resultMap="PaymentResultMap">
+        SELECT 
+            p.*,
+            b.bookingReference,
+            u.email as userEmail
+        FROM payments p
+        LEFT JOIN bookings b ON p.bookingId = b.bookingId
+        LEFT JOIN users u ON p.userId = u.userId
+        WHERE p.bookingId = #{bookingId}
+    </select>
+
+    <!-- Find payment by Stripe session ID -->
+    <select id="findByStripeSessionId" resultMap="PaymentResultMap">
+        SELECT 
+            p.*,
+            b.bookingReference,
+            u.email as userEmail
+        FROM payments p
+        LEFT JOIN bookings b ON p.bookingId = b.bookingId
+        LEFT JOIN users u ON p.userId = u.userId
+        WHERE p.stripeSessionId = #{stripeSessionId}
+    </select>
+
+    <!-- Find payment by Stripe payment intent ID -->
+    <select id="findByStripePaymentIntentId" resultMap="PaymentResultMap">
+        SELECT 
+            p.*,
+            b.bookingReference,
+            u.email as userEmail
+        FROM payments p
+        LEFT JOIN bookings b ON p.bookingId = b.bookingId
+        LEFT JOIN users u ON p.userId = u.userId
+        WHERE p.stripePaymentIntentId = #{stripePaymentIntentId}
+    </select>
+
+    <!-- Update payment -->
+    <update id="updatePayment" parameterType="com.dvinedao.domain.Payment">
+        UPDATE payments SET
+            stripeSessionId = #{stripeSessionId},
+            stripePaymentIntentId = #{stripePaymentIntentId},
+            amount = #{amount},
+            currency = #{currency},
+            status = #{status},
+            paymentMethod = #{paymentMethod},
+            stripeCustomerId = #{stripeCustomerId},
+            failureReason = #{failureReason},
+            refundAmount = #{refundAmount},
+            paidAt = #{paidAt}
+        WHERE paymentId = #{paymentId}
+    </update>
+
+    <!-- Find payments by user ID (direct relationship) -->
+    <select id="findByUserId" resultMap="PaymentResultMap">
+        SELECT 
+            p.*,
+            b.bookingReference,
+            u.email as userEmail
+        FROM payments p
+        LEFT JOIN bookings b ON p.bookingId = b.bookingId
+        LEFT JOIN users u ON p.userId = u.userId
+        WHERE p.userId = #{userId}
+        ORDER BY p.createTime DESC
+    </select>
+
+    <!-- Find payments by status -->
+    <select id="findByStatus" resultMap="PaymentResultMap">
+        SELECT 
+            p.*,
+            b.bookingReference,
+            u.email as userEmail
+        FROM payments p
+        LEFT JOIN bookings b ON p.bookingId = b.bookingId
+        LEFT JOIN users u ON p.userId = u.userId
+        WHERE p.status = #{status}
+        ORDER BY p.createTime DESC
+    </select>
+
+    <!-- Count payments by status -->
+    <select id="countByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM payments 
+        <where>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

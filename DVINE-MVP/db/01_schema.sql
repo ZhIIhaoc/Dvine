@@ -143,7 +143,8 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 CREATE TABLE IF NOT EXISTS payments (
     paymentId BIGINT AUTO_INCREMENT PRIMARY KEY,
-    bookingId BIGINT NOT NULL COMMENT "Links to the booking this payment is for",
+    userId BIGINT NOT NULL COMMENT "User who made the payment - direct relationship for performance and subscription support",
+    bookingId BIGINT NULL COMMENT "Links to the booking this payment is for (NULL for subscription payments)",
     stripeSessionId VARCHAR(255) UNIQUE COMMENT "Stripe Checkout Session ID for tracking payment flow",
     stripePaymentIntentId VARCHAR(255) COMMENT "Stripe Payment Intent ID after successful payment - used for refunds",
     amount DECIMAL(10,2) NOT NULL COMMENT "Amount in dollars (e.g., 99.50 for $99.50)",
@@ -156,11 +157,13 @@ CREATE TABLE IF NOT EXISTS payments (
     paidAt DATETIME NULL COMMENT "Timestamp when payment was successfully completed",
     createTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "When payment record was created",
     updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Last status update time",
+    FOREIGN KEY (userId) REFERENCES users(userId),
     FOREIGN KEY (bookingId) REFERENCES bookings(bookingId)
 );
 
 -- Performance indexes for payment system
 CREATE INDEX idx_bookings_user_date ON bookings (userId, createTime DESC);
 CREATE INDEX idx_bookings_tour_status ON bookings (tourId, status);
+CREATE INDEX idx_payments_user_date ON payments (userId, createTime DESC);
 CREATE INDEX idx_payments_status ON payments (status, createTime);
 CREATE INDEX idx_payments_stripe_session ON payments (stripeSessionId);

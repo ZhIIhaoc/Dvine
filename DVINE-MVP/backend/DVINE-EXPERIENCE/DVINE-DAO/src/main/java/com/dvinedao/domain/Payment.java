@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Payment {
     private Long paymentId;
+    private Long userId;
     private Long bookingId;
     private String stripeSessionId;
     private String stripePaymentIntentId;

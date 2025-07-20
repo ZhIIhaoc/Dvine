@@ -2780,7 +2780,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [PENDING, COMPLETED, FAILED, REFUNDED]
+            enum: [PENDING, PROCESSING, SUCCEEDED, FAILED, CANCELLED, REFUNDED]
           example: "COMPLETED"
       responses:
         "200":
