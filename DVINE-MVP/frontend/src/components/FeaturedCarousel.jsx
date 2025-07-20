@@ -30,14 +30,12 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
     return (
         <Box
             sx={{
-                mb: 8,
-                background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-                py: 6,
+                mb: 3,
+                py: 3,
                 borderRadius: 3,
-                mx: -2,
             }}
         >
-            <Typography
+            {/* <Typography
                 variant="h3"
                 fontWeight="bold"
                 textAlign="center"
@@ -59,11 +57,11 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                 }}
             >
                 Discover our most popular experiences
-            </Typography>
+            </Typography> */}
 
             <Box
                 sx={{
-                    maxWidth: "1400px",
+                    maxWidth: { xs: "100vw", md: "80vw" },
                     mx: "auto",
                     px: { xs: 3, sm: 6, md: 8 },
                     position: "relative",
@@ -85,13 +83,14 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                         },
                     }}
                     autoplay={{
-                        delay: 4000,
+                        delay: 8000,
                         disableOnInteraction: false,
                         pauseOnMouseEnter: true,
                     }}
                     loop={tours.length > 1}
                     slidesPerView={1}
-                    spaceBetween={40}
+                    centeredSlides={true}
+                    spaceBetween={80}
                     breakpoints={{
                         640: {
                             slidesPerView: 1,
@@ -112,15 +111,18 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                         <SwiperSlide key={tour.tourId}>
                             <Card
                                 sx={{
-                                    height: "100%",
+                                    height: { xs: "auto", md: 500 },
+                                    width: "100%",
                                     display: "flex",
                                     flexDirection: "column",
+                                    display: "flex",
+                                    flexDirection: { xs: "column", md: "row" },
                                     cursor: "pointer",
                                     transition:
-                                        "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                                        "all 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
                                     "&:hover": {
                                         transform:
-                                            "translateY(-12px) scale(1.02)",
+                                            "translateY(-2px) scale(1.005)",
                                         boxShadow:
                                             "0 20px 40px rgba(0,0,0,0.2)",
                                     },
@@ -160,17 +162,14 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                 <Box
                                     sx={{
                                         position: "absolute",
-                                        top: 16,
-                                        right: 16,
+                                        bottom: 78,
+                                        right: 0,
                                         zIndex: 2,
-                                        bgcolor: "primary.main",
-                                        color: "white",
-                                        px: 3,
+                                        px: 8,
                                         py: 1,
-                                        borderRadius: 3,
+                                        // borderRadius: 3,
                                         fontWeight: "bold",
-                                        fontSize: "1.1rem",
-                                        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                                        fontSize: "1.3rem",
                                         display: "flex",
                                         alignItems: "center",
                                         gap: 0.5,
@@ -182,7 +181,7 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
 
                                 <CardMedia
                                     component="img"
-                                    height="280"
+                                    height={{ xs: 280, md: "auto" }}
                                     image={
                                         tour.primaryImageUrl ||
                                         tour.image ||
@@ -192,13 +191,16 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                     sx={{
                                         objectFit: "cover",
                                         position: "relative",
+                                        width: { xs: "100%", md: "70%" },
+                                        height: { xs: 280, md: "100%" },
+                                        objectFit: "cover",
                                         filter: "brightness(0.9)",
                                     }}
                                 />
 
                                 <CardContent
                                     sx={{
-                                        flexGrow: 1,
+                                        width: { xs: "100%", md: "30%" },
                                         p: 4,
                                         display: "flex",
                                         flexDirection: "column",
@@ -303,7 +305,7 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                             endIcon={<ArrowIcon />}
                                             sx={{
                                                 borderRadius: 2,
-                                                px: 2,
+                                                px: 3,
                                                 py: 0.5,
                                                 textTransform: "none",
                                                 fontWeight: "bold",
