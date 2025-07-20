@@ -1,5 +1,6 @@
 package com.dvineapi.controller;
 
+import com.dvinedao.domain.EmailRequest;
 import com.dvinedao.domain.RegisterWithVerificationRequest;
 import com.dvinedao.domain.ResetPasswordRequest;
 import com.dvinedao.domain.ReturnResult;
@@ -25,9 +26,9 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/send-verification-code")
-    public ReturnResult sendVerificationCode(@RequestParam String email) {
-        log.info("Send verification code to email: {}", email);
-        boolean success = authService.sendVerificationCode(email);
+    public ReturnResult sendVerificationCode(@RequestBody EmailRequest emailRequest) {
+        log.info("Send verification code to email: {}", emailRequest.getEmail());
+        boolean success = authService.sendVerificationCode(emailRequest.getEmail());
         if (success) {
             return ReturnResult.success("Verification code sent successfully");
         } else {
@@ -80,9 +81,9 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/send-password-reset-code")
-    public ReturnResult sendPasswordResetCode(@RequestParam String email) {
-        log.info("Send password reset code to email: {}", email);
-        boolean success = authService.sendPasswordResetCode(email);
+    public ReturnResult sendPasswordResetCode(@RequestBody EmailRequest emailRequest) {
+        log.info("Send password reset code to email: {}", emailRequest.getEmail());
+        boolean success = authService.sendPasswordResetCode(emailRequest.getEmail());
         if (success) {
             return ReturnResult.success("Password reset code sent successfully");
         } else {
