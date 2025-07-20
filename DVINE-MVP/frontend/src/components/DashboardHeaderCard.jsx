@@ -23,7 +23,7 @@ export function DashboardHeaderCard() {
         <Button onClick={() => navigate("/upcoming-tours")}>Future Tours</Button>
         <Button onClick={() => navigate("/tours-history")}>Tour History</Button>
         <Button onClick={() => navigate("/purchase-history")}>Purchases</Button>
-        <Button onClick={() => navigate("/support")}>Support</Button>
+        <Button onClick={() => navigate("/faq")}>Support</Button>
       </Box>
     </Box>
 
