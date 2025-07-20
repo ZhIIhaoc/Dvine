@@ -60,7 +60,7 @@ const mockTours = [
         destination: "Coffs Harbour, NSW",
         description:
             "Experience the stunning coastline and vibrant marine life of Coffs Harbour.",
-        price: 299.99,
+        regularPrice: 299.99,
         primaryImageUrl: "/src/assets/coffs_harbour.png",
         catalogueId: 1,
         catalogueTitle: "Adventure Collection",
@@ -72,7 +72,7 @@ const mockTours = [
         destination: "Port Macquarie, NSW",
         description:
             "Discover the historic landmarks and beautiful beaches of Port Macquarie.",
-        price: 199.99,
+        regularPrice: 199.99,
         primaryImageUrl: "/src/assets/port_macquarie.jpg",
         catalogueId: 1,
         catalogueTitle: "Adventure Collection",
@@ -84,7 +84,7 @@ const mockTours = [
         destination: "Multiple Locations",
         description:
             "Exclusive luxury experience with premium accommodations and personalized service.",
-        price: 1299.99,
+        regularPrice: 1299.99,
         primaryImageUrl: "/src/assets/vip_experience.jpg",
         catalogueId: 1,
         catalogueTitle: "Luxury Collection",
@@ -193,6 +193,10 @@ export function Catalogue() {
         fetchToursData();
         fetchFeaturedToursData();
     }, []);
+    // useEffect(() => {
+    //     console.log("Catalogues:", catalogues);
+    //     console.log("Tours:", tours);
+    // }, [catalogues, tours]);
 
     // Create new catalogue
     const handleCreateCatalogue = async () => {
@@ -327,8 +331,8 @@ export function Catalogue() {
         // Filter by price range
         filtered = filtered.filter(
             (tour) =>
-                tour.price >= filters.priceRange[0] &&
-                tour.price <= filters.priceRange[1]
+                tour.regularPrice >= filters.priceRange[0] &&
+                tour.regularPrice <= filters.priceRange[1]
         );
 
         // Filter by location (destination)
@@ -638,25 +642,40 @@ export function Catalogue() {
                                         >
                                             {tour.title}
                                         </Typography>
+                                    </CardContent>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{ mb: 2 }}
+                                    >
+                                        {tour.description}
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                        }}
+                                    >
                                         <Box
                                             sx={{
                                                 display: "flex",
                                                 alignItems: "center",
-                                                mb: 1,
                                             }}
                                         >
-                                            <LocationIcon
+                                            <PriceIcon
                                                 sx={{
                                                     fontSize: 16,
                                                     mr: 0.5,
-                                                    color: "text.secondary",
+                                                    color: "primary.main",
                                                 }}
                                             />
                                             <Typography
-                                                variant="body2"
-                                                color="text.secondary"
+                                                variant="h6"
+                                                color="primary"
+                                                fontWeight="bold"
                                             >
-                                                {tour.destination}
+                                                ${tour.regularPrice}
                                             </Typography>
                                         </Box>
                                         <Typography
@@ -700,7 +719,7 @@ export function Catalogue() {
                                                 size="small"
                                             />
                                         </Box>
-                                    </CardContent>
+                                    </Box>
                                 </Card>
                             </Grid>
                         )
@@ -960,13 +979,36 @@ export function Catalogue() {
                                                     color="primary"
                                                     fontWeight="bold"
                                                 >
-                                                    ${tour.price}
+                                                    ${tour.regularPrice}
                                                 </Typography>
-                                                <Rating
-                                                    value={4.5}
-                                                    readOnly
-                                                    size="small"
-                                                />
+                                                <Typography
+                                                    variant="body2"
+                                                    color="text.secondary"
+                                                    sx={{ mb: 1 }}
+                                                >
+                                                    {tour.destination}
+                                                </Typography>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <Typography
+                                                        variant="h6"
+                                                        color="primary"
+                                                        fontWeight="bold"
+                                                    >
+                                                        ${tour.price}
+                                                    </Typography>
+                                                    <Rating
+                                                        value={4.5}
+                                                        readOnly
+                                                        size="small"
+                                                    />
+                                                </Box>
                                             </Box>
                                         </CardContent>
                                     </Card>
