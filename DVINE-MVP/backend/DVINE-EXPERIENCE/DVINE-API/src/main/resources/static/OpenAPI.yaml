@@ -598,15 +598,22 @@ paths:
       summary: Send email verification code
       description: Send a verification code to the specified email address for user registration
       operationId: sendVerificationCode
-      parameters:
-        - name: email
-          in: query
-          required: true
-          schema:
-            type: string
-            format: email
-          description: Email address to send verification code to
-          example: newUser@example.com
+      requestBody:
+        description: Email address to send verification code to
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address to send verification code to
+              required:
+                - email
+            example:
+              email: newUser@example.com
+        required: true
       responses:
         "400":
           description: Bad Request - occurs when email parameter is missing or invalid
@@ -877,15 +884,22 @@ paths:
       summary: Send password reset verification code
       description: Send a verification code to the user's email for password reset.
       operationId: sendPasswordResetCode
-      parameters:
-        - name: email
-          in: query
-          description: User's email address
-          required: true
-          schema:
-            type: string
-            format: email
-          example: user@example.com
+      requestBody:
+        description: User's email address
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+              required:
+                - email
+            example:
+              email: user@example.com
+        required: true
       responses:
         "400":
           description: Bad Request - occurs when user with email doesn't exist

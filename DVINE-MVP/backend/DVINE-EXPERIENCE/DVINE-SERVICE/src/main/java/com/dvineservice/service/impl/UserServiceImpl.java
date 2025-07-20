@@ -28,6 +28,8 @@ public class UserServiceImpl implements UserService {
         if (user.isEmptyPatch()) {
             throw new IllegalArgumentException("You should patch at least one field");
         }
+        // Security: Prevent password updates through profile update
+        user.setPassword(null);
         user.setUserId(UserUtil.getCurrentUserId());
         userMapper.updateUser(user);
     }
