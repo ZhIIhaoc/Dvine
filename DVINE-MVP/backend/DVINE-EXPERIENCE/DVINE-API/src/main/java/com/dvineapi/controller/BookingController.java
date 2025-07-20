@@ -102,7 +102,7 @@ public class BookingController {
      * Cancel a booking
      */
     @PostMapping("/{bookingId}/cancel")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public ReturnResult cancelBooking(@PathVariable Long bookingId) throws StripeException {
         log.info("Cancelling booking {}", bookingId);
         

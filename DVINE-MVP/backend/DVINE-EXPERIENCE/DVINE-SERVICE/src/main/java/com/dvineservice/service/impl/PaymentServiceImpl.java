@@ -4,7 +4,7 @@ import com.dvinedao.annotation.PaymentOwnerCheck;
 import com.dvinedao.annotation.UserOwnerCheck;
 import com.dvinedao.domain.*;
 import com.dvinedao.mapper.PaymentMapper;
-import com.dvineservice.service.BookingService;
+import com.dvinedao.mapper.BookingMapper;
 import com.dvineservice.service.PaymentService;
 import com.dvineservice.util.PaymentUtil;
 import com.dvineservice.util.StripeUtil;
@@ -36,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     private StripeUtil stripeUtil;
 
     @Autowired
-    private BookingService bookingService;
+    private BookingMapper bookingMapper;
 
 // ===============================================================================
 // Payment Operations
@@ -187,7 +187,12 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setStatus(Payment.PaymentStatus.REFUNDED);
             if (payment.getBookingId() != null) {
                 // If this payment was for a booking, update booking status to cancelled
-                bookingService.updateBookingStatus(payment.getBookingId(), Booking.BookingStatus.CANCELLED);
+                Booking booking = bookingMapper.findById(payment.getBookingId());
+                if (booking != null) {
+                    booking.setStatus(Booking.BookingStatus.CANCELLED);
+                    bookingMapper.updateBooking(booking);
+                    log.info("Updated booking {} status to CANCELLED due to full refund", booking.getBookingId());
+                }
             }
         }
         

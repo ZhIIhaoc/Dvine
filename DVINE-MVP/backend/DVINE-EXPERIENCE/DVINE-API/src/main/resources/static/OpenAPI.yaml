@@ -2111,7 +2111,12 @@ paths:
       tags:
         - Bookings
       summary: Create booking and payment session
-      description: Create a new tour booking and Stripe payment session for checkout
+      description: |
+        Create a new tour booking and Stripe payment session for checkout.
+        
+        **Access:** Open to all users including guests
+        - **Authenticated users:** Get premium pricing if eligible, user details pre-filled
+        - **Guest users:** Use regular pricing, must provide user details in request
       operationId: createBookingSession
       requestBody:
         required: true
@@ -2119,6 +2124,21 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateBookingRequest"
+            examples:
+              Authenticated User Request:
+                description: Request with authentication token (premium pricing if eligible)
+                value:
+                  tourId: 1
+                  quantity: 2
+                  travelDate: "2025-08-15"
+                  customerNotes: "Anniversary celebration - vegetarian meals preferred"
+              Guest User Request:
+                description: Request without authentication (regular pricing)
+                value:
+                  tourId: 1
+                  quantity: 2
+                  travelDate: "2025-08-15"
+                  customerNotes: "First time visitors - looking forward to the experience"
       responses:
         "200":
           description: Booking session created successfully
@@ -2131,13 +2151,33 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/BookingSessionResponse"
-              example:
-                code: 0
-                msg: success
-                data:
-                  bookingId: 12345
-                  bookingReference: "DVINE-2025-001234"
-                  checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_abc123def456ghi789"
+              examples:
+                Authenticated User Response:
+                  description: Response for authenticated user (premium pricing applied)
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      bookingId: 12345
+                      bookingReference: "DVINE-20250815-1234"
+                      checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_auth_abc123"
+                      totalAmount: 233.98
+                      unitPrice: 116.99
+                      pricingTier: "premium"
+                      userId: 3
+                Guest User Response:
+                  description: Response for guest user (regular pricing applied)
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      bookingId: 12346
+                      bookingReference: "DVINE-20250816-5678"
+                      checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_guest_def456"
+                      totalAmount: 259.98
+                      unitPrice: 129.99
+                      pricingTier: "regular"
+                      userId: null
         "400":
           description: Invalid booking request
           content:
@@ -2166,16 +2206,17 @@ paths:
                     code: 1
                     msg: "Missing required field: tourId"
         "401":
-          description: Authentication required
+          description: Invalid authentication token (only when token is provided but invalid)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "User not logged in"
+                msg: "Invalid or expired JWT token"
       security:
         - bearerAuth: []
+        - {}
 
   /bookings/{bookingId}:
     get:
@@ -2227,18 +2268,38 @@ paths:
             type: integer
             format: int64
       responses:
-        "200":
+        "202":
           description: Booking cancelled successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+        "404":
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Booking not found: 123"
         "400":
           description: Booking cannot be cancelled
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Time Restriction:
+                  description: Booking cannot be cancelled within 48 hours of travel date
+                  value:
+                    code: 1
+                    msg: "Booking cannot be cancelled within 48 hours of travel date"
+                Status Restriction:
+                  description: Only confirmed or pending bookings can be cancelled
+                  value:
+                    code: 1
+                    msg: "Only confirmed or pending bookings can be cancelled"
       security:
         - bearerAuth: []
 
@@ -2252,22 +2313,58 @@ paths:
       parameters:
         - name: bookingId
           in: path
+          description: Booking ID to get payment for
           required: true
           schema:
             type: integer
             format: int64
+          example: 1
       responses:
         "200":
           description: Payment details retrieved successfully
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ReturnResult"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/Payment"
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  paymentId: 1
+                  userId: 3
+                  bookingId: 1
+                  stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                  stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                  amount: 259.98
+                  currency: "AUD"
+                  status: "SUCCEEDED"
+                  paymentMethod: "card"
+                  stripeCustomerId: "cus_ABCD1234567890"
+                  failureReason: null
+                  refundAmount: 0.00
+                  paidAt: "2024-07-18T14:35:00Z"
+                  createTime: "2024-07-18T14:30:00Z"
+                  updateTime: "2024-07-18T14:35:00Z"
+                  bookingReference: "DVINE-20240718-1234"
+                  userEmail: "user@example.com"
+        "404":
+          description: Payment not found for the booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "No payment found for booking ID 999"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
       security:
         - bearerAuth: []
 
@@ -2321,7 +2418,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "DVINE-2024-001234"
+          example: "DVINE-20240718-1234"
       responses:
         "200":
           description: Booking retrieved successfully
@@ -2334,7 +2431,7 @@ paths:
                 msg: success
                 data:
                   bookingId: 1
-                  bookingReference: "DVINE-2024-001234"
+                  bookingReference: "DVINE-20240718-1234"
                   tourId: 1
                   userId: 1
                   quantity: 2
@@ -2390,7 +2487,7 @@ paths:
                 msg: success
                 data:
                   - bookingId: 1
-                    bookingReference: "DVINE-2024-001234"
+                    bookingReference: "DVINE-20240718-1234"
                     tourId: 1
                     userId: 1
                     quantity: 2
@@ -2405,7 +2502,7 @@ paths:
                     tourTitle: "Sydney Coastal Walk"
                     tourDestination: "Sydney, Australia"
                   - bookingId: 2
-                    bookingReference: "DVINE-2024-001567"
+                    bookingReference: "DVINE-20240719-5678"
                     tourId: 3
                     userId: 1
                     quantity: 1
@@ -2468,7 +2565,7 @@ paths:
                 msg: success
                 data:
                   - bookingId: 1
-                    bookingReference: "DVINE-2024-001234"
+                    bookingReference: "DVINE-20240718-1234"
                     tourId: 1
                     userId: 15
                     quantity: 2
@@ -2484,7 +2581,7 @@ paths:
                     userEmail: "sarah.johnson@email.com"
                     userPhone: "0412345678"
                   - bookingId: 3
-                    bookingReference: "DVINE-2024-001235"
+                    bookingReference: "DVINE-20240720-9012"
                     tourId: 1
                     userId: 22
                     quantity: 4
@@ -2548,7 +2645,7 @@ paths:
                 msg: success
                 data:
                   - bookingId: 1
-                    bookingReference: "DVINE-2024-001234"
+                    bookingReference: "DVINE-20240718-1234"
                     tourId: 1
                     userId: 15
                     quantity: 2
@@ -2566,9 +2663,9 @@ paths:
                     tourTitle: "Sydney Coastal Walk"
                     tourDestination: "Sydney, Australia"
                     catalogueTitle: "Nature Adventures"
-                    paymentStatus: "COMPLETED"
+                    paymentStatus: "SUCCEEDED"
                   - bookingId: 2
-                    bookingReference: "DVINE-2024-001567"
+                    bookingReference: "DVINE-20240719-5678"
                     tourId: 3
                     userId: 8
                     quantity: 1
@@ -2646,11 +2743,22 @@ paths:
                 msg: success
                 data:
                   paymentId: 1
+                  userId: 3
                   bookingId: 1
-                  stripeSessionId: "cs_test_123"
+                  stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                  stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
                   amount: 259.98
                   currency: "AUD"
-                  status: "COMPLETED"
+                  status: "SUCCEEDED"
+                  paymentMethod: "card"
+                  stripeCustomerId: "cus_ABCD1234567890"
+                  failureReason: null
+                  refundAmount: 0.00
+                  paidAt: "2024-07-18T14:35:00Z"
+                  createTime: "2024-07-18T14:30:00Z"
+                  updateTime: "2024-07-18T14:35:00Z"
+                  bookingReference: "DVINE-20240718-1234"
+                  userEmail: "user@example.com"
         "404":
           description: Payment not found
           content:
@@ -2709,20 +2817,22 @@ paths:
                 msg: success
                 data:
                   - paymentId: 1
+                    userId: 5
                     bookingId: 1
                     stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
                     stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
                     amount: 259.98
                     currency: "AUD"
-                    status: "COMPLETED"
+                    status: "SUCCEEDED"
                     paymentMethod: "card"
                     refundAmount: 0.00
                     paidAt: "2024-07-18T14:35:00Z"
                     createTime: "2024-07-18T14:30:00Z"
-                    bookingReference: "DVINE-2024-001234"
+                    bookingReference: "DVINE-20240718-1234"
                     tourTitle: "Sydney Coastal Walk"
                     tourDestination: "Sydney, Australia"
                   - paymentId: 3
+                    userId: 5
                     bookingId: 3
                     stripeSessionId: "cs_test_b2C3d4E5f6G7h8I9j0K1l2M3"
                     stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC5678"
@@ -2733,7 +2843,7 @@ paths:
                     refundAmount: 0.00
                     paidAt: null
                     createTime: "2024-07-19T10:15:00Z"
-                    bookingReference: "DVINE-2024-001567"
+                    bookingReference: "DVINE-20240719-5678"
                     tourTitle: "Wine Tasting Experience"
                     tourDestination: "Hunter Valley, NSW"
         "404":
@@ -2766,6 +2876,70 @@ paths:
       security:
         - bearerAuth: []
 
+  /payments/my-payments:
+    get:
+      tags:
+        - Payments
+      summary: Get current user's payments
+      description: Get all payments for the currently authenticated user
+      operationId: getMyPayments
+      responses:
+        "200":
+          description: Current user's payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - paymentId: 1
+                    userId: 3
+                    bookingId: 1
+                    stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                    amount: 259.98
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    stripeCustomerId: "cus_USER3ABC123456"
+                    failureReason: null
+                    refundAmount: 0.00
+                    paidAt: "2024-07-18T14:35:00Z"
+                    createTime: "2024-07-18T14:30:00Z"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    bookingReference: "DVINE-20240718-1234"
+                    userEmail: "user3@example.com"
+                  - paymentId: 5
+                    userId: 3
+                    bookingId: 5
+                    stripeSessionId: "cs_test_c3D4e5F6g7H8i9J0k1L2m3N4"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC9012"
+                    amount: 450.00
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    stripeCustomerId: "cus_USER3ABC123456"
+                    failureReason: null
+                    refundAmount: 125.00
+                    paidAt: "2024-07-20T09:22:00Z"
+                    createTime: "2024-07-20T09:18:00Z"
+                    updateTime: "2024-07-20T09:22:00Z"
+                    bookingReference: "DVINE-20240720-9012"
+                    userEmail: "user3@example.com"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+
   /payments/status/{status}:
     get:
       tags:
@@ -2780,8 +2954,8 @@ paths:
           required: true
           schema:
             type: string
-            enum: [PENDING, PROCESSING, SUCCEEDED, FAILED, CANCELLED, REFUNDED]
-          example: "COMPLETED"
+            enum: [PENDING, SUCCEEDED, FAILED, CANCELLED, REFUNDED]
+          example: "SUCCEEDED"
       responses:
         "200":
           description: Payments retrieved successfully
@@ -2794,35 +2968,39 @@ paths:
                 msg: success
                 data:
                   - paymentId: 1
+                    userId: 5
                     bookingId: 1
                     stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
                     stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
                     amount: 259.98
                     currency: "AUD"
-                    status: "COMPLETED"
+                    status: "SUCCEEDED"
                     paymentMethod: "card"
+                    stripeCustomerId: "cus_ABCD1234567890"
+                    failureReason: null
                     refundAmount: 0.00
                     paidAt: "2024-07-18T14:35:00Z"
                     createTime: "2024-07-18T14:30:00Z"
-                    bookingReference: "DVINE-2024-001234"
-                    userId: 15
-                    userName: "Sarah Johnson"
-                    tourTitle: "Sydney Coastal Walk"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    bookingReference: "DVINE-20240718-1234"
+                    userEmail: "sarah.johnson@email.com"
                   - paymentId: 5
+                    userId: 8
                     bookingId: 5
                     stripeSessionId: "cs_test_c3D4e5F6g7H8i9J0k1L2m3N4"
                     stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC9012"
                     amount: 467.96
                     currency: "AUD"
-                    status: "COMPLETED"
+                    status: "SUCCEEDED"
                     paymentMethod: "card"
+                    stripeCustomerId: "cus_EFGH5678901234"
+                    failureReason: null
                     refundAmount: 0.00
                     paidAt: "2024-07-19T09:22:00Z"
                     createTime: "2024-07-19T09:20:00Z"
-                    bookingReference: "DVINE-2024-001235"
-                    userId: 22
-                    userName: "Michael Chen"
-                    tourTitle: "Sydney Coastal Walk"
+                    updateTime: "2024-07-19T09:22:00Z"
+                    bookingReference: "DVINE-20240720-9012"
+                    userEmail: "michael.chen@email.com"
         "403":
           description: Insufficient permissions
           content:
@@ -2840,7 +3018,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Invalid payment status 'INVALID'. Allowed values: PENDING, COMPLETED, FAILED, REFUNDED"
+                msg: "Invalid payment status 'INVALID'. Allowed values: PENDING, SUCCEEDED, FAILED, CANCELLED, REFUNDED"
         "401":
           description: Authentication required
           content:
@@ -2968,10 +3146,11 @@ paths:
                 code: 0
                 msg: success
                 data:
-                  totalRevenue: 15789.50
-                  totalTransactions: 127
-                  successRate: 98.5
-                  averageTransactionAmount: 124.33
+                  totalPayments: 127
+                  succeededPayments: 125
+                  failedPayments: 2
+                  pendingPayments: 0
+                  totalRevenue: 15539.50
                   totalRefunds: 250.00
                   refundRate: 1.6
         "403":
@@ -3383,8 +3562,8 @@ components:
           example: 12345
         bookingReference:
           type: string
-          description: Human-readable booking reference
-          example: 'DVINE-2025-001234'
+          description: Human-readable booking reference in format DVINE-YYYYMMDD-XXXX
+          example: 'DVINE-20250815-1234'
         checkoutUrl:
           type: string
           format: uri
@@ -3416,8 +3595,8 @@ components:
           example: 1
         bookingReference:
           type: string
-          description: Human-readable booking reference
-          example: 'DVINE-2025-001234'
+          description: Human-readable booking reference in format DVINE-YYYYMMDD-XXXX
+          example: 'DVINE-20250815-1234'
         quantity:
           type: integer
           description: Number of participants
@@ -3443,7 +3622,7 @@ components:
           example: '2025-08-15'
         status:
           type: string
-          enum: [PENDING, CONFIRMED, CANCELLED, COMPLETED]
+          enum: [PENDING, CONFIRMED, CANCELLED]
           description: Current booking status
           example: 'CONFIRMED'
         customerNotes:
@@ -3540,8 +3719,8 @@ components:
           example: '2025-07-18T14:30:00'
         bookingReference:
           type: string
-          description: Associated booking reference
-          example: 'DVINE-2025-001234'
+          description: Associated booking reference in format DVINE-YYYYMMDD-XXXX
+          example: 'DVINE-20250815-1234'
       required:
         - paymentId
         - bookingId

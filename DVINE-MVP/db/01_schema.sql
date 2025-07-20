@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 CREATE TABLE IF NOT EXISTS payments (
     paymentId BIGINT AUTO_INCREMENT PRIMARY KEY,
-    userId BIGINT NOT NULL COMMENT "User who made the payment - direct relationship for performance and subscription support",
+    userId BIGINT NULL COMMENT "User who made the payment - direct relationship for performance and subscription support",
     bookingId BIGINT NULL COMMENT "Links to the booking this payment is for (NULL for subscription payments)",
     stripeSessionId VARCHAR(255) UNIQUE COMMENT "Stripe Checkout Session ID for tracking payment flow",
     stripePaymentIntentId VARCHAR(255) COMMENT "Stripe Payment Intent ID after successful payment - used for refunds",
