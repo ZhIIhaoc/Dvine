@@ -104,7 +104,7 @@ export function Footer() {
                         underline="hover"
                         sx={{ color: "black" }}
                     >
-                        DVINE Experiences Catalog
+                        DVINE Experiences Catalogue
                     </Link>
                     <Link
                         component="button"
