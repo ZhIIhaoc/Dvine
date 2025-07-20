@@ -8,8 +8,7 @@ import MessageAlert from "../components/MessageAlert.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { useContext } from "react";
 
-
-export const Login = () => {
+export const Login = ({ isDarkMode, setIsDarkMode }) => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
     // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
@@ -102,7 +101,7 @@ export const Login = () => {
                     }}
                 >
                     <Box sx={{ pl: { xs: 0, md: 12 } }}>
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </Box>
 
                     <Box
@@ -126,6 +125,13 @@ export const Login = () => {
                             onChange={(event) =>
                                 setLoginEmail(event.target.value)
                             }
+                            InputLabelProps={{
+                                shrink: true,
+                                sx: {
+                                    color: "text.primary",
+                                    fontSize: "1.2rem",
+                                },
+                            }}
                         />
                         <TextField
                             label="Password"
@@ -134,6 +140,13 @@ export const Login = () => {
                             sx={{ mb: 6, width: "70%" }}
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
+                            InputLabelProps={{
+                                shrink: true,
+                                sx: {
+                                    color: "text.primary",
+                                    fontSize: "1.2rem",
+                                },
+                            }}
                         />
 
                         <Button
@@ -148,11 +161,15 @@ export const Login = () => {
                         >
                             Log in
                         </Button>
-                        <Typography variant="body2" align="center">
+                        <Typography
+                            variant="body2"
+                            align="center"
+                            sx={{ mb: 1 }}
+                        >
                             <Link
                                 underline="hover"
                                 color="secondary"
-                                sx={{ cursor: "pointer", ml: 2 }}
+                                sx={{ cursor: "pointer" }}
                                 onClick={() => navigate("/password-reset")}
                             >
                                 Forgot Password?

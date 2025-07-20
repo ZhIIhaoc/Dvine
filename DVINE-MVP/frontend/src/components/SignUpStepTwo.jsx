@@ -42,6 +42,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ my: 4, width: "70%" }}
                 value={props.userInfo.firstName}
                 onChange={props.changeState("firstName")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Last Name"
@@ -50,6 +54,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.lastName}
                 onChange={props.changeState("lastName")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Phone Number"
@@ -58,6 +66,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.phone}
                 onChange={props.changeState("phone")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Postcode"
@@ -66,6 +78,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ mb: 6, width: "70%", justifyContent: "center" }}
                 value={props.userInfo.postcode}
                 onChange={props.changeState("postcode")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <Box
                 sx={{
@@ -103,11 +119,11 @@ const SignUpStepTwo = (props) => {
                     Sign Up
                 </Button>
             </Box>
-            <Typography variant="body2" align="center">
+            <Typography variant="body2" align="center" sx={{ mb: 1 }}>
                 <Link
                     underline="hover"
                     color="secondary"
-                    sx={{ cursor: "pointer", ml: 2 }}
+                    sx={{ cursor: "pointer" }}
                     onClick={() => navigate("/password-reset")}
                 >
                     Forgot Password?
