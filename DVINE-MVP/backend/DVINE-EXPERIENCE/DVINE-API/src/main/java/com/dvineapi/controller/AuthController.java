@@ -1,6 +1,7 @@
 package com.dvineapi.controller;
 
 import com.dvinedao.domain.RegisterWithVerificationRequest;
+import com.dvinedao.domain.ResetPasswordRequest;
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.TokenRefreshRequest;
 import com.dvinedao.domain.TokenResponse;
@@ -75,5 +76,29 @@ public class AuthController {
         TokenResponse tokens = authService.refreshToken(request);
         return ReturnResult.success(tokens);
 
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/send-password-reset-code")
+    public ReturnResult sendPasswordResetCode(@RequestParam String email) {
+        log.info("Send password reset code to email: {}", email);
+        boolean success = authService.sendPasswordResetCode(email);
+        if (success) {
+            return ReturnResult.success("Password reset code sent successfully");
+        } else {
+            return ReturnResult.error("Failed to send password reset code");
+        }
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/reset-password")
+    public ReturnResult resetPassword(@RequestBody ResetPasswordRequest request) {
+        log.info("Reset password for email: {}", request.getEmail());
+        boolean success = authService.resetPassword(request);
+        if (success) {
+            return ReturnResult.success("Password reset successfully");
+        } else {
+            return ReturnResult.error("Failed to reset password");
+        }
     }
 }
