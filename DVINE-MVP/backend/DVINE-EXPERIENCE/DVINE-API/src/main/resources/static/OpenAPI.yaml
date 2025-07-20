@@ -944,6 +944,11 @@ paths:
                   value:
                     code: 1
                     msg: Invalid or expired verification code
+                Same Password:
+                  description: New password is the same as current password
+                  value:
+                    code: 1
+                    msg: New password cannot be the same as current password
         "200":
           description: Password reset successfully
           content:
