@@ -99,6 +99,8 @@ public class StripeUtil {
      * SignatureVerificationException will be handled by GlobalExceptionHandler
      */
     public Event constructWebhookEvent(String payload, String signature) throws SignatureVerificationException {
+        log.info("Stripe webhook event received");
+        log.info("webhookSecret: {}", webhookSecret);
         return Webhook.constructEvent(payload, signature, webhookSecret);
     }
     
