@@ -36,6 +36,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             "/auth/register",
             "/auth/register-with-verification",
             "/auth/send-verification-code",
+            "/auth/send-password-reset-code",
+            "/auth/reset-password",
             "/auth/refresh",
             // OpenAPI/Swagger endpoints
             "/swagger-ui.html",
