@@ -2,13 +2,14 @@ import React from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png"; // Adjust the path as necessary
+import logoDark from "../assets/logoDark.png";
 
-const Logo = ({ sx = {} }) => {
+const Logo = ({ sx = {}, isDarkMode }) => {
     const navigate = useNavigate();
     return (
         <Box
             component="img"
-            src={logo}
+            src={isDarkMode ? logoDark : logo}
             alt="Dvine Logo"
             onClick={() => navigate("/")}
             sx={{

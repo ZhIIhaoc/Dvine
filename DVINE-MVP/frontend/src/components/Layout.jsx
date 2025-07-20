@@ -15,7 +15,7 @@ export default function Layout({ isDarkMode, setIsDarkMode }) {
         >
             <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             <Outlet />
-            <Footer />
+            <Footer isDarkMode={isDarkMode} />
         </Box>
     );
 }

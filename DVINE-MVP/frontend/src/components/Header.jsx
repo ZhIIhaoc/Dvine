@@ -69,7 +69,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                     }}
                 >
                     <Box sx={{ minWidth: 40 }}>
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </Box>
                     <Button
                         sx={{ mt: 1, color: "text.primary" }}
