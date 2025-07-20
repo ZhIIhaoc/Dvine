@@ -27,7 +27,7 @@ stripe:
   secret:
     key: sk_test_51Rm729GfQkMoi85m3625oChFNXNhgKoeiGpupVUvyDZRfdOzCK3ShhwUB3XW73710JUoVxnXoYusJUF6qG948h1r00BsztoKNv
   webhook:
-    secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret_here}
+    secret: ${STRIPE_WEBHOOK_SECRET:whsec_f578b5d873b0e9ff3821b9c29b27180c19034b670fa5ed1150a29e24e535395e}
   public:
     key: pk_test_51Rm729GfQkMoi85mj5PvXe7k8AmUiMPTEsV6Pnxp3CWzcXc6emlYgQUwoLLa38sjOwqdJlXzI6U7lKKGCWRK9iIq00VLMXP3Tz
 

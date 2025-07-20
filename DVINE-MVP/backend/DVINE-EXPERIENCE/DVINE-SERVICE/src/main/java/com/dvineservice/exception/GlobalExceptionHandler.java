@@ -144,6 +144,13 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleInvalidBookingStatusException(InvalidBookingStatusException e) {
+        log.error("Invalid booking status error:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ExceptionHandler
     public ReturnResult handleTourSubmittedException(TourSubmittedException e) {
