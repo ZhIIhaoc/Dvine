@@ -148,6 +148,11 @@ public class AuthServiceImpl implements AuthService {
         if (!emailVerificationService.verifyCode(email, verificationCode)) {
             throw new IllegalArgumentException("Invalid or expired verification code");
         }
+
+        // Check if new password is the same as the old password
+        if(passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the old password");
+        }
         
         // Update password
         String encodedPassword = passwordEncoder.encode(newPassword);
