@@ -8,6 +8,8 @@ import { AdminDashboard } from "./pages/AdminDashboard.jsx";
 import { Catalogue } from "./pages/Catalogue.jsx";
 import { DvineMoments } from "./pages/DvineMoments.jsx";
 import { FAQ } from "./pages/FAQ.jsx";
+import TourPurchasesSuccess from "./pages/TourPurchasesSuccess.jsx"; 
+import TourPurchaseFail from "./pages/TourPurchaseFail.jsx";
 import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import {CurrentUploadedTours} from "./pages/CurrentUploadedTours.jsx";
@@ -65,6 +67,8 @@ function App() {
                     <Route path="/user/settings" element={<UserSettings />} />
                     <Route path="/tour/:id" element={<TourDetails />} />
                     <Route path="/uploaded-tours" element={<CurrentUploadedTours />} />
+                    <Route path="/booking/success/:id" element={<TourPurchasesSuccess />} />
+                    <Route path="/booking/cancel/:id" element={<TourPurchaseFail />} />
                     <Route path="admin-tour-approval" element={<AdminTourPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
