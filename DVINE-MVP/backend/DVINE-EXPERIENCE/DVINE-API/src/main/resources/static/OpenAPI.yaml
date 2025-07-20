@@ -867,6 +867,93 @@ paths:
                 data:
                   accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                   refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  /auth/send-password-reset-code:
+    post:
+      tags:
+        - Authentication
+      summary: Send password reset verification code
+      description: Send a verification code to the user's email for password reset.
+      operationId: sendPasswordResetCode
+      parameters:
+        - name: email
+          in: query
+          description: User's email address
+          required: true
+          schema:
+            type: string
+            format: email
+          example: user@example.com
+      responses:
+        "400":
+          description: Bad Request - occurs when user with email doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User with this email does not exist
+        "200":
+          description: Password reset code sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: Password reset code sent successfully
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset user password
+      description: Reset user password using email verification code. The verification code must be valid and not expired.
+      operationId: resetPassword
+      requestBody:
+        description: Password reset request with email, verification code, and new password
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+            example:
+              email: user@example.com
+              verificationCode: "123456"
+              newPassword: NewSecurePassword12!
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when validation fails
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Input:
+                  description: Missing required fields
+                  value:
+                    code: 1
+                    msg: Email, verification code, and new password are required
+                User Not Found:
+                  description: User with email doesn't exist
+                  value:
+                    code: 1
+                    msg: User with this email does not exist
+                Invalid Code:
+                  description: Verification code is invalid or expired
+                  value:
+                    code: 1
+                    msg: Invalid or expired verification code
+        "200":
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: Password reset successfully
   /approvals/tours/{pendingTourId}/reject:
     post:
       tags:
@@ -2349,6 +2436,27 @@ components:
       required:
         - user
         - verificationCode
+    ResetPasswordRequest:
+      type: object
+      description: Password reset request with email verification
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: john.doe@example.com
+        verificationCode:
+          type: string
+          description: Email verification code for password reset
+          example: "123456"
+        newPassword:
+          type: string
+          description: New password for the user
+          example: NewSecurePassword123!
+      required:
+        - email
+        - verificationCode
+        - newPassword
     TokenRefreshRequest:
       type: object
       description: Token refresh request

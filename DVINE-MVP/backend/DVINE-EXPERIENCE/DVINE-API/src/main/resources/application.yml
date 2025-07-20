@@ -28,7 +28,7 @@ aws:
     access-key: AKIAYAF3XLATNGLF4YO4
     secret-key: 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
     region: ap-southeast-2
-    from-email: vxyu82505@gmail.com
+    from-email: noreply@enmaai.online
 
 email:
   verification:
