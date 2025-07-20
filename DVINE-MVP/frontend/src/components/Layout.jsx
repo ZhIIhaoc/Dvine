@@ -4,7 +4,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Box } from "@mui/material";
 
-export default function Layout() {
+export default function Layout({ isDarkMode, setIsDarkMode }) {
     return (
         <Box
             sx={{
@@ -13,9 +13,9 @@ export default function Layout() {
                 minHeight: "100vh",
             }}
         >
-            <Header />
+            <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             <Outlet />
-            <Footer />
+            <Footer isDarkMode={isDarkMode} />
         </Box>
     );
 }

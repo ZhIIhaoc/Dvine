@@ -43,6 +43,10 @@ const SignUpStepOne = (props) => {
                 sx={{ mb: 4, mt: 10, width: "70%" }}
                 value={props.userInfo.email}
                 onChange={props.changeState("email")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Password"
@@ -52,6 +56,10 @@ const SignUpStepOne = (props) => {
                 sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.password}
                 onChange={props.changeState("password")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Confirm Password"
@@ -61,6 +69,10 @@ const SignUpStepOne = (props) => {
                 sx={{ mb: 11, width: "70%" }}
                 value={props.userInfo.confirmPassword}
                 onChange={props.changeState("confirmPassword")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <Button
                 variant="contained"
@@ -74,11 +86,11 @@ const SignUpStepOne = (props) => {
             >
                 Next
             </Button>
-            <Typography variant="body2" align="center">
+            <Typography variant="body2" align="center" sx={{ mb: 1 }}>
                 <Link
                     underline="hover"
                     color="secondary"
-                    sx={{ cursor: "pointer", ml: 2 }}
+                    sx={{ cursor: "pointer" }}
                     onClick={() => navigate("/password-reset")}
                 >
                     Forgot Password?

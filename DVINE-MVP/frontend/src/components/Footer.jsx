@@ -10,13 +10,13 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
 import { useNavigate } from "react-router-dom";
 
-export function Footer() {
+export function Footer({ isDarkMode }) {
     const navigate = useNavigate();
     return (
         <Box
             component="footer"
             sx={{
-                backgroundColor: "#EDE9E3",
+                backgroundColor: "background.secondary",
                 mt: "auto",
                 minHeight: 400,
                 padding: 4,
@@ -42,7 +42,10 @@ export function Footer() {
                         }}
                     >
                         <Box sx={{ position: "relative" }}>
-                            <Logo sx={{ height: 200 }} />
+                            <Logo
+                                sx={{ height: 200 }}
+                                isDarkMode={isDarkMode}
+                            />
                         </Box>
                         <Typography sx={{ mt: -3 }}>
                             Explore Port Macquarie’s vibrant culinary and <br />
@@ -94,7 +97,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         Home
                     </Link>
@@ -102,7 +105,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/catalogue")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         DVINE Experiences Catalogue
                     </Link>
@@ -110,7 +113,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/dvine-moments")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         DVINE Moments
                     </Link>
@@ -118,7 +121,7 @@ export function Footer() {
                         component="button"
                         onClick={() => navigate("/faq")}
                         underline="hover"
-                        sx={{ color: "black" }}
+                        sx={{ color: "text.primary" }}
                     >
                         FAQ
                     </Link>

@@ -12,9 +12,12 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    Switch,
+    Typography,
+    useTheme,
 } from "@mui/material";
 
-export function Header() {
+export function Header({ isDarkMode, setIsDarkMode }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
     // code taken from https://mui.com/material-ui/react-menu/
@@ -29,15 +32,19 @@ export function Header() {
     const { token, userInfo } = useContext(AuthContext);
     useEffect(() => {
         if (userInfo) {
-            setIsAdmin(userInfo.permission == 2 || userInfo.permission == 3 || userInfo.permission == 4);
+            setIsAdmin(
+                userInfo.permission == 2 ||
+                    userInfo.permission == 3 ||
+                    userInfo.permission == 4
+            );
         }
-
     }, [userInfo]);
+    const theme = useTheme();
 
     return (
         <AppBar
             sx={{
-                backgroundColor: "rgba(251, 249, 245, 0.8)",
+                backgroundColor: theme.palette.header.main,
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
             }}
@@ -62,16 +69,16 @@ export function Header() {
                     }}
                 >
                     <Box sx={{ minWidth: 40 }}>
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </Box>
                     <Button
-                        sx={{ mt: 1, color: "black" }}
+                        sx={{ mt: 1, color: "text.primary" }}
                         onClick={() => navigate("/catalogue")}
                     >
                         Tours
                     </Button>
                     <Button
-                        sx={{ mt: 1, color: "black" }}
+                        sx={{ mt: 1, color: "text.primary" }}
                         onClick={() => navigate("/dvine-moments")}
                     >
                         DVine Moments
@@ -86,31 +93,30 @@ export function Header() {
                             pr: 10,
                         }}
                     >
-                    {isAdmin ? (
-                        <Button
-                            sx={{
-                                mt: 0,
-                                color: "black",
-                                mr: 3,
-                            }}
-                            onClick={() => navigate("/admin-dashboard")}
-                        >
-                            Admin Dashboard
-                        </Button>
+                        {isAdmin ? (
+                            <Button
+                                sx={{
+                                    mt: 0,
+                                    color: "text.primary",
+                                    mr: 3,
+                                }}
+                                onClick={() => navigate("/admin-dashboard")}
+                            >
+                                Admin Dashboard
+                            </Button>
+                        ) : (
+                            <Button
+                                sx={{
+                                    mt: 0,
+                                    color: "text.primary",
+                                    mr: 3,
+                                }}
+                                onClick={() => navigate("/user-dashboard")}
+                            >
+                                User Dashboard
+                            </Button>
+                        )}
 
-                    ) : (
-                        <Button
-                            sx={{
-                                mt: 0,
-                                color: "black",
-                                mr: 3,
-                            }}
-                            onClick={() => navigate("/user-dashboard")}
-                        >
-                            User Dashboard
-                        </Button>
-                    )}
-                        
                         <IconButton
                             sx={{ my: 2, mr: { xs: 2, sm: 4, md: 10 } }}
                             onClick={handleClick}
@@ -159,7 +165,10 @@ export function Header() {
                     >
                         <Button
                             onClick={() => navigate("/login")}
-                            sx={{ color: "black", textTransform: "none" }}
+                            sx={{
+                                color: "text.primary",
+                                textTransform: "none",
+                            }}
                         >
                             Log In
                         </Button>
@@ -181,6 +190,19 @@ export function Header() {
                         </Button>
                     </Box>
                 )}
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    gap={2}
+                    sx={{ pr: 3, height: "100%" }}
+                >
+                    <Switch
+                        checked={isDarkMode}
+                        onChange={(e) => setIsDarkMode(e.target.checked)}
+                        color="primary"
+                    />
+                </Box>
             </Toolbar>
         </AppBar>
     );

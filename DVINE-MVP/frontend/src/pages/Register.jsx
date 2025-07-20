@@ -12,8 +12,7 @@ import SubmitEmailRegistration from "../endpoints/SubmitEmailRegistration.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { useContext } from "react";
 
-
-export const Register = () => {
+export const Register = ({ isDarkMode, setIsDarkMode }) => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const { setToken } = useContext(AuthContext);
@@ -57,8 +56,8 @@ export const Register = () => {
     };
 
     // this tracks what process of the register process the user is on
-    const pageNext = () => setPage(prevPage => prevPage + 1);
-    const pageBack = () => setPage(prevPage => prevPage - 1);
+    const pageNext = () => setPage((prevPage) => prevPage + 1);
+    const pageBack = () => setPage((prevPage) => prevPage - 1);
     const changeState = (value) => (event) => {
         setUserInfo({
             ...userInfo,
@@ -99,7 +98,7 @@ export const Register = () => {
             console.error("Error sending verification email:", error);
             showSnackbar("Network error. Please try again.", "error");
         }
-    }
+    };
     const resendCode = async () => {
         try {
             const response = await SubmitEmailRegistration(userInfo.email);
@@ -109,7 +108,10 @@ export const Register = () => {
             if (responseInfo.code === 0) {
                 showSnackbar("Verification email resent", "success");
             } else {
-                showSnackbar(responseInfo.msg || "Failed to resend verification email", "error");
+                showSnackbar(
+                    responseInfo.msg || "Failed to resend verification email",
+                    "error"
+                );
             }
         } catch (error) {
             console.error("Error resending email:", error);
@@ -187,7 +189,7 @@ export const Register = () => {
                     }}
                 >
                     <Box sx={{ pl: { xs: 0, md: 12 } }}>
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </Box>
                     <Box
                         sx={{
@@ -221,30 +223,27 @@ export const Register = () => {
                                 resendCode={resendCode} // ← pass this in
                             />
                         )}
-                        
+                    </Box>
                 </Box>
-            </Box>
-        </Grid>
-            {
-        windowSize.innerWidth >= 900 && (
-            <Grid size={6}>
-                <img
-                    src="../src/assets/background.png"
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                    }}
-                />
             </Grid>
-        )
-    }
-    <MessageAlert
-        open={snackbarOpen}
-        onClose={() => setSnackbarOpen(false)}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
-    />
-        </Grid >
+            {windowSize.innerWidth >= 900 && (
+                <Grid size={6}>
+                    <img
+                        src="../src/assets/background.png"
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                        }}
+                    />
+                </Grid>
+            )}
+            <MessageAlert
+                open={snackbarOpen}
+                onClose={() => setSnackbarOpen(false)}
+                message={snackbarMessage}
+                severity={snackbarSeverity}
+            />
+        </Grid>
     );
 };
