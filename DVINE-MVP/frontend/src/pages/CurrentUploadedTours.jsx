@@ -160,7 +160,7 @@ export const CurrentUploadedTours = () => {
                     <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
                         {currentUserAllToursList.map((tour) => {
                             // one to show that the tour is live
-                            const statusKey = mapStatus(live);
+                            const statusKey = mapStatus(LIVE_STATUS_CODE);
                             return (
                                 <Grid item xs={12} sm={6} md={4} key={tour.tourId}>
                                     <Card sx={{ boxShadow: 1 }}>
