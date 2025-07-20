@@ -114,8 +114,6 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                     height: { xs: "auto", md: 500 },
                                     width: "100%",
                                     display: "flex",
-                                    flexDirection: "column",
-                                    display: "flex",
                                     flexDirection: { xs: "column", md: "row" },
                                     cursor: "pointer",
                                     transition:
@@ -193,7 +191,6 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                         position: "relative",
                                         width: { xs: "100%", md: "70%" },
                                         height: { xs: 280, md: "100%" },
-                                        objectFit: "cover",
                                         filter: "brightness(0.9)",
                                     }}
                                 />
