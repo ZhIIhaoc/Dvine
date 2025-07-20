@@ -221,27 +221,30 @@ export const Register = () => {
                                 resendCode={resendCode} // ← pass this in
                             />
                         )}
-                    </Box>
+                        
                 </Box>
-            </Grid>
-            {windowSize.innerWidth >= 900 && (
-                <Grid size={6}>
-                    <img
-                        src="../src/assets/background.png"
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                        }}
-                    />
-                </Grid>
-            )}
-            <MessageAlert
-                open={snackbarOpen}
-                onClose={() => setSnackbarOpen(false)}
-                message={snackbarMessage}
-                severity={snackbarSeverity}
-            />
+            </Box>
         </Grid>
+            {
+        windowSize.innerWidth >= 900 && (
+            <Grid size={6}>
+                <img
+                    src="../src/assets/background.png"
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                    }}
+                />
+            </Grid>
+        )
+    }
+    <MessageAlert
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+    />
+        </Grid >
     );
 };

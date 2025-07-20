@@ -103,6 +103,16 @@ const SignUpStepTwo = (props) => {
                     Sign Up
                 </Button>
             </Box>
+            <Typography variant="body2" align="center">
+                <Link
+                    underline="hover"
+                    color="secondary"
+                    sx={{ cursor: "pointer", ml: 2 }}
+                    onClick={() => navigate("/password-reset")}
+                >
+                    Forgot Password?
+                </Link>
+            </Typography>
 
             <Typography variant="body2" align="center">
                 Already have an account?{" "}
