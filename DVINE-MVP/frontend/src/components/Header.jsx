@@ -42,7 +42,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
     return (
         <AppBar
             sx={{
-                backgroundColor: "rgba(251, 249, 245, 0.8)",
+                backgroundColor: "background.default",
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
             }}
@@ -70,13 +70,13 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                         <Logo />
                     </Box>
                     <Button
-                        sx={{ mt: 1, color: "black" }}
+                        sx={{ mt: 1, color: "text.primary" }}
                         onClick={() => navigate("/catalogue")}
                     >
                         Tours
                     </Button>
                     <Button
-                        sx={{ mt: 1, color: "black" }}
+                        sx={{ mt: 1, color: "text.primary" }}
                         onClick={() => navigate("/dvine-moments")}
                     >
                         DVine Moments
@@ -95,7 +95,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                             <Button
                                 sx={{
                                     mt: 0,
-                                    color: "black",
+                                    color: "text.primary",
                                     mr: 3,
                                 }}
                                 onClick={() => navigate("/admin-dashboard")}
@@ -106,7 +106,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                             <Button
                                 sx={{
                                     mt: 0,
-                                    color: "black",
+                                    color: "text.primary",
                                     mr: 3,
                                 }}
                                 onClick={() => navigate("/user-dashboard")}
@@ -163,7 +163,10 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                     >
                         <Button
                             onClick={() => navigate("/login")}
-                            sx={{ color: "black", textTransform: "none" }}
+                            sx={{
+                                color: "text.primary",
+                                textTransform: "none",
+                            }}
                         >
                             Log In
                         </Button>
