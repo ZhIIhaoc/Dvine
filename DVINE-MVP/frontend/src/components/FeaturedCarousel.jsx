@@ -35,30 +35,6 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                 borderRadius: 3,
             }}
         >
-            {/* <Typography
-                variant="h3"
-                fontWeight="bold"
-                textAlign="center"
-                sx={{
-                    mb: 1,
-                    color: "primary.main",
-                    textShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-            >
-                Featured Tours
-            </Typography>
-            <Typography
-                variant="h6"
-                textAlign="center"
-                sx={{
-                    mb: 6,
-                    color: "text.secondary",
-                    fontStyle: "italic",
-                }}
-            >
-                Discover our most popular experiences
-            </Typography> */}
-
             <Box
                 sx={{
                     maxWidth: { xs: "100vw", md: "80vw" },
@@ -127,8 +103,7 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                     borderRadius: 4,
                                     overflow: "hidden",
                                     position: "relative",
-                                    background:
-                                        "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
+                                    background: "background.secondary",
                                     border: "1px solid rgba(0,0,0,0.05)",
                                 }}
                                 onClick={() => onTourClick(tour.tourId)}
@@ -202,8 +177,7 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "space-between",
-                                        background:
-                                            "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.98) 100%)",
+                                        background: "background.primary",
                                     }}
                                 >
                                     <Box>
@@ -241,7 +215,7 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
                                             />
                                             <Typography
                                                 variant="body1"
-                                                color="text.secondary"
+                                                color="text.primary"
                                                 fontWeight="medium"
                                             >
                                                 {tour.destination}
@@ -250,7 +224,7 @@ export default function FeaturedCarousel({ tours, onTourClick }) {
 
                                         <Typography
                                             variant="body1"
-                                            color="text.secondary"
+                                            color="text.primary"
                                             sx={{
                                                 mb: 3,
                                                 lineHeight: 1.6,
