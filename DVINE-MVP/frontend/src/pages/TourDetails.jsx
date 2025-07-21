@@ -37,7 +37,7 @@ import {
 } from "@mui/material";
 import {
     LocationOn as LocationIcon,
-    AttachMoney as PriceIcon,
+    // AttachMoney as PriceIcon,
     Star as StarIcon,
     Person as PersonIcon,
     Category as CategoryIcon,
@@ -61,6 +61,8 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import PriceDisplay from "../components/PriceDisplay";
+import { useAuth } from "../components/AuthContext";
 
 // Mock data for fallback
 const mockTour = {
@@ -164,6 +166,7 @@ export default function TourDetails() {
     const [activeTab, setActiveTab] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
     const token = localStorage.getItem("accessToken");
+    const { userInfo } = useAuth();
 
     // Fetch tour details
     const fetchTourDetails = async () => {
@@ -311,6 +314,14 @@ export default function TourDetails() {
                             <Typography variant="h6" color="text.secondary">
                                 {tour.destination}
                             </Typography>
+                        </Box>
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+                            <PriceDisplay
+                                regularPrice={tour?.regularPrice ?? tour?.price}
+                                premiumPrice={tour?.premiumPrice ?? tour?.price}
+                                userPermission={userInfo?.permission ?? 0}
+                            />
                         </Box>
 
                         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -462,9 +473,9 @@ export default function TourDetails() {
                     {/* Booking Card */}
                     <Card sx={{ position: "sticky", top: 20, mb: 3 }}>
                         <CardContent>
-                            <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
+                            {/* <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
                                 ${tour.price}
-                            </Typography>
+                            </Typography> */}
                             <Typography variant="body2" color="text.secondary" gutterBottom>
                                 per person
                             </Typography>
