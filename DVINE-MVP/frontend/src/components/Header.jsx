@@ -15,7 +15,10 @@ import {
     Switch,
     Typography,
     useTheme,
+    Tooltip
 } from "@mui/material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 
 export function Header({ isDarkMode, setIsDarkMode }) {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -34,8 +37,8 @@ export function Header({ isDarkMode, setIsDarkMode }) {
         if (userInfo) {
             setIsAdmin(
                 userInfo.permission == 2 ||
-                    userInfo.permission == 3 ||
-                    userInfo.permission == 4
+                userInfo.permission == 3 ||
+                userInfo.permission == 4
             );
         }
     }, [userInfo]);
@@ -197,11 +200,25 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                     gap={2}
                     sx={{ pr: 3, height: "100%" }}
                 >
-                    <Switch
-                        checked={isDarkMode}
-                        onChange={(e) => setIsDarkMode(e.target.checked)}
-                        color="primary"
-                    />
+                    <Tooltip title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}>
+                        <IconButton
+                            onClick={() => setIsDarkMode(!isDarkMode)}
+                            sx={{
+                                color: "text.primary",
+                                border: "1px solid",
+                                borderColor: "divider",
+                                borderRadius: 2,
+                                p: 1,
+                                ml: 2,
+                                transition: "all 0.3s ease",
+                                "&:hover": {
+                                    backgroundColor: "action.hover",
+                                },
+                            }}
+                        >
+                            {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Toolbar>
         </AppBar>

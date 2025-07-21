@@ -25,12 +25,14 @@ import React, { useState, useEffect } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 
 function App() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("themeMode") === "dark";
+});
 
-    useEffect(() => {
-        const saved = localStorage.getItem("themeMode");
-        if (saved) setIsDarkMode(saved === "dark");
-    }, []);
+    // useEffect(() => {
+    //     const saved = localStorage.getItem("themeMode");
+    //     if (saved) setIsDarkMode(saved === "dark");
+    // }, []);
 
     useEffect(() => {
         localStorage.setItem("themeMode", isDarkMode ? "dark" : "light");
