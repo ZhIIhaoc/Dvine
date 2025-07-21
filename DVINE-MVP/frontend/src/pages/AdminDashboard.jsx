@@ -190,7 +190,7 @@ export function AdminDashboard() {
                                                 overlap="rectangular"
                                             >
                                                 <ApprovalIcon style={{ marginRight: 8 }} />
-                                                Pending Approvals
+                                                Manage Tours
                                             </Badge>
                                         </Button>
                                     </Box>
