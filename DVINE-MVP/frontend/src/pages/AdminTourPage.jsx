@@ -19,7 +19,6 @@ import {
     Chip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../components/AuthContext.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
 
@@ -77,7 +76,7 @@ export const AdminTourPage = () => {
             const response = await fetch("http://localhost:8080/approvals/pending-tours", {
                 headers: { Authorization: `${token}` },
             });
-            const responseInfo = await res.json();
+            const responseInfo = await response .json();
             if (responseInfo.code === 0) setPendingTourList(responseInfo.data);
         } catch (err) {
             console.error("Error fetching pending tours:", err);
@@ -90,7 +89,9 @@ export const AdminTourPage = () => {
                 headers: { Authorization: `${token}` },
             });
             const responseInfo = await response.json();
-            if (responseInfo.code === 0) setFeaturedManageList(responseInfo.data);
+            if (responseInfo.code === 0) {
+                setFeaturedManageList(responseInfo.data);
+            }
         } catch (err) {
             console.error("Error fetching featured tours:", err);
         }
@@ -120,8 +121,9 @@ export const AdminTourPage = () => {
                 fetchPendingTours();
                 fetchAllTours();
             } else showSnackbar(responseInfo.msg, "error");
-        } catch (err) {
+        } catch (error) {
             showSnackbar("Approval failed", "error");
+            console.error("Error approving tour:", error);
         }
     };
 
@@ -156,8 +158,9 @@ export const AdminTourPage = () => {
                 fetchFeaturedTours();
                 showSnackbar("Tour added to featured!", "success");
             } else showSnackbar(responseInfo.msg, "error");
-        } catch (err) {
+        } catch (error) {
             showSnackbar("Failed to add to featured", "error");
+            console.error("Error adding tour to featured:", error);
         }
     };
 
@@ -246,7 +249,7 @@ export const AdminTourPage = () => {
                             {featuredManageList.map((item) => (
                                 <ListItem
                                     key={item.featuredTourId}
-                                    sx={{ backgroundColor: "#1c1c1c", borderRadius: 2, mb: 1 }}
+                                    sx={{ backgroundColor: "#897979ff", borderRadius: 2, mb: 1 }}
                                     secondaryAction={
                                         <Button variant="outlined" color="error" onClick={() => removeFeaturedTour(item.tourId)}>
                                             Remove
@@ -273,7 +276,7 @@ export const AdminTourPage = () => {
                             {nonFeaturedTours.map((tour) => (
                                 <ListItem
                                     key={tour.tourId}
-                                    sx={{ backgroundColor: "#1c1c1c", borderRadius: 2, mb: 1 }}
+                                    sx={{ backgroundColor: "#897979ff", borderRadius: 2, mb: 1 }}
                                     secondaryAction={
                                         <Button variant="outlined" color="primary" onClick={() => featureTour(tour.tourId)}>
                                             Add to Featured
