@@ -592,6 +592,7 @@ export function Catalogue() {
             <CatalogueSearch
                 onSearch={handleSearch}
                 onClear={handleClearSearch}
+                sx={{ width: "100%" }}
             />
 
             {/* All Tours Section */}
@@ -608,7 +609,7 @@ export function Catalogue() {
                     sx={{
                         justifyContent: {
                             xs: "center",
-                            xl: "space-between",
+                            xl: "flex-start",
                         },
                     }}
                 >

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     TextField,
@@ -26,7 +26,7 @@ export default function CatalogueSearch({ onSearch, onClear }) {
     const [location, setLocation] = useState("");
     const [duration, setDuration] = useState("");
 
-    const handleSearch = () => {
+    useEffect(() => {
         const filters = {
             searchTerm,
             priceRange,
@@ -35,43 +35,66 @@ export default function CatalogueSearch({ onSearch, onClear }) {
             duration,
         };
         onSearch(filters);
-    };
-
-    const handleClear = () => {
-        setSearchTerm("");
-        setPriceRange([0, 2000]);
-        setSelectedCatalogue("");
-        setLocation("");
-        setDuration("");
-        onClear();
-    };
+    }, [searchTerm, priceRange, selectedCatalogue, location, duration]);
 
     return (
-        <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-                Search & Filter Tours
+        <Paper
+            sx={{
+                py: 3,
+                px: 5,
+                mb: 3,
+                width: "100%",
+                backgroundColor: "background.primary",
+            }}
+        >
+            <Typography variant="h6" fontWeight="regular" gutterBottom>
+                Search & Filter Experiences
             </Typography>
-            
-            <Grid container spacing={3} alignItems="center">
-                <Grid item xs={12} md={3}>
+
+            <Grid
+                container
+                spacing={3}
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                        xs: "repeat(1, 1fr)",
+                        sm: "repeat(2, 1fr)",
+                        md: "repeat(3, 1fr)",
+                        lg: "repeat(5, 1fr)",
+                    },
+                }}
+            >
+                <Grid item>
                     <TextField
                         fullWidth
                         label="Search tours..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        InputProps={{
-                            startAdornment: <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />,
+                        InputLabelProps={{
+                            sx: (theme) => ({
+                                color: "text.primary",
+                            }),
                         }}
                     />
                 </Grid>
-                
-                <Grid item xs={12} md={2}>
-                    <FormControl fullWidth sx={{ minWidth: 160 }}>
-                        <InputLabel>Catalogue</InputLabel>
+
+                <Grid item>
+                    <FormControl fullWidth>
+                        <InputLabel
+                            id="catalogue-label"
+                            sx={{
+                                color: "text.primary",
+                            }}
+                        >
+                            Catalogue Type
+                        </InputLabel>
                         <Select
+                            labelId="catalogue-label"
                             value={selectedCatalogue}
-                            onChange={(e) => setSelectedCatalogue(e.target.value)}
-                            label="Catalogue"
+                            onChange={(e) =>
+                                setSelectedCatalogue(e.target.value)
+                            }
+                            label="Catalogue Type"
                         >
                             <MenuItem value="">All Catalogues</MenuItem>
                             <MenuItem value="1">Adventure Collection</MenuItem>
@@ -79,29 +102,49 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                         </Select>
                     </FormControl>
                 </Grid>
-                
-                <Grid item xs={12} md={2}>
-                    <FormControl fullWidth sx={{ minWidth: 160 }}>
-                        <InputLabel>Location</InputLabel>
+
+                <Grid item>
+                    <FormControl fullWidth>
+                        <InputLabel
+                            id="location-label"
+                            sx={{
+                                color: "text.primary",
+                            }}
+                        >
+                            Location
+                        </InputLabel>
                         <Select
+                            labelId="location-label"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             label="Location"
                         >
                             <MenuItem value="">All Locations</MenuItem>
-                            <MenuItem value="Coffs Harbour">Coffs Harbour</MenuItem>
-                            <MenuItem value="Port Macquarie">Port Macquarie</MenuItem>
+                            <MenuItem value="Coffs Harbour">
+                                Coffs Harbour
+                            </MenuItem>
+                            <MenuItem value="Port Macquarie">
+                                Port Macquarie
+                            </MenuItem>
                             <MenuItem value="Sydney">Sydney</MenuItem>
                             <MenuItem value="Melbourne">Melbourne</MenuItem>
                             <MenuItem value="Brisbane">Brisbane</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
-                
-                <Grid item xs={12} md={2}>
-                    <FormControl fullWidth sx={{ minWidth: 160 }}>
-                        <InputLabel>Duration</InputLabel>
+
+                <Grid item>
+                    <FormControl fullWidth>
+                        <InputLabel
+                            id="duration-label"
+                            sx={{
+                                color: "text.primary",
+                            }}
+                        >
+                            Duration
+                        </InputLabel>
                         <Select
+                            labelId="duration-label"
                             value={duration}
                             onChange={(e) => setDuration(e.target.value)}
                             label="Duration"
@@ -113,54 +156,91 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                         </Select>
                     </FormControl>
                 </Grid>
-                
-                <Grid item xs={12} md={3}>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                        <Button
-                            variant="contained"
-                            startIcon={<FilterIcon />}
-                            onClick={handleSearch}
+
+                <Grid item>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                minWidth: 100,
+                            }}
+                        >
+                            <Typography>Price</Typography>
+                            <Typography
+                                variant="body2"
+                                color="text.primary"
+                                gutterBottom
+                            >
+                                (${priceRange[0]} - ${priceRange[1]})
+                            </Typography>
+                        </Box>
+
+                        <Slider
+                            value={priceRange}
+                            onChange={(event, newValue) =>
+                                setPriceRange(newValue)
+                            }
+                            valueLabelDisplay="auto"
+                            min={0}
+                            max={2000}
+                            step={50}
                             sx={{ flexGrow: 1 }}
-                        >
-                            SEARCH
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ClearIcon />}
-                            onClick={handleClear}
-                        >
-                            CLEAR
-                        </Button>
+                        />
                     </Box>
                 </Grid>
             </Grid>
-            
-            <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Price Range: ${priceRange[0]} - ${priceRange[1]}
+
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    mt: 2,
+                }}
+            >
+                <Typography
+                    variant="body2"
+                    color="text.primary"
+                    gutterBottom
+                    sx={{ mr: 1 }}
+                >
+                    Active Filters:
                 </Typography>
-                <Slider
-                    value={priceRange}
-                    onChange={(event, newValue) => setPriceRange(newValue)}
-                    valueLabelDisplay="auto"
-                    min={0}
-                    max={2000}
-                    step={50}
-                />
-            </Box>
-            
-            {/* Active Filters */}
-            {(searchTerm || selectedCatalogue || location || duration || (priceRange[0] > 0 || priceRange[1] < 2000)) && (
-                <Box sx={{ mt: 2 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                        Active Filters:
-                    </Typography>
+                {/* Active Filters */}
+                {(searchTerm ||
+                    selectedCatalogue ||
+                    location ||
+                    duration ||
+                    priceRange[0] > 0 ||
+                    priceRange[1] < 2000) && (
                     <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {searchTerm && (
                             <Chip
                                 label={`Search: ${searchTerm}`}
                                 onDelete={() => setSearchTerm("")}
                                 size="small"
+                                sx={{
+                                    backgroundColor: "primary.light",
+                                    color: "white",
+                                    "&:hover": {
+                                        backgroundColor: "primary.dark",
+                                        cursor: "pointer",
+                                    },
+                                    "& .MuiChip-deleteIcon": {
+                                        color: "white",
+                                        "&:hover": {
+                                            color: "white",
+                                        },
+                                    },
+                                }}
                             />
                         )}
                         {selectedCatalogue && (
@@ -168,6 +248,20 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                                 label={`Catalogue: ${selectedCatalogue}`}
                                 onDelete={() => setSelectedCatalogue("")}
                                 size="small"
+                                sx={{
+                                    backgroundColor: "primary.light",
+                                    color: "white",
+                                    "&:hover": {
+                                        backgroundColor: "primary.dark",
+                                        cursor: "pointer",
+                                    },
+                                    "& .MuiChip-deleteIcon": {
+                                        color: "white",
+                                        "&:hover": {
+                                            color: "white",
+                                        },
+                                    },
+                                }}
                             />
                         )}
                         {location && (
@@ -175,6 +269,20 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                                 label={`Location: ${location}`}
                                 onDelete={() => setLocation("")}
                                 size="small"
+                                sx={{
+                                    backgroundColor: "primary.light",
+                                    color: "white",
+                                    "&:hover": {
+                                        backgroundColor: "primary.dark",
+                                        cursor: "pointer",
+                                    },
+                                    "& .MuiChip-deleteIcon": {
+                                        color: "white",
+                                        "&:hover": {
+                                            color: "white",
+                                        },
+                                    },
+                                }}
                             />
                         )}
                         {duration && (
@@ -182,6 +290,20 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                                 label={`Duration: ${duration} days`}
                                 onDelete={() => setDuration("")}
                                 size="small"
+                                sx={{
+                                    backgroundColor: "primary.light",
+                                    color: "white",
+                                    "&:hover": {
+                                        backgroundColor: "primary.dark",
+                                        cursor: "pointer",
+                                    },
+                                    "& .MuiChip-deleteIcon": {
+                                        color: "white",
+                                        "&:hover": {
+                                            color: "white",
+                                        },
+                                    },
+                                }}
                             />
                         )}
                         {(priceRange[0] > 0 || priceRange[1] < 2000) && (
@@ -189,11 +311,25 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                                 label={`Price: $${priceRange[0]} - $${priceRange[1]}`}
                                 onDelete={() => setPriceRange([0, 2000])}
                                 size="small"
+                                sx={{
+                                    backgroundColor: "primary.light",
+                                    color: "white",
+                                    "&:hover": {
+                                        backgroundColor: "primary.dark",
+                                        cursor: "pointer",
+                                    },
+                                    "& .MuiChip-deleteIcon": {
+                                        color: "white",
+                                        "&:hover": {
+                                            color: "white",
+                                        },
+                                    },
+                                }}
                             />
                         )}
                     </Box>
-                </Box>
-            )}
+                )}
+            </Box>
         </Paper>
     );
-} 
+}
