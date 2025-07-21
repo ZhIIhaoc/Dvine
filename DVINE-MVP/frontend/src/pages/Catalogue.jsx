@@ -668,76 +668,22 @@ export function Catalogue() {
                                         >
                                             {tour.title}
                                         </Typography>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.primary"
-                                            sx={{ mb: 2 }}
-                                        >
+                                        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                                            <LocationIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
+                                            <Typography variant="body2" color="text.secondary">
+                                                {tour.destination}
+                                            </Typography>
+                                        </Box>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                                             {tour.description}
                                         </Typography>
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <PriceIcon
-                                                    sx={{
-                                                        fontSize: 16,
-                                                        mr: 0.5,
-                                                        color: "primary.main",
-                                                    }}
-                                                />
-                                                <Typography
-                                                    variant="h6"
-                                                    color="primary"
-                                                    fontWeight="bold"
-                                                >
-                                                    ${tour.regularPrice}
-                                                </Typography>
-                                            </Box>
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                        "space-between",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <PriceIcon
-                                                        sx={{
-                                                            fontSize: 16,
-                                                            mr: 0.5,
-                                                            color: "primary.main",
-                                                        }}
-                                                    />
-                                                    <Typography
-                                                        variant="h6"
-                                                        color="primary"
-                                                        fontWeight="bold"
-                                                    >
-                                                        ${tour.price}
-                                                    </Typography>
-                                                </Box>
-                                                <Rating
-                                                    value={4.5}
-                                                    readOnly
-                                                    size="small"
-                                                />
-                                            </Box>
+                                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <PriceDisplay
+                                                regularPrice={tour.regularPrice ?? tour.price}
+                                                premiumPrice={tour.premiumPrice ?? tour.price}
+                                                userPermission={userInfo?.permission ?? 0}
+                                            />
+                                            <Rating value={4.5} readOnly size="small" />
                                         </Box>
                                     </CardContent>
                                 </Card>
