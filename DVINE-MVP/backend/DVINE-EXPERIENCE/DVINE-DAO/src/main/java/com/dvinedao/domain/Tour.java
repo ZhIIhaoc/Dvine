@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,8 +21,8 @@ public class Tour {
     private String title; // Tour title
     private String destination; // Tour destination
     private String description; // Tour description
-    private Double regularPrice;
-    private Double premiumPrice;
+    private BigDecimal regularPrice;
+    private BigDecimal premiumPrice;
     private String primaryImageUrl; // URL of the primary image for the tour
     private List<String> images; // List of image URLs associated with the tour
     private Long createdBy; // User ID who created this tour

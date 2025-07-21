@@ -27,7 +27,8 @@ public class JwtInterceptor implements HandlerInterceptor {
     private static final List<String> GET_WHITELIST = List.of(
             "/catalogues/**",    // /catalogues/list  |  /catalogues/123
             "/tours/**",          // /tours?catalogueId=3  |  /tours/101
-            "/featured-tours"
+            "/featured-tours",
+            "/faqs/**"           // /faqs  |  /faqs/123
     );
 
     /** URLs that skip JWT for all verbs (login, register, refresh…) */
@@ -36,12 +37,20 @@ public class JwtInterceptor implements HandlerInterceptor {
             "/auth/register",
             "/auth/register-with-verification",
             "/auth/send-verification-code",
+            "/auth/send-password-reset-code",
+            "/auth/reset-password",
             "/auth/refresh",
+            "/webhooks/stripe", // Stripe webhook endpoint
             // OpenAPI/Swagger endpoints
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/OpenAPI.yaml"
+    );
+
+    /** URLs that support optional authentication - try to extract user if token present, allow guest if not */
+    private static final List<String> OPTIONAL_AUTH_LIST = List.of(
+            "/bookings/create-session"
     );
 
     @Override
@@ -56,9 +65,15 @@ public class JwtInterceptor implements HandlerInterceptor {
                 GET_WHITELIST.stream().anyMatch(p -> PATH.match(p, uri));
 
         boolean allowedAny = ANY_METHOD_WHITELIST.stream().anyMatch(p -> PATH.match(p, uri));
+        boolean optionalAuth = OPTIONAL_AUTH_LIST.stream().anyMatch(p -> PATH.match(p, uri));
 
         if (allowedGet || allowedAny) {
             return true;                     // skip JWT, continue to controller
+        }
+
+        // Handle optional authentication endpoints
+        if (optionalAuth) {
+            return handleOptionalAuthentication(req);
         }
 
         // --- let every pre-flight straight through ---
@@ -84,6 +99,33 @@ public class JwtInterceptor implements HandlerInterceptor {
             throw new InvalidTokenException("Token is invalid or expired");
         }
         UserUtil.setCurrentUserId(userId);
+        return true;
+    }
+
+    /**
+     * Handle endpoints that support optional authentication.
+     * If valid token is present, extract userId and set in ThreadLocal.
+     * If no token or invalid token, allow to proceed as guest user.
+     */
+    private boolean handleOptionalAuthentication(HttpServletRequest req) {
+        String token = req.getHeader("Authorization");
+        
+        // Extract bearer token if present
+        token = tokenUtil.extractBearerToken(token);
+        
+        // If no token provided, continue as guest
+        if (!StringUtils.hasText(token)) {
+            log.debug("No token provided for optional auth endpoint, proceeding as guest");
+            return true;
+        }
+
+        // Extract user ID from the token
+        Long userId = tokenUtil.getUserIdFromToken(token);
+        if (userId == null) {
+            throw new InvalidTokenException("Token is invalid or expired");
+        }
+        UserUtil.setCurrentUserId(userId);
+
         return true;
     }
 

@@ -1,6 +1,7 @@
 package com.dvineservice.exception;
 
 import com.dvinedao.domain.ReturnResult;
+import com.stripe.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -143,10 +144,89 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleInvalidBookingStatusException(InvalidBookingStatusException e) {
+        log.error("Invalid booking status error:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ExceptionHandler
     public ReturnResult handleTourSubmittedException(TourSubmittedException e) {
         log.info("Tour submitted for approval:", e);
         return ReturnResult.success();
+    }
+
+    // Payment-specific exception handlers
+
+    /**
+     * Handles Stripe API errors - general Stripe API issues
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleStripeException(StripeException e) {
+        log.error("Stripe API error:", e);
+        return ReturnResult.error("Payment processing error: " + e.getUserMessage());
+    }
+
+    /**
+     * Handles Stripe card errors - declined cards, insufficient funds, etc.
+     */
+    @ResponseStatus(HttpStatus.PAYMENT_REQUIRED)
+    @ExceptionHandler
+    public ReturnResult handleCardException(CardException e) {
+        log.error("Stripe card error:", e);
+        return ReturnResult.error("Payment failed: " + e.getUserMessage());
+    }
+
+    /**
+     * Handles invalid Stripe request parameters
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleInvalidRequestException(InvalidRequestException e) {
+        log.error("Invalid Stripe request:", e);
+        return ReturnResult.error("Invalid payment request: " + e.getUserMessage());
+    }
+
+    /**
+     * Handles Stripe authentication errors - invalid API keys
+     */
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler
+    public ReturnResult handleAuthenticationException(AuthenticationException e) {
+        log.error("Stripe authentication error:", e);
+        return ReturnResult.error("Payment service authentication failed");
+    }
+
+    /**
+     * Handles Stripe API connection errors
+     */
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler
+    public ReturnResult handleApiConnectionException(ApiConnectionException e) {
+        log.error("Stripe API connection error:", e);
+        return ReturnResult.error("Payment service unavailable. Please try again later.");
+    }
+
+    /**
+     * Handles Stripe rate limiting
+     */
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    @ExceptionHandler
+    public ReturnResult handleRateLimitException(RateLimitException e) {
+        log.error("Stripe rate limit exceeded:", e);
+        return ReturnResult.error("Too many payment requests. Please try again later.");
+    }
+
+    /**
+     * Handles Stripe webhook signature verification failures
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleSignatureVerificationException(SignatureVerificationException e) {
+        log.error("Stripe webhook signature verification failed:", e);
+        return ReturnResult.error("Invalid webhook signature");
     }
 }

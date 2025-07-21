@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class PendingTour {
     private String title;
     private String destination;
     private String description;
-    private Double regularPrice;
-    private Double premiumPrice;
+    private BigDecimal regularPrice;
+    private BigDecimal premiumPrice;
     private String primaryImageUrl;
     private Long submittedBy; // User ID who submitted
     private OperationType operationType; // CREATE, UPDATE, DELETE

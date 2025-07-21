@@ -2,6 +2,7 @@
 .idea/
 .claude/
 .vscode/
+shared/
 package-lock.json
 CLAUDE.md
 

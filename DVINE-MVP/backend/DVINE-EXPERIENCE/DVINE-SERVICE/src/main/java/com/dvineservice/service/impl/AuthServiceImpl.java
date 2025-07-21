@@ -2,6 +2,7 @@ package com.dvineservice.service.impl;
 
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.RegisterWithVerificationRequest;
+import com.dvinedao.domain.ResetPasswordRequest;
 import com.dvinedao.domain.TokenRefreshRequest;
 import com.dvinedao.domain.TokenResponse;
 import com.dvinedao.domain.User;
@@ -119,5 +120,49 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Tokens refreshed successfully for user ID: {}", userId);
         return tokens;
+    }
+    
+    @Override
+    public boolean sendPasswordResetCode(String email) {
+        return emailVerificationService.sendVerificationCode(email);
+    }
+    
+    @Override
+    public boolean resetPassword(ResetPasswordRequest request) {
+        String email = request.getEmail();
+        String verificationCode = request.getVerificationCode();
+        String newPassword = request.getNewPassword();
+        
+        // Validate input
+        if (!StringUtils.hasText(email) || !StringUtils.hasText(verificationCode) || !StringUtils.hasText(newPassword)) {
+            throw new IllegalArgumentException("Email, verification code, and new password are required");
+        }
+        
+        // Check if user exists
+        User user = userMapper.selectUserByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User with this email does not exist");
+        }
+        
+        // Verify the verification code
+        if (!emailVerificationService.verifyCode(email, verificationCode)) {
+            throw new IllegalArgumentException("Invalid or expired verification code");
+        }
+
+        // Check if new password is the same as the old password
+        if(passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the old password");
+        }
+        
+        // Update password
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+        userMapper.updateUser(user);
+        
+        // Remove verification code
+        emailVerificationService.removeVerificationCode(email);
+        
+        log.info("Password reset successfully for user: {}", email);
+        return true;
     }
 }

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dvinedao.mapper.BookingMapper">
+
+    <!-- Result Map for Booking -->
+    <resultMap id="BookingResultMap" type="com.dvinedao.domain.Booking">
+        <id property="bookingId" column="bookingId"/>
+        <result property="userId" column="userId"/>
+        <result property="tourId" column="tourId"/>
+        <result property="bookingReference" column="bookingReference"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unitPrice"/>
+        <result property="totalAmount" column="totalAmount"/>
+        <result property="currency" column="currency"/>
+        <result property="travelDate" column="travelDate"/>
+        <result property="status" column="status"/>
+        <result property="customerNotes" column="customerNotes"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <!-- Additional fields for joined queries -->
+        <result property="userEmail" column="userEmail"/>
+        <result property="userName" column="userName"/>
+        <result property="tourTitle" column="tourTitle"/>
+        <result property="tourDestination" column="tourDestination"/>
+    </resultMap>
+
+    <!-- Create booking -->
+    <insert id="createBooking" parameterType="com.dvinedao.domain.Booking" useGeneratedKeys="true" keyProperty="bookingId">
+        INSERT INTO bookings (
+            userId, tourId, bookingReference, quantity, unitPrice, totalAmount, 
+            currency, travelDate, status, customerNotes
+        ) VALUES (
+            #{userId}, #{tourId}, #{bookingReference}, #{quantity}, #{unitPrice}, #{totalAmount},
+            #{currency}, #{travelDate}, #{status}, #{customerNotes}
+        )
+    </insert>
+
+    <!-- Find booking by ID -->
+    <select id="findById" resultMap="BookingResultMap">
+        SELECT 
+            b.*,
+            u.email as userEmail,
+            CONCAT(u.firstName, ' ', u.lastName) as userName,
+            t.title as tourTitle,
+            t.destination as tourDestination
+        FROM bookings b
+        LEFT JOIN users u ON b.userId = u.userId
+        LEFT JOIN tours t ON b.tourId = t.tourId
+        WHERE b.bookingId = #{bookingId}
+    </select>
+
+    <!-- Find booking by reference -->
+    <select id="findByReference" resultMap="BookingResultMap">
+        SELECT 
+            b.*,
+            u.email as userEmail,
+            CONCAT(u.firstName, ' ', u.lastName) as userName,
+            t.title as tourTitle,
+            t.destination as tourDestination
+        FROM bookings b
+        LEFT JOIN users u ON b.userId = u.userId
+        LEFT JOIN tours t ON b.tourId = t.tourId
+        WHERE b.bookingReference = #{bookingReference}
+    </select>
+
+    <!-- Find bookings by user ID -->
+    <select id="findByUserId" resultMap="BookingResultMap">
+        SELECT 
+            b.*,
+            u.email as userEmail,
+            CONCAT(u.firstName, ' ', u.lastName) as userName,
+            t.title as tourTitle,
+            t.destination as tourDestination
+        FROM bookings b
+        LEFT JOIN users u ON b.userId = u.userId
+        LEFT JOIN tours t ON b.tourId = t.tourId
+        WHERE b.userId = #{userId}
+        ORDER BY b.createTime DESC
+    </select>
+
+    <!-- Find bookings by tour ID -->
+    <select id="findByTourId" resultMap="BookingResultMap">
+        SELECT 
+            b.*,
+            u.email as userEmail,
+            CONCAT(u.firstName, ' ', u.lastName) as userName,
+            t.title as tourTitle,
+            t.destination as tourDestination
+        FROM bookings b
+        LEFT JOIN users u ON b.userId = u.userId
+        LEFT JOIN tours t ON b.tourId = t.tourId
+        WHERE b.tourId = #{tourId}
+        ORDER BY b.createTime DESC
+    </select>
+
+    <!-- Update booking -->
+    <update id="updateBooking" parameterType="com.dvinedao.domain.Booking">
+        UPDATE bookings SET
+            quantity = #{quantity},
+            unitPrice = #{unitPrice},
+            totalAmount = #{totalAmount},
+            currency = #{currency},
+            travelDate = #{travelDate},
+            status = #{status},
+            customerNotes = #{customerNotes}
+        WHERE bookingId = #{bookingId}
+    </update>
+
+    <!-- Find bookings with details for admin -->
+    <select id="findBookingsWithDetails" resultMap="BookingResultMap">
+        SELECT 
+            b.*,
+            u.email as userEmail,
+            CONCAT(u.firstName, ' ', u.lastName) as userName,
+            t.title as tourTitle,
+            t.destination as tourDestination
+        FROM bookings b
+        LEFT JOIN users u ON b.userId = u.userId
+        LEFT JOIN tours t ON b.tourId = t.tourId
+        ORDER BY b.createTime DESC
+    </select>
+
+    <!-- Count bookings by status -->
+    <select id="countByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM bookings WHERE status = #{status}
+    </select>
+
+</mapper>
