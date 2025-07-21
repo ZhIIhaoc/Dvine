@@ -385,7 +385,7 @@ export function Catalogue() {
             sx={{
                 minHeight: "100vh",
                 px: { xs: 2, sm: 4, md: 8 },
-                maxWidth: "100vw",
+                maxWidth: "100%",
                 overflowX: "hidden",
             }}
         >
@@ -602,13 +602,38 @@ export function Catalogue() {
                         ? `Search Results (${filteredTours.length} tours found)`
                         : "All Available Tours"}
                 </Typography>
-                <Grid container spacing={3} justifyContent="center">
+                <Grid
+                    container
+                    spacing={3}
+                    sx={{
+                        justifyContent: {
+                            xs: "center",
+                            xl: "space-between",
+                        },
+                    }}
+                >
                     {(filteredTours.length > 0 ? filteredTours : tours).map(
                         (tour) => (
-                            <Grid item xs={12} sm={6} md={4} key={tour.tourId}>
+                            <Box
+                                key={tour.tourId}
+                                sx={{
+                                    flexBasis: {
+                                        xs: "100%",
+                                        md: "45%",
+                                        xl: "32%",
+                                    },
+                                    maxWidth: {
+                                        xs: "80%",
+                                        md: "45%",
+                                        xl: "32%",
+                                    },
+                                    flexGrow: 0,
+                                }}
+                            >
                                 <Card
                                     sx={{
                                         height: "100%",
+                                        width: "100%",
                                         display: "flex",
                                         flexDirection: "column",
                                         cursor: "pointer",
@@ -642,45 +667,9 @@ export function Catalogue() {
                                         >
                                             {tour.title}
                                         </Typography>
-                                    </CardContent>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{ mb: 2 }}
-                                    >
-                                        {tour.description}
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <PriceIcon
-                                                sx={{
-                                                    fontSize: 16,
-                                                    mr: 0.5,
-                                                    color: "primary.main",
-                                                }}
-                                            />
-                                            <Typography
-                                                variant="h6"
-                                                color="primary"
-                                                fontWeight="bold"
-                                            >
-                                                ${tour.regularPrice}
-                                            </Typography>
-                                        </Box>
                                         <Typography
                                             variant="body2"
-                                            color="text.secondary"
+                                            color="text.primary"
                                             sx={{ mb: 2 }}
                                         >
                                             {tour.description}
@@ -710,18 +699,48 @@ export function Catalogue() {
                                                     color="primary"
                                                     fontWeight="bold"
                                                 >
-                                                    ${tour.price}
+                                                    ${tour.regularPrice}
                                                 </Typography>
                                             </Box>
-                                            <Rating
-                                                value={4.5}
-                                                readOnly
-                                                size="small"
-                                            />
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    justifyContent:
+                                                        "space-between",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <PriceIcon
+                                                        sx={{
+                                                            fontSize: 16,
+                                                            mr: 0.5,
+                                                            color: "primary.main",
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        variant="h6"
+                                                        color="primary"
+                                                        fontWeight="bold"
+                                                    >
+                                                        ${tour.price}
+                                                    </Typography>
+                                                </Box>
+                                                <Rating
+                                                    value={4.5}
+                                                    readOnly
+                                                    size="small"
+                                                />
+                                            </Box>
                                         </Box>
-                                    </Box>
+                                    </CardContent>
                                 </Card>
-                            </Grid>
+                            </Box>
                         )
                     )}
                 </Grid>
@@ -916,7 +935,7 @@ export function Catalogue() {
                 <DialogContent>
                     <Typography
                         variant="body2"
-                        color="text.secondary"
+                        color="text.primary"
                         sx={{ mb: 3 }}
                     >
                         {selectedCatalogue?.description}
@@ -983,7 +1002,7 @@ export function Catalogue() {
                                                 </Typography>
                                                 <Typography
                                                     variant="body2"
-                                                    color="text.secondary"
+                                                    color="text.primary"
                                                     sx={{ mb: 1 }}
                                                 >
                                                     {tour.destination}
