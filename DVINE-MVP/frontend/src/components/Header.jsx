@@ -78,7 +78,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                         sx={{ mt: 1, color: "text.primary" }}
                         onClick={() => navigate("/catalogue")}
                     >
-                        Experiences
+                        Experiences Catalogue
                     </Button>
                     <Button
                         sx={{ mt: 1, color: "text.primary" }}
