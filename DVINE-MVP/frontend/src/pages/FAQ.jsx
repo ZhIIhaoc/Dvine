@@ -35,9 +35,9 @@ const BASE_URL = "http://localhost:8080";
 const fetchFAQs = async () => {
     try {
         const response = await fetch(`${BASE_URL}/faqs`, {
-            method: 'GET',
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
         });
         return await response.json();
@@ -50,9 +50,9 @@ const fetchFAQs = async () => {
 const createFAQ = async (faqData, token) => {
     try {
         const response = await fetch(`${BASE_URL}/faqs`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
                 Authorization: token,
             },
             body: JSON.stringify(faqData),
@@ -67,9 +67,9 @@ const createFAQ = async (faqData, token) => {
 const updateFAQ = async (faqData, token) => {
     try {
         const response = await fetch(`${BASE_URL}/faqs`, {
-            method: 'PUT',
+            method: "PUT",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
                 Authorization: token,
             },
             body: JSON.stringify(faqData),
@@ -84,7 +84,7 @@ const updateFAQ = async (faqData, token) => {
 const deleteFAQ = async (faqId, token) => {
     try {
         const response = await fetch(`${BASE_URL}/faqs/${faqId}`, {
-            method: 'DELETE',
+            method: "DELETE",
             headers: {
                 Authorization: token,
             },
@@ -141,9 +141,12 @@ export function FAQ() {
         if (searchTerm.trim() === "") {
             setFilteredFaqs(faqs);
         } else {
-            const filtered = faqs.filter(faq =>
-                faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
+            const filtered = faqs.filter(
+                (faq) =>
+                    faq.question
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredFaqs(filtered);
         }
@@ -169,10 +172,13 @@ export function FAQ() {
     // Update FAQ
     const handleUpdateFAQ = async () => {
         try {
-            const result = await updateFAQ({
-                ...faqForm,
-                faqId: editingFaq.faqId,
-            }, token);
+            const result = await updateFAQ(
+                {
+                    ...faqForm,
+                    faqId: editingFaq.faqId,
+                },
+                token
+            );
             if (result.code === 0) {
                 setEditDialogOpen(false);
                 setEditingFaq(null);
@@ -218,7 +224,14 @@ export function FAQ() {
 
     if (loading) {
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "50vh",
+                }}
+            >
                 <CircularProgress />
             </Box>
         );
@@ -228,17 +241,22 @@ export function FAQ() {
         <Box sx={{ minHeight: "100vh", py: 4, px: { xs: 2, sm: 4, md: 8 } }}>
             {/* Header */}
             <Box sx={{ mb: 4, textAlign: "center" }}>
-                <Typography variant="h2" color="primary" gutterBottom>
+                <Typography variant="h3" color="text.tertiary" gutterBottom>
                     Frequently Asked Questions
                 </Typography>
                 <Typography variant="h6" color="text.secondary">
-                    Find answers to common questions about our tours and services
+                    Find answers to common questions about our tours and
+                    services
                 </Typography>
             </Box>
 
             {/* Error Alert */}
             {error && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+                <Alert
+                    severity="error"
+                    sx={{ mb: 2 }}
+                    onClose={() => setError("")}
+                >
                     {error}
                 </Alert>
             )}
@@ -246,7 +264,8 @@ export function FAQ() {
             {/* Debug Info - Remove this after testing */}
             {userInfo && (
                 <Alert severity="info" sx={{ mb: 2 }}>
-                    Debug: User permission level: {userInfo.permission} (isAdmin: {isAdmin ? 'true' : 'false'})
+                    Debug: User permission level: {userInfo.permission}{" "}
+                    (isAdmin: {isAdmin ? "true" : "false"})
                 </Alert>
             )}
 
@@ -259,7 +278,16 @@ export function FAQ() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         InputProps={{
-                            startAdornment: <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />,
+                            startAdornment: (
+                                <SearchIcon
+                                    sx={{ mr: 1, color: "text.primary" }}
+                                />
+                            ),
+                        }}
+                        InputLabelProps={{
+                            sx: {
+                                color: "text.primary",
+                            },
                         }}
                     />
                     {isAdmin && (
@@ -279,21 +307,35 @@ export function FAQ() {
             {/* FAQs List */}
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
-                    {searchTerm ? `Search Results (${filteredFaqs.length} FAQs found)` : "All FAQs"}
+                    {searchTerm
+                        ? `Search Results (${filteredFaqs.length} FAQs found)`
+                        : "All FAQs"}
                 </Typography>
-                
+
                 {filteredFaqs.length === 0 ? (
                     <Box sx={{ textAlign: "center", py: 4 }}>
                         <Typography variant="h6" color="text.secondary">
-                            {searchTerm ? "No FAQs found matching your search." : "No FAQs available."}
+                            {searchTerm
+                                ? "No FAQs found matching your search."
+                                : "No FAQs available."}
                         </Typography>
                     </Box>
                 ) : (
                     filteredFaqs.map((faq) => (
                         <Accordion key={faq.faqId} sx={{ mb: 2 }}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                                    <Typography variant="h6" fontWeight="medium">
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight="medium"
+                                    >
                                         {faq.question}
                                     </Typography>
                                     {isAdmin && (
@@ -316,14 +358,18 @@ export function FAQ() {
                                                 }}
                                                 color="error"
                                             >
-                                                <DeleteIcon />
+                                                <DeleteIcon sx={{ mr: 3 }} />
                                             </IconButton>
                                         </Box>
                                     )}
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                                <Typography
+                                    variant="body1"
+                                    color="text.primary"
+                                    sx={{ lineHeight: 1.6 }}
+                                >
                                     {faq.answer}
                                 </Typography>
                             </AccordionDetails>
@@ -333,14 +379,21 @@ export function FAQ() {
             </Box>
 
             {/* Create FAQ Dialog */}
-            <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="md" fullWidth>
+            <Dialog
+                open={createDialogOpen}
+                onClose={() => setCreateDialogOpen(false)}
+                maxWidth="md"
+                fullWidth
+            >
                 <DialogTitle>Create New FAQ</DialogTitle>
                 <DialogContent>
                     <TextField
                         fullWidth
                         label="Question"
                         value={faqForm.question}
-                        onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })}
+                        onChange={(e) =>
+                            setFaqForm({ ...faqForm, question: e.target.value })
+                        }
                         margin="normal"
                         required
                         multiline
@@ -350,7 +403,9 @@ export function FAQ() {
                         fullWidth
                         label="Answer"
                         value={faqForm.answer}
-                        onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })}
+                        onChange={(e) =>
+                            setFaqForm({ ...faqForm, answer: e.target.value })
+                        }
                         margin="normal"
                         required
                         multiline
@@ -358,20 +413,31 @@ export function FAQ() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleCreateFAQ} variant="contained">Create</Button>
+                    <Button onClick={() => setCreateDialogOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleCreateFAQ} variant="contained">
+                        Create
+                    </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Edit FAQ Dialog */}
-            <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="md" fullWidth>
+            <Dialog
+                open={editDialogOpen}
+                onClose={() => setEditDialogOpen(false)}
+                maxWidth="md"
+                fullWidth
+            >
                 <DialogTitle>Edit FAQ</DialogTitle>
                 <DialogContent>
                     <TextField
                         fullWidth
                         label="Question"
                         value={faqForm.question}
-                        onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })}
+                        onChange={(e) =>
+                            setFaqForm({ ...faqForm, question: e.target.value })
+                        }
                         margin="normal"
                         required
                         multiline
@@ -381,7 +447,9 @@ export function FAQ() {
                         fullWidth
                         label="Answer"
                         value={faqForm.answer}
-                        onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })}
+                        onChange={(e) =>
+                            setFaqForm({ ...faqForm, answer: e.target.value })
+                        }
                         margin="normal"
                         required
                         multiline
@@ -389,10 +457,14 @@ export function FAQ() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleUpdateFAQ} variant="contained">Update</Button>
+                    <Button onClick={() => setEditDialogOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleUpdateFAQ} variant="contained">
+                        Update
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>
     );
-} 
+}

@@ -394,14 +394,25 @@ export function Catalogue() {
     // Update tour
     const handleUpdateTour = async () => {
         try {
-            const result = await updateCatalogue({
-                ...tourForm,
-                tourId: editingTour.tourId,
-            }, token);
+            const result = await updateCatalogue(
+                {
+                    ...tourForm,
+                    tourId: editingTour.tourId,
+                },
+                token
+            );
             if (result.code === 0) {
                 setEditTourOpen(false);
                 setEditingTour(null);
-                setTourForm({ title: "", description: "", destination: "", regularPrice: "", premiumPrice: "", primaryImageUrl: "", images: [] });
+                setTourForm({
+                    title: "",
+                    description: "",
+                    destination: "",
+                    regularPrice: "",
+                    premiumPrice: "",
+                    primaryImageUrl: "",
+                    images: [],
+                });
                 fetchToursData(); // Refresh the list
             } else {
                 setError("Failed to update tour");
@@ -628,8 +639,10 @@ export function Catalogue() {
             )}
 
             {/* Featured Tours Carousel */}
-            <FeaturedCarousel 
-                tours={featuredTours.length > 0 ? featuredTours : tours.slice(0, 6)}
+            <FeaturedCarousel
+                tours={
+                    featuredTours.length > 0 ? featuredTours : tours.slice(0, 6)
+                }
                 onTourClick={(tourId) => navigate(`/tour/${tourId}`)}
                 userPermission={userInfo?.permission ?? 0}
             />
@@ -714,22 +727,59 @@ export function Catalogue() {
                                         >
                                             {tour.title}
                                         </Typography>
-                                        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                            <LocationIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
-                                            <Typography variant="body2" color="text.secondary">
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                mb: 1,
+                                            }}
+                                        >
+                                            <LocationIcon
+                                                sx={{
+                                                    fontSize: 16,
+                                                    mr: 0.5,
+                                                    color: "text.tertiary",
+                                                }}
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
                                                 {tour.destination}
                                             </Typography>
                                         </Box>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.primary"
+                                            sx={{ mb: 2 }}
+                                        >
                                             {tour.description}
                                         </Typography>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                            }}
+                                        >
                                             <PriceDisplay
-                                                regularPrice={tour.regularPrice ?? tour.price}
-                                                premiumPrice={tour.premiumPrice ?? tour.price}
-                                                userPermission={userInfo?.permission ?? 0}
+                                                regularPrice={
+                                                    tour.regularPrice ??
+                                                    tour.price
+                                                }
+                                                premiumPrice={
+                                                    tour.premiumPrice ??
+                                                    tour.price
+                                                }
+                                                userPermission={
+                                                    userInfo?.permission ?? 0
+                                                }
                                             />
-                                            <Rating value={4.5} readOnly size="small" />
+                                            <Rating
+                                                value={4.5}
+                                                readOnly
+                                                size="small"
+                                            />
                                         </Box>
                                     </CardContent>
                                     <CardActions
@@ -749,13 +799,25 @@ export function Catalogue() {
                                         </Button>
                                         <Box>
                                             {userInfo?.permission >= 2 && (
-                                                <IconButton size="small" onClick={e => { e.stopPropagation(); handleEditTour(tour); }} color="primary">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleEditTour(tour);
+                                                    }}
+                                                    color="primary"
+                                                >
                                                     <EditIcon />
                                                 </IconButton>
                                             )}
                                             <IconButton
                                                 size="small"
-                                                onClick={e => { e.stopPropagation(); handleDeleteCatalogue(tour.tourId); }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteCatalogue(
+                                                        tour.tourId
+                                                    );
+                                                }}
                                                 color="error"
                                             >
                                                 <DeleteIcon />
@@ -1003,7 +1065,7 @@ export function Catalogue() {
                                             </Typography>
                                             <Typography
                                                 variant="body2"
-                                                color="text.secondary"
+                                                color="text.primary"
                                                 sx={{ mb: 1 }}
                                             >
                                                 {tour.destination}
@@ -1040,7 +1102,7 @@ export function Catalogue() {
                                                 >
                                                     <Typography
                                                         variant="h6"
-                                                        color="primary"
+                                                        color="text.primary"
                                                         fontWeight="bold"
                                                     >
                                                         ${tour.price}
@@ -1066,14 +1128,21 @@ export function Catalogue() {
             </Dialog>
 
             {/* Edit Tour Dialog */}
-            <Dialog open={editTourOpen} onClose={() => setEditTourOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog
+                open={editTourOpen}
+                onClose={() => setEditTourOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
                 <DialogTitle>Edit Tour</DialogTitle>
                 <DialogContent>
                     <TextField
                         fullWidth
                         label="Title"
                         value={tourForm.title}
-                        onChange={e => setTourForm({ ...tourForm, title: e.target.value })}
+                        onChange={(e) =>
+                            setTourForm({ ...tourForm, title: e.target.value })
+                        }
                         margin="normal"
                         required
                     />
@@ -1081,7 +1150,12 @@ export function Catalogue() {
                         fullWidth
                         label="Description"
                         value={tourForm.description}
-                        onChange={e => setTourForm({ ...tourForm, description: e.target.value })}
+                        onChange={(e) =>
+                            setTourForm({
+                                ...tourForm,
+                                description: e.target.value,
+                            })
+                        }
                         margin="normal"
                         multiline
                         rows={3}
@@ -1090,14 +1164,24 @@ export function Catalogue() {
                         fullWidth
                         label="Destination"
                         value={tourForm.destination}
-                        onChange={e => setTourForm({ ...tourForm, destination: e.target.value })}
+                        onChange={(e) =>
+                            setTourForm({
+                                ...tourForm,
+                                destination: e.target.value,
+                            })
+                        }
                         margin="normal"
                     />
                     <TextField
                         fullWidth
                         label="Regular Price"
                         value={tourForm.regularPrice}
-                        onChange={e => setTourForm({ ...tourForm, regularPrice: e.target.value })}
+                        onChange={(e) =>
+                            setTourForm({
+                                ...tourForm,
+                                regularPrice: e.target.value,
+                            })
+                        }
                         margin="normal"
                         type="number"
                     />
@@ -1105,7 +1189,12 @@ export function Catalogue() {
                         fullWidth
                         label="Premium Price"
                         value={tourForm.premiumPrice}
-                        onChange={e => setTourForm({ ...tourForm, premiumPrice: e.target.value })}
+                        onChange={(e) =>
+                            setTourForm({
+                                ...tourForm,
+                                premiumPrice: e.target.value,
+                            })
+                        }
                         margin="normal"
                         type="number"
                     />
@@ -1113,13 +1202,22 @@ export function Catalogue() {
                         fullWidth
                         label="Primary Image URL"
                         value={tourForm.primaryImageUrl}
-                        onChange={e => setTourForm({ ...tourForm, primaryImageUrl: e.target.value })}
+                        onChange={(e) =>
+                            setTourForm({
+                                ...tourForm,
+                                primaryImageUrl: e.target.value,
+                            })
+                        }
                         margin="normal"
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setEditTourOpen(false)}>Cancel</Button>
-                    <Button onClick={handleUpdateTour} variant="contained">Update</Button>
+                    <Button onClick={() => setEditTourOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleUpdateTour} variant="contained">
+                        Update
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>

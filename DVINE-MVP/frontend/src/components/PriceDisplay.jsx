@@ -23,7 +23,11 @@ export default function PriceDisplay({
     if (isPremium) {
         return (
             <Box>
-                <Typography variant="h6" color="primary" fontWeight="bold">
+                <Typography
+                    variant="h6"
+                    color="text.tertiary"
+                    fontWeight="bold"
+                >
                     Premium Price: ${premiumPrice}
                 </Typography>
                 {showDiscount && (
@@ -42,12 +46,12 @@ export default function PriceDisplay({
         <Box>
             <Typography
                 variant="body2"
-                color="text.secondary"
+                color="text.tertiary"
                 sx={{ textDecoration: showDiscount ? "line-through" : "none" }}
             >
                 Regular Price: ${regularPrice}
             </Typography>
-            <Typography variant="h6" color="primary" fontWeight="bold">
+            <Typography variant="h6" color="text.tertiary" fontWeight="bold">
                 Premium Price: ${premiumPrice}
             </Typography>
             {showDiscount && (
@@ -55,7 +59,7 @@ export default function PriceDisplay({
                     label={`Save $${discount} with Premium`}
                     color="info"
                     size="small"
-                    sx={{ ml: 1 }}
+                    sx={{ ml: 1, color: "white", fontWeight: "bold" }}
                 />
             )}
         </Box>
