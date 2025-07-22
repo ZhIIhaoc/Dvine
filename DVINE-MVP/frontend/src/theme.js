@@ -12,7 +12,7 @@ export const lightTheme = createTheme({
         },
         text: {
             primary: "#000000",
-            secondary: "#fbf9f5",
+            secondary: "#757575",
         },
         header: { main: "rgba(251, 249, 245, 0.8)" },
     },

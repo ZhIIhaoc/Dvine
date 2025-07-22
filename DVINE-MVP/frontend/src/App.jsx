@@ -23,6 +23,7 @@ import UserSettings from "./pages/UserSettings.jsx";
 import { lightTheme, darkTheme } from "./theme";
 import React, { useState, useEffect } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
+import Checkout from "./pages/Checkout";
 
 function App() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -98,6 +99,7 @@ function App() {
                             element={<AdminTourPage />}
                         />
                         <Route path="*" element={<NotFound />} />
+                        <Route path="/checkout/:tourId" element={<Checkout />} />
                     </Route>
                     <Route
                         path="/login"
