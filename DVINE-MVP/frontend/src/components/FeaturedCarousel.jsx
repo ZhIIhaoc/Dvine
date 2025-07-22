@@ -23,7 +23,11 @@ import "swiper/css/pagination";
 import "../components/CSS/Catalogue.css";
 import PriceDisplay from "./PriceDisplay";
 
-export default function FeaturedCarousel({ tours, onTourClick, userPermission = 0 }) {
+export default function FeaturedCarousel({
+    tours,
+    onTourClick,
+    userPermission = 0,
+}) {
     if (!tours || tours.length === 0) {
         return null;
     }
@@ -60,7 +64,7 @@ export default function FeaturedCarousel({ tours, onTourClick, userPermission = 
                         },
                     }}
                     autoplay={{
-                        delay: 8000,
+                        delay: 10000,
                         disableOnInteraction: false,
                         pauseOnMouseEnter: true,
                     }}
@@ -88,14 +92,17 @@ export default function FeaturedCarousel({ tours, onTourClick, userPermission = 
                         <SwiperSlide key={tour.tourId}>
                             <Card
                                 sx={{
-                                    height: "100%",
+                                    height: { xs: "auto", md: 500 },
                                     display: "flex",
-                                    flexDirection: "column",
+                                    flexDirection: { xs: "column", md: "row" },
                                     cursor: "pointer",
-                                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                                    transition:
+                                        "all 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
                                     "&:hover": {
-                                        transform: "translateY(-12px) scale(1.02)",
-                                        boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+                                        transform:
+                                            "translateY(-2px) scale(1.005)",
+                                        boxShadow:
+                                            "0 20px 40px rgba(0,0,0,0.2)",
                                     },
                                     borderRadius: 4,
                                     overflow: "hidden",
@@ -234,22 +241,44 @@ export default function FeaturedCarousel({ tours, onTourClick, userPermission = 
                                             {tour.description}
                                         </Typography>
                                     </Box>
-                                    <Box sx={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        mt: "auto",
-                                        pt: 2,
-                                        borderTop: "1px solid rgba(0,0,0,0.08)",
-                                    }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            mt: "auto",
+                                            pt: 2,
+                                            borderTop:
+                                                "1px solid rgba(0,0,0,0.08)",
+                                        }}
+                                    >
                                         <PriceDisplay
-                                            regularPrice={tour.regularPrice ?? tour.price}
-                                            premiumPrice={tour.premiumPrice ?? tour.price}
+                                            regularPrice={
+                                                tour.regularPrice ?? tour.price
+                                            }
+                                            premiumPrice={
+                                                tour.premiumPrice ?? tour.price
+                                            }
                                             userPermission={userPermission}
                                         />
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <Rating value={4.8} readOnly size="small" precision={0.1} />
-                                            <Typography variant="body2" color="text.secondary">
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1,
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            <Rating
+                                                value={4.8}
+                                                readOnly
+                                                size="small"
+                                                precision={0.1}
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                            >
                                                 (4.8)
                                             </Typography>
                                         </Box>

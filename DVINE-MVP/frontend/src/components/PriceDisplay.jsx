@@ -7,14 +7,18 @@ import { Box, Typography, Chip } from "@mui/material";
  * @param {number|string} premiumPrice
  * @param {number} userPermission
  */
-export default function PriceDisplay({ regularPrice, premiumPrice, userPermission }) {
+export default function PriceDisplay({
+    regularPrice,
+    premiumPrice,
+    userPermission,
+}) {
     const isPremium = userPermission === 1;
     const isRegular = userPermission === 0;
     const showDiscount =
         typeof regularPrice === "number" &&
         typeof premiumPrice === "number" &&
         regularPrice > premiumPrice;
-    const discount = showDiscount ? (regularPrice - premiumPrice) : 0;
+    const discount = showDiscount ? regularPrice - premiumPrice : 0;
 
     if (isPremium) {
         return (
@@ -36,7 +40,11 @@ export default function PriceDisplay({ regularPrice, premiumPrice, userPermissio
     // Regular user
     return (
         <Box>
-            <Typography variant="body2" color="text.secondary" sx={{ textDecoration: showDiscount ? "line-through" : "none" }}>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ textDecoration: showDiscount ? "line-through" : "none" }}
+            >
                 Regular Price: ${regularPrice}
             </Typography>
             <Typography variant="h6" color="primary" fontWeight="bold">
@@ -52,4 +60,4 @@ export default function PriceDisplay({ regularPrice, premiumPrice, userPermissio
             )}
         </Box>
     );
-} 
+}
