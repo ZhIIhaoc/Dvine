@@ -154,8 +154,8 @@ export default function UserListForm({ onClose }) {
         <>
             <Box
                 sx={{
-                    width: "100%",
-                    p: 4,
+                    width: "100vh",
+                    p: 2,
                     display: "flex",
                     flexDirection: "column",
                     gap: 3,

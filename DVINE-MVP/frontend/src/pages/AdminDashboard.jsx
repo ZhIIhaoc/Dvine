@@ -27,6 +27,8 @@ import { AuthContext } from "../components/AuthContext.jsx";
 import UserListModal from "../components/UserListModal.jsx";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UserListForm from "../components/UserListForm.jsx";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import CreateCatalogueForm from "../components/CreateCatalogueForm.jsx";
 
 export function AdminDashboard() {
     const { token, userInfo } = useContext(AuthContext);
@@ -162,7 +164,7 @@ export function AdminDashboard() {
                                 md={3}
                                 sx={{
                                     borderRight: "1px solid gray",
-                                    height: "80vh",
+                                    height: "100vh",
                                 }}
                             >
                                 <Box
@@ -189,17 +191,15 @@ export function AdminDashboard() {
                                             }}
                                         />
                                         <Typography
-                                            sx={{ color: "text.primary" }}
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
                                         >
                                             Create Tour
                                         </Typography>
                                     </Button>
                                 </Box>
-                                {/* <CreateTourModal
-                                    open={modalOpen}
-                                    onClose={() => setModalOpen(false)}
-                                    catalogueList={listOfCatalogues}
-                                /> */}
 
                                 {/* Button to open Users List Modal (only for Manager/Owner) */}
                                 {isAdmin && (
@@ -229,6 +229,7 @@ export function AdminDashboard() {
                                                 <Typography
                                                     sx={{
                                                         color: "text.primary",
+                                                        fontWeight: "bold",
                                                     }}
                                                 >
                                                     View Registered Users
@@ -251,15 +252,15 @@ export function AdminDashboard() {
                                                 py: 2,
                                                 pl: 1,
                                                 pr: 3,
-                                                // backgroundColor:
-                                                //     activePanel === "createTour"
-                                                //         ? "background.secondary"
-                                                //         : "transparent",
+                                                backgroundColor:
+                                                    activePanel === "catalogue"
+                                                        ? "background.secondary"
+                                                        : "transparent",
                                             }}
                                         >
                                             <Button
                                                 onClick={() =>
-                                                    setCatalogueModalOpen(true)
+                                                    setActivePanel("catalogue")
                                                 }
                                             >
                                                 <MenuBookIcon
@@ -273,22 +274,13 @@ export function AdminDashboard() {
                                                 <Typography
                                                     sx={{
                                                         color: "text.primary",
+                                                        fontWeight: "bold",
                                                     }}
                                                 >
                                                     Create/Delete Catalogues
                                                 </Typography>
                                             </Button>
                                         </Box>
-                                        {/* <CreateCatalogueModal
-                                            open={catalogueModalOpen}
-                                            onClose={() =>
-                                                setCatalogueModalOpen(false)
-                                            }
-                                            onCatalogueCreated={
-                                                refreshCatalogues
-                                            }
-                                            catalogueList={listOfCatalogues}
-                                        /> */}
                                     </Box>
                                 )}
                                 {isPartner && (
@@ -312,6 +304,7 @@ export function AdminDashboard() {
                                             <Typography
                                                 sx={{
                                                     color: "text.primary",
+                                                    fontWeight: "bold",
                                                 }}
                                             >
                                                 View Your Uploaded Tours
@@ -357,13 +350,45 @@ export function AdminDashboard() {
                                                 <Typography
                                                     sx={{
                                                         color: "text.primary",
+                                                        fontWeight: "bold",
                                                     }}
                                                 >
-                                                    {" "}
                                                     Manage Tours
                                                 </Typography>
                                             </Button>
                                         </Badge>
+                                    </Box>
+                                )}
+                                {isAdmin && (
+                                    <Box
+                                        sx={{
+                                            textAlign: "start",
+                                            py: 2,
+                                            pl: 1,
+                                            // backgroundColor:
+                                            //     activePanel === "createTour"
+                                            //         ? "background.secondary"
+                                            //         : "transparent",
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() => navigate("/faq")}
+                                        >
+                                            <LiveHelpIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{
+                                                    color: "text.tertiary",
+                                                }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Manage FAQ
+                                            </Typography>
+                                        </Button>
                                     </Box>
                                 )}
                             </Grid>
@@ -394,17 +419,29 @@ export function AdminDashboard() {
                                             />
                                         )}
 
-                                        {/* {activePanel === "catalogue" && (
+                                        {activePanel === "catalogue" && (
                                             <CreateCatalogueForm
                                                 onComplete={() => {
                                                     refreshCatalogues();
                                                     setActivePanel(null);
                                                 }}
                                                 catalogueList={listOfCatalogues}
+                                                // onCatalogueCreated={
+                                                //     refreshCatalogues
+                                                // }
+                                                onClose={() =>
+                                                    setActivePanel(null)
+                                                }
                                             />
-                                        )} */}
+                                        )}
 
-                                        {activePanel === null && <Box></Box>}
+                                        {activePanel === null && (
+                                            <Box sx={{ mt: 4 }}>
+                                                This is an admin dashboard.
+                                                Please select options on the
+                                                left. (Teemp Message)
+                                            </Box>
+                                        )}
                                     </Box>
                                 )}
                             </Grid>
