@@ -425,11 +425,11 @@ export function AdminDashboard() {
                             </Grid>
 
                             {/* Right Column - Next Tour Box */}
-                            <Grid item xs={12} md={9}>
+                            <Grid item xs={12} md={9} sx={{ width: "50%" }}>
                                 {isAdmin && (
                                     <Box
                                         sx={{
-                                            ml: "10%",
+                                            mx: "10%",
                                             width: "100%",
                                             mb: 20,
                                         }}
@@ -445,14 +445,14 @@ export function AdminDashboard() {
                                             <CreateTourForm
                                                 catalogueList={listOfCatalogues}
                                                 onClose={() =>
-                                                    setActivePanel(home)
+                                                    setActivePanel("home")
                                                 }
                                             />
                                         )}
                                         {activePanel === "users" && (
                                             <UserListForm
                                                 onClose={() =>
-                                                    setActivePanel(home)
+                                                    setActivePanel("home")
                                                 }
                                             />
                                         )}
@@ -461,14 +461,14 @@ export function AdminDashboard() {
                                             <CreateCatalogueForm
                                                 onComplete={() => {
                                                     refreshCatalogues();
-                                                    setActivePanel(home);
+                                                    setActivePanel("home");
                                                 }}
                                                 catalogueList={listOfCatalogues}
                                                 // onCatalogueCreated={
                                                 //     refreshCatalogues
                                                 // }
                                                 onClose={() =>
-                                                    setActivePanel(home)
+                                                    setActivePanel("home")
                                                 }
                                             />
                                         )}

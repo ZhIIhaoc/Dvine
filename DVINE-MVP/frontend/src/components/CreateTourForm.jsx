@@ -63,7 +63,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
     return (
         <Box
             sx={{
-                width: "100vh",
+                width: "100%",
                 p: 2,
                 display: "flex",
                 flex: 1,
