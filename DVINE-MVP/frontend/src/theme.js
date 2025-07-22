@@ -13,6 +13,7 @@ export const lightTheme = createTheme({
         text: {
             primary: "#000000",
             secondary: "#fbf9f5",
+            tertiary: "#8d198f",
         },
         header: { main: "rgba(251, 249, 245, 0.8)" },
     },
@@ -31,6 +32,7 @@ export const darkTheme = createTheme({
         text: {
             primary: "#fbf9f5",
             secondary: "#303030",
+            tertiary: "#c828caff",
         },
         header: { main: "rgba(48, 48, 48, 0.8)" },
     },
