@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
     
     @Override
     @Transactional
-    public BookingSessionResponse createPaymentSession(CreateBookingRequest request) throws StripeException {
+    public BookingSessionResponse createBookingPaymentSession(CreateBookingRequest request) throws StripeException {
         log.info("Creating payment session for tour {} quantity {}", request.getTourId(), request.getQuantity());
         
         // 1. Validate input

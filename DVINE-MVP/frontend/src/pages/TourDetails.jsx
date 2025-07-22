@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchTourById } from "../endpoints/CatalogueEndpoints";
+import { fetchTourById, updateTour } from "../endpoints/CatalogueEndpoints";
 import {
     Box,
     Typography,
@@ -37,7 +37,7 @@ import {
 } from "@mui/material";
 import {
     LocationOn as LocationIcon,
-    AttachMoney as PriceIcon,
+    // AttachMoney as PriceIcon,
     Star as StarIcon,
     Person as PersonIcon,
     Category as CategoryIcon,
@@ -55,12 +55,19 @@ import {
     Phone as PhoneIcon,
     Email as EmailIcon,
     Language as WebsiteIcon,
+    Edit as EditIcon,
 } from "@mui/icons-material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import PriceDisplay from "../components/PriceDisplay";
+import { useAuth } from "../components/AuthContext";
+import BookNowButton from "../components/BookNowButton";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // Mock data for fallback
 const mockTour = {
@@ -164,6 +171,18 @@ export default function TourDetails() {
     const [activeTab, setActiveTab] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
     const token = localStorage.getItem("accessToken");
+    const { userInfo } = useAuth();
+    const [editOpen, setEditOpen] = useState(false);
+    const [editForm, setEditForm] = useState({
+        title: "",
+        description: "",
+        destination: "",
+        regularPrice: "",
+        premiumPrice: "",
+        primaryImageUrl: "",
+        images: [],
+    });
+    // 删除与travelDate相关的state和DatePicker
 
     // Fetch tour details
     const fetchTourDetails = async () => {
@@ -213,6 +232,36 @@ export default function TourDetails() {
     const averageRating = tour?.reviews?.length > 0 
         ? tour.reviews.reduce((sum, review) => sum + review.rating, 0) / tour.reviews.length 
         : 4.5;
+
+    // Open edit modal
+    const handleEditOpen = () => {
+        setEditForm({
+            title: tour?.title || "",
+            description: tour?.description || "",
+            destination: tour?.destination || "",
+            regularPrice: tour?.regularPrice ?? tour?.price ?? "",
+            premiumPrice: tour?.premiumPrice ?? tour?.price ?? "",
+            primaryImageUrl: tour?.primaryImageUrl || "",
+            images: tour?.images || [],
+        });
+        setEditOpen(true);
+    };
+    const handleEditSubmit = async () => {
+        try {
+            const result = await updateTour({
+                ...editForm,
+                tourId: tour.tourId,
+            }, token);
+            if (result.code === 0) {
+                setEditOpen(false);
+                fetchTourDetails();
+            } else {
+                alert("Failed to update tour");
+            }
+        } catch (error) {
+            alert("Error updating tour");
+        }
+    };
 
     if (loading) {
         return (
@@ -303,6 +352,13 @@ export default function TourDetails() {
                                         <ShareIcon />
                                     </IconButton>
                                 </Tooltip>
+                                {userInfo?.permission >= 2 && (
+                                    <Tooltip title="Edit Tour">
+                                        <IconButton onClick={handleEditOpen} color="primary">
+                                            <EditIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                             </Box>
                         </Box>
 
@@ -311,6 +367,14 @@ export default function TourDetails() {
                             <Typography variant="h6" color="text.secondary">
                                 {tour.destination}
                             </Typography>
+                        </Box>
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+                            <PriceDisplay
+                                regularPrice={tour?.regularPrice ?? tour?.price}
+                                premiumPrice={tour?.premiumPrice ?? tour?.price}
+                                userPermission={userInfo?.permission ?? 0}
+                            />
                         </Box>
 
                         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -462,9 +526,9 @@ export default function TourDetails() {
                     {/* Booking Card */}
                     <Card sx={{ position: "sticky", top: 20, mb: 3 }}>
                         <CardContent>
-                            <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
+                            {/* <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
                                 ${tour.price}
-                            </Typography>
+                            </Typography> */}
                             <Typography variant="body2" color="text.secondary" gutterBottom>
                                 per person
                             </Typography>
@@ -472,10 +536,9 @@ export default function TourDetails() {
                             <Box sx={{ my: 2 }}>
                                 <Button
                                     variant="contained"
-                                    size="large"
+                                    color="primary"
+                                    onClick={() => navigate(`/checkout/${tour.tourId}`)}
                                     fullWidth
-                                    startIcon={<BookIcon />}
-                                    onClick={() => setBookingOpen(true)}
                                 >
                                     Book Now
                                 </Button>
@@ -582,6 +645,63 @@ export default function TourDetails() {
                 <DialogActions>
                     <Button onClick={() => setBookingOpen(false)}>Cancel</Button>
                     <Button onClick={handleBooking} variant="contained">Confirm Booking</Button>
+                </DialogActions>
+            </Dialog>
+            {/* 编辑对话框 */}
+            <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Edit Tour</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        fullWidth
+                        label="Title"
+                        value={editForm.title}
+                        onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                        margin="normal"
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        value={editForm.description}
+                        onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                        margin="normal"
+                        multiline
+                        rows={3}
+                    />
+                    <TextField
+                        fullWidth
+                        label="Destination"
+                        value={editForm.destination}
+                        onChange={e => setEditForm({ ...editForm, destination: e.target.value })}
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Regular Price"
+                        value={editForm.regularPrice}
+                        onChange={e => setEditForm({ ...editForm, regularPrice: e.target.value })}
+                        margin="normal"
+                        type="number"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Premium Price"
+                        value={editForm.premiumPrice}
+                        onChange={e => setEditForm({ ...editForm, premiumPrice: e.target.value })}
+                        margin="normal"
+                        type="number"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Primary Image URL"
+                        value={editForm.primaryImageUrl}
+                        onChange={e => setEditForm({ ...editForm, primaryImageUrl: e.target.value })}
+                        margin="normal"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setEditOpen(false)}>Cancel</Button>
+                    <Button onClick={handleEditSubmit} variant="contained">Update</Button>
                 </DialogActions>
             </Dialog>
         </Box>

@@ -32,7 +32,7 @@ public class BookingController {
     public ReturnResult createBookingSession(@RequestBody CreateBookingRequest request) throws StripeException {
         log.info("Creating booking session for tour {} quantity {}", request.getTourId(), request.getQuantity());
         
-        BookingSessionResponse response = bookingService.createPaymentSession(request);
+        BookingSessionResponse response = bookingService.createBookingPaymentSession(request);
         return ReturnResult.success(response);
     }
     

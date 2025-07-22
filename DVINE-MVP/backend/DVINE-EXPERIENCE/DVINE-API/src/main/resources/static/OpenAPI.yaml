@@ -27,6 +27,12 @@ tags:
     description: Main page featured tours management operations
   - name: FAQ
     description: Frequently Asked Questions management operations
+  - name: Bookings
+    description: Tour booking and payment session management operations
+  - name: Payments
+    description: Payment processing and transaction management operations
+  - name: Webhooks
+    description: External webhook integrations (Stripe)
 paths:
   /users/profile:
     get:
@@ -591,6 +597,106 @@ paths:
                 msg: success
       security:
         - bearerAuth: []
+  /auth/send-verification-code:
+    post:
+      tags:
+        - Authentication
+      summary: Send email verification code
+      description: Send a verification code to the specified email address for user registration
+      operationId: sendVerificationCode
+      requestBody:
+        description: Email address to send verification code to
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address to send verification code to
+              required:
+                - email
+            example:
+              email: newUser@example.com
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when email parameter is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Failed to send verification code
+        "200":
+          description: Verification code sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: Verification code sent successfully
+  /auth/register-with-verification:
+    post:
+      tags:
+        - Authentication
+      summary: Register user with email verification
+      description: Register a new user account using email verification code
+      operationId: registerWithVerification
+      requestBody:
+        description: User registration data with verification code
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterWithVerificationRequest"
+            example:
+              user:
+                email: newUser@example.com
+                phone: "+61412345678"
+                password: SecurePassword12!
+                postcode: "2017"
+                firstName: new
+                lastName: user
+              verificationCode: "123456"
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when verification code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Verification Code:
+                  description: Verification code validation failure
+                  value:
+                    code: 1
+                    msg: Invalid or expired verification code
+                Missing Required Fields:
+                  description: Required fields validation failure
+                  value:
+                    code: 1
+                    msg: Registration fields cannot be empty or contain only spaces
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: The email already exists
+        "201":
+          description: User registered successfully with verification
+          content:
+            application/json:
+              example:
+                code: 0
+                msg: success
+                data:
+                  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   /auth/register:
     post:
       tags:
@@ -777,6 +883,106 @@ paths:
                 data:
                   accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                   refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  /auth/send-password-reset-code:
+    post:
+      tags:
+        - Authentication
+      summary: Send password reset verification code
+      description: Send a verification code to the user's email for password reset.
+      operationId: sendPasswordResetCode
+      requestBody:
+        description: User's email address
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+              required:
+                - email
+            example:
+              email: user@example.com
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when user with email doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User with this email does not exist
+        "200":
+          description: Password reset code sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: Password reset code sent successfully
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset user password
+      description: Reset user password using email verification code. The verification code must be valid and not expired.
+      operationId: resetPassword
+      requestBody:
+        description: Password reset request with email, verification code, and new password
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+            example:
+              email: user@example.com
+              verificationCode: "123456"
+              newPassword: NewSecurePassword12!
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when validation fails
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Input:
+                  description: Missing required fields
+                  value:
+                    code: 1
+                    msg: Email, verification code, and new password are required
+                User Not Found:
+                  description: User with email doesn't exist
+                  value:
+                    code: 1
+                    msg: User with this email does not exist
+                Invalid Code:
+                  description: Verification code is invalid or expired
+                  value:
+                    code: 1
+                    msg: Invalid or expired verification code
+                Same Password:
+                  description: New password is the same as current password
+                  value:
+                    code: 1
+                    msg: New password cannot be the same as current password
+        "200":
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: Password reset successfully
+
   /approvals/tours/{pendingTourId}/reject:
     post:
       tags:
@@ -2098,6 +2304,1084 @@ paths:
                 msg: success
       security:
         - bearerAuth: []
+
+  # Booking and Payment Endpoints
+  /bookings/create-session:
+    post:
+      tags:
+        - Bookings
+      summary: Create booking and payment session
+      description: |
+        Create a new tour booking and Stripe payment session for checkout.
+        
+        **Access:** Open to all users including guests
+        - **Authenticated users:** Get premium pricing if eligible, user details pre-filled
+        - **Guest users:** Use regular pricing, must provide user details in request
+      operationId: createBookingSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingRequest"
+            examples:
+              Authenticated User Request:
+                description: Request with authentication token (premium pricing if eligible)
+                value:
+                  tourId: 1
+                  quantity: 2
+                  travelDate: "2025-08-15"
+                  customerNotes: "Anniversary celebration - vegetarian meals preferred"
+              Guest User Request:
+                description: Request without authentication (regular pricing)
+                value:
+                  tourId: 1
+                  quantity: 2
+                  travelDate: "2025-08-15"
+                  customerNotes: "First time visitors - looking forward to the experience"
+      responses:
+        "200":
+          description: Booking session created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ReturnResult"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/BookingSessionResponse"
+              examples:
+                Authenticated User Response:
+                  description: Response for authenticated user (premium pricing applied)
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      bookingId: 12345
+                      bookingReference: "DVINE-20250815-1234"
+                      checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_auth_abc123"
+                      totalAmount: 233.98
+                      unitPrice: 116.99
+                      pricingTier: "premium"
+                      userId: 3
+                Guest User Response:
+                  description: Response for guest user (regular pricing applied)
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      bookingId: 12346
+                      bookingReference: "DVINE-20250816-5678"
+                      checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_guest_def456"
+                      totalAmount: 259.98
+                      unitPrice: 129.99
+                      pricingTier: "regular"
+                      userId: null
+        "400":
+          description: Invalid booking request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Tour ID:
+                  description: Tour ID not found
+                  value:
+                    code: 1
+                    msg: "Tour with ID 999 not found"
+                Invalid Quantity:
+                  description: Quantity exceeds maximum allowed
+                  value:
+                    code: 1
+                    msg: "Quantity must be between 1 and 10"
+                Invalid Travel Date:
+                  description: Travel date in the past
+                  value:
+                    code: 1
+                    msg: "Travel date must be in the future"
+                Missing Required Fields:
+                  description: Required fields are missing
+                  value:
+                    code: 1
+                    msg: "Missing required field: tourId"
+        "401":
+          description: Invalid authentication token (only when token is provided but invalid)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Invalid or expired JWT token"
+      security:
+        - bearerAuth: []
+        - {}
+
+  /bookings/{bookingId}:
+    get:
+      tags:
+        - Bookings
+      summary: Get booking details
+      description: Retrieve booking details by ID with permission checking
+      operationId: getBookingDetails
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Booking details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ReturnResult"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Booking"
+        "404":
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+      security:
+        - bearerAuth: []
+
+  /bookings/{bookingId}/cancel:
+    post:
+      tags:
+        - Bookings
+      summary: Cancel booking
+      description: Cancel a booking with business rule validation
+      operationId: cancelBooking
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "202":
+          description: Booking cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+        "404":
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Booking not found: 123"
+        "400":
+          description: Booking cannot be cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Time Restriction:
+                  description: Booking cannot be cancelled within 48 hours of travel date
+                  value:
+                    code: 1
+                    msg: "Booking cannot be cancelled within 48 hours of travel date"
+                Status Restriction:
+                  description: Only confirmed or pending bookings can be cancelled
+                  value:
+                    code: 1
+                    msg: "Only confirmed or pending bookings can be cancelled"
+      security:
+        - bearerAuth: []
+
+  /payments/booking/{bookingId}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment by booking ID
+      description: Retrieve payment details for a specific booking
+      operationId: getPaymentByBookingId
+      parameters:
+        - name: bookingId
+          in: path
+          description: Booking ID to get payment for
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          description: Payment details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  paymentId: 1
+                  userId: 3
+                  bookingId: 1
+                  stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                  stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                  amount: 259.98
+                  currency: "AUD"
+                  status: "SUCCEEDED"
+                  paymentMethod: "card"
+                  stripeCustomerId: "cus_ABCD1234567890"
+                  failureReason: null
+                  refundAmount: 0.00
+                  paidAt: "2024-07-18T14:35:00Z"
+                  createTime: "2024-07-18T14:30:00Z"
+                  updateTime: "2024-07-18T14:35:00Z"
+                  bookingReference: "DVINE-20240718-1234"
+                  userEmail: "user@example.com"
+        "404":
+          description: Payment not found for the booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "No payment found for booking ID 999"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+
+  /webhooks/stripe:
+    post:
+      tags:
+        - Webhooks
+      summary: Stripe webhook endpoint
+      description: Process Stripe webhook events for payment status updates
+      operationId: handleStripeWebhook
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Stripe webhook signature for verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Raw Stripe webhook payload
+      responses:
+        "200":
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+        "400":
+          description: Invalid webhook payload or signature
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+
+  # Additional Booking Endpoints
+  /bookings/reference/{bookingReference}:
+    get:
+      tags:
+        - Bookings
+      summary: Get booking by reference
+      description: Retrieve booking details using booking reference number
+      operationId: getBookingByReference
+      parameters:
+        - name: bookingReference
+          in: path
+          description: Booking reference number
+          required: true
+          schema:
+            type: string
+          example: "DVINE-20240718-1234"
+      responses:
+        "200":
+          description: Booking retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  bookingId: 1
+                  bookingReference: "DVINE-20240718-1234"
+                  tourId: 1
+                  userId: 1
+                  quantity: 2
+                  unitPrice: 129.99
+                  totalAmount: 259.98
+                  status: "CONFIRMED"
+        "404":
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Booking with reference 'DVINE-2024-999999' not found"
+        "400":
+          description: Invalid booking reference format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Invalid booking reference format. Expected format: DVINE-YYYY-XXXXXX"
+      security:
+        - bearerAuth: []
+
+  /bookings/user/{userId}:
+    get:
+      tags:
+        - Bookings
+      summary: Get user bookings
+      description: Get all bookings for a specific user
+      operationId: getUserBookings
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          description: User bookings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - bookingId: 1
+                    bookingReference: "DVINE-20240718-1234"
+                    tourId: 1
+                    userId: 1
+                    quantity: 2
+                    unitPrice: 129.99
+                    totalAmount: 259.98
+                    currency: "AUD"
+                    travelDate: "2024-08-15"
+                    status: "CONFIRMED"
+                    customerNotes: "Vegetarian meal required"
+                    createTime: "2024-07-18T14:30:00Z"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    tourTitle: "Sydney Coastal Walk"
+                    tourDestination: "Sydney, Australia"
+                  - bookingId: 2
+                    bookingReference: "DVINE-20240719-5678"
+                    tourId: 3
+                    userId: 1
+                    quantity: 1
+                    unitPrice: 89.99
+                    totalAmount: 89.99
+                    currency: "AUD"
+                    travelDate: "2024-09-20"
+                    status: "PENDING"
+                    customerNotes: null
+                    createTime: "2024-07-19T10:15:00Z"
+                    updateTime: "2024-07-19T10:15:00Z"
+                    tourTitle: "Wine Tasting Experience"
+                    tourDestination: "Hunter Valley, NSW"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User with ID 999 not found"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+
+  /bookings/tour/{tourId}:
+    get:
+      tags:
+        - Bookings
+      summary: Get tour bookings
+      description: Get all bookings for a specific tour (Partner+ access required)
+      operationId: getTourBookings
+      parameters:
+        - name: tourId
+          in: path
+          description: Tour ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          description: Tour bookings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - bookingId: 1
+                    bookingReference: "DVINE-20240718-1234"
+                    tourId: 1
+                    userId: 15
+                    quantity: 2
+                    unitPrice: 129.99
+                    totalAmount: 259.98
+                    currency: "AUD"
+                    travelDate: "2024-08-15"
+                    status: "CONFIRMED"
+                    customerNotes: "Vegetarian meal required"
+                    createTime: "2024-07-18T14:30:00Z"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    userName: "Sarah Johnson"
+                    userEmail: "sarah.johnson@email.com"
+                    userPhone: "0412345678"
+                  - bookingId: 3
+                    bookingReference: "DVINE-20240720-9012"
+                    tourId: 1
+                    userId: 22
+                    quantity: 4
+                    unitPrice: 116.99
+                    totalAmount: 467.96
+                    currency: "AUD"
+                    travelDate: "2024-08-15"
+                    status: "CONFIRMED"
+                    customerNotes: "Group booking - anniversary celebration"
+                    createTime: "2024-07-18T16:45:00Z"
+                    updateTime: "2024-07-18T16:50:00Z"
+                    userName: "Michael Chen"
+                    userEmail: "m.chen@email.com"
+                    userPhone: "0498765432"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Partner"
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Tour with ID 999 not found"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+
+  /bookings/admin/all:
+    get:
+      tags:
+        - Bookings
+      summary: Get all bookings (Admin)
+      description: Get all bookings with full details (Manager+ access required)
+      operationId: getAllBookingsWithDetails
+      responses:
+        "200":
+          description: All bookings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - bookingId: 1
+                    bookingReference: "DVINE-20240718-1234"
+                    tourId: 1
+                    userId: 15
+                    quantity: 2
+                    unitPrice: 129.99
+                    totalAmount: 259.98
+                    currency: "AUD"
+                    travelDate: "2024-08-15"
+                    status: "CONFIRMED"
+                    customerNotes: "Vegetarian meal required"
+                    createTime: "2024-07-18T14:30:00Z"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    userName: "Sarah Johnson"
+                    userEmail: "sarah.johnson@email.com"
+                    userPhone: "0412345678"
+                    tourTitle: "Sydney Coastal Walk"
+                    tourDestination: "Sydney, Australia"
+                    catalogueTitle: "Nature Adventures"
+                    paymentStatus: "SUCCEEDED"
+                  - bookingId: 2
+                    bookingReference: "DVINE-20240719-5678"
+                    tourId: 3
+                    userId: 8
+                    quantity: 1
+                    unitPrice: 89.99
+                    totalAmount: 89.99
+                    currency: "AUD"
+                    travelDate: "2024-09-20"
+                    status: "PENDING"
+                    customerNotes: null
+                    createTime: "2024-07-19T10:15:00Z"
+                    updateTime: "2024-07-19T10:15:00Z"
+                    userName: "David Wilson"
+                    userEmail: "d.wilson@email.com"
+                    userPhone: "0487654321"
+                    tourTitle: "Wine Tasting Experience"
+                    tourDestination: "Hunter Valley, NSW"
+                    catalogueTitle: "Wine & Food"
+                    paymentStatus: "PENDING"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Internal server error occurred while retrieving bookings"
+      security:
+        - bearerAuth: []
+
+  # Additional Payment Endpoints
+  /payments/{paymentId}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment details
+      description: Retrieve payment details by payment ID
+      operationId: getPaymentDetails
+      parameters:
+        - name: paymentId
+          in: path
+          description: Payment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          description: Payment details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  paymentId: 1
+                  userId: 3
+                  bookingId: 1
+                  stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                  stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                  amount: 259.98
+                  currency: "AUD"
+                  status: "SUCCEEDED"
+                  paymentMethod: "card"
+                  stripeCustomerId: "cus_ABCD1234567890"
+                  failureReason: null
+                  refundAmount: 0.00
+                  paidAt: "2024-07-18T14:35:00Z"
+                  createTime: "2024-07-18T14:30:00Z"
+                  updateTime: "2024-07-18T14:35:00Z"
+                  bookingReference: "DVINE-20240718-1234"
+                  userEmail: "user@example.com"
+        "404":
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Payment with ID 999 not found"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+        "403":
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You can only access your own payment details"
+      security:
+        - bearerAuth: []
+
+  /payments/user/{userId}:
+    get:
+      tags:
+        - Payments
+      summary: Get user payments
+      description: Get all payments for a specific user
+      operationId: getUserPayments
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          description: User payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - paymentId: 1
+                    userId: 5
+                    bookingId: 1
+                    stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                    amount: 259.98
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    refundAmount: 0.00
+                    paidAt: "2024-07-18T14:35:00Z"
+                    createTime: "2024-07-18T14:30:00Z"
+                    bookingReference: "DVINE-20240718-1234"
+                    tourTitle: "Sydney Coastal Walk"
+                    tourDestination: "Sydney, Australia"
+                  - paymentId: 3
+                    userId: 5
+                    bookingId: 3
+                    stripeSessionId: "cs_test_b2C3d4E5f6G7h8I9j0K1l2M3"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC5678"
+                    amount: 89.99
+                    currency: "AUD"
+                    status: "FAILED"
+                    paymentMethod: "card"
+                    refundAmount: 0.00
+                    paidAt: null
+                    createTime: "2024-07-19T10:15:00Z"
+                    bookingReference: "DVINE-20240719-5678"
+                    tourTitle: "Wine Tasting Experience"
+                    tourDestination: "Hunter Valley, NSW"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User with ID 999 not found"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+        "403":
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You can only access your own payment history"
+      security:
+        - bearerAuth: []
+
+  /payments/my-payments:
+    get:
+      tags:
+        - Payments
+      summary: Get current user's payments
+      description: Get all payments for the currently authenticated user
+      operationId: getMyPayments
+      responses:
+        "200":
+          description: Current user's payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - paymentId: 1
+                    userId: 3
+                    bookingId: 1
+                    stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                    amount: 259.98
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    stripeCustomerId: "cus_USER3ABC123456"
+                    failureReason: null
+                    refundAmount: 0.00
+                    paidAt: "2024-07-18T14:35:00Z"
+                    createTime: "2024-07-18T14:30:00Z"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    bookingReference: "DVINE-20240718-1234"
+                    userEmail: "user3@example.com"
+                  - paymentId: 5
+                    userId: 3
+                    bookingId: 5
+                    stripeSessionId: "cs_test_c3D4e5F6g7H8i9J0k1L2m3N4"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC9012"
+                    amount: 450.00
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    stripeCustomerId: "cus_USER3ABC123456"
+                    failureReason: null
+                    refundAmount: 125.00
+                    paidAt: "2024-07-20T09:22:00Z"
+                    createTime: "2024-07-20T09:18:00Z"
+                    updateTime: "2024-07-20T09:22:00Z"
+                    bookingReference: "DVINE-20240720-9012"
+                    userEmail: "user3@example.com"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+
+  /payments/status/{status}:
+    get:
+      tags:
+        - Payments
+      summary: Get payments by status (Admin)
+      description: Get payments filtered by status (Manager+ access required)
+      operationId: getPaymentsByStatus
+      parameters:
+        - name: status
+          in: path
+          description: Payment status
+          required: true
+          schema:
+            type: string
+            enum: [PENDING, SUCCEEDED, FAILED, CANCELLED, REFUNDED]
+          example: "SUCCEEDED"
+      responses:
+        "200":
+          description: Payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - paymentId: 1
+                    userId: 5
+                    bookingId: 1
+                    stripeSessionId: "cs_test_a1B2c3D4e5F6g7H8i9J0k1L2"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC1234"
+                    amount: 259.98
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    stripeCustomerId: "cus_ABCD1234567890"
+                    failureReason: null
+                    refundAmount: 0.00
+                    paidAt: "2024-07-18T14:35:00Z"
+                    createTime: "2024-07-18T14:30:00Z"
+                    updateTime: "2024-07-18T14:35:00Z"
+                    bookingReference: "DVINE-20240718-1234"
+                    userEmail: "sarah.johnson@email.com"
+                  - paymentId: 5
+                    userId: 8
+                    bookingId: 5
+                    stripeSessionId: "cs_test_c3D4e5F6g7H8i9J0k1L2m3N4"
+                    stripePaymentIntentId: "pi_3MtwBw2eZvKYlo2C0KQC9012"
+                    amount: 467.96
+                    currency: "AUD"
+                    status: "SUCCEEDED"
+                    paymentMethod: "card"
+                    stripeCustomerId: "cus_EFGH5678901234"
+                    failureReason: null
+                    refundAmount: 0.00
+                    paidAt: "2024-07-19T09:22:00Z"
+                    createTime: "2024-07-19T09:20:00Z"
+                    updateTime: "2024-07-19T09:22:00Z"
+                    bookingReference: "DVINE-20240720-9012"
+                    userEmail: "michael.chen@email.com"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "400":
+          description: Invalid payment status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Invalid payment status 'INVALID'. Allowed values: PENDING, SUCCEEDED, FAILED, CANCELLED, REFUNDED"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+
+  /payments/{paymentId}/refund:
+    post:
+      tags:
+        - Payments
+      summary: Process refund (Admin)
+      description: Process a manual refund for a payment (Manager+ access required)
+      operationId: processRefund
+      parameters:
+        - name: paymentId
+          in: path
+          description: Payment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: refundAmount
+          in: query
+          description: Refund amount
+          required: true
+          schema:
+            type: number
+            format: decimal
+          example: 129.99
+      responses:
+        "200":
+          description: Refund processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+        "400":
+          description: Invalid refund request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Invalid Amount:
+                  description: Refund amount exceeds payment amount
+                  value:
+                    code: 1
+                    msg: "Refund amount $500.00 exceeds payment amount $259.98"
+                Negative Amount:
+                  description: Refund amount must be positive
+                  value:
+                    code: 1
+                    msg: "Refund amount must be greater than 0"
+                Already Refunded:
+                  description: Payment already fully refunded
+                  value:
+                    code: 1
+                    msg: "Payment has already been fully refunded"
+        "404":
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Payment with ID 999 not found"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+        "422":
+          description: Payment cannot be refunded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Payment Failed:
+                  description: Cannot refund failed payment
+                  value:
+                    code: 1
+                    msg: "Cannot refund payment with status FAILED"
+                Stripe Error:
+                  description: Stripe refund processing failed
+                  value:
+                    code: 1
+                    msg: "Stripe refund failed: Charge already refunded"
+      security:
+        - bearerAuth: []
+
+  /payments/admin/stats:
+    get:
+      tags:
+        - Payments
+      summary: Get payment statistics (Admin)
+      description: Get payment statistics and analytics (Manager+ access required)
+      operationId: getPaymentStats
+      responses:
+        "200":
+          description: Payment statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  totalPayments: 127
+                  succeededPayments: 125
+                  failedPayments: 2
+                  pendingPayments: 0
+                  totalRevenue: 15539.50
+                  totalRefunds: 250.00
+                  refundRate: 1.6
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Manager"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "User not logged in"
+        "500":
+          description: Error calculating statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Internal server error occurred while calculating payment statistics"
+      security:
+        - bearerAuth: []
 components:
   schemas:
     ReturnResult:
@@ -2434,6 +3718,288 @@ components:
       required:
         - question
         - answer
+    # Payment System Schemas
+    CreateBookingRequest:
+      type: object
+      description: Request to create a new tour booking
+      properties:
+        tourId:
+          type: integer
+          format: int64
+          description: ID of the tour to book
+          example: 1
+        quantity:
+          type: integer
+          description: Number of participants (1-10)
+          minimum: 1
+          maximum: 10
+          example: 2
+        travelDate:
+          type: string
+          format: date
+          description: Date when the tour takes place
+          example: '2025-08-15'
+        customerNotes:
+          type: string
+          description: Special requests or notes from customer
+          maxLength: 500
+          example: 'Vegetarian meal required'
+      required:
+        - tourId
+        - quantity
+        - travelDate
+
+    BookingSessionResponse:
+      type: object
+      description: Response containing booking session information
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+          description: Unique booking identifier
+          example: 12345
+        bookingReference:
+          type: string
+          description: Human-readable booking reference in format DVINE-YYYYMMDD-XXXX
+          example: 'DVINE-20250815-1234'
+        checkoutUrl:
+          type: string
+          format: uri
+          description: Stripe checkout session URL
+          example: 'https://checkout.stripe.com/c/pay/cs_test_abc123'
+      required:
+        - bookingId
+        - bookingReference
+        - checkoutUrl
+
+    Booking:
+      type: object
+      description: Tour booking information
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+          description: Unique booking identifier
+          example: 12345
+        userId:
+          type: integer
+          format: int64
+          description: ID of user who made the booking
+          example: 1
+        tourId:
+          type: integer
+          format: int64
+          description: ID of the booked tour
+          example: 1
+        bookingReference:
+          type: string
+          description: Human-readable booking reference in format DVINE-YYYYMMDD-XXXX
+          example: 'DVINE-20250815-1234'
+        quantity:
+          type: integer
+          description: Number of participants
+          example: 2
+        unitPrice:
+          type: number
+          format: decimal
+          description: Price per person at time of booking
+          example: 299.99
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total amount for the booking
+          example: 599.98
+        currency:
+          type: string
+          description: Currency code
+          example: 'AUD'
+        travelDate:
+          type: string
+          format: date
+          description: Date when the tour takes place
+          example: '2025-08-15'
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED, CANCELLED ]
+          description: Current booking status
+          example: 'CONFIRMED'
+        customerNotes:
+          type: string
+          description: Special requests from customer
+          example: 'Vegetarian meal required'
+        createTime:
+          type: string
+          format: date-time
+          description: When the booking was created
+          example: '2025-07-18T14:30:00'
+        updateTime:
+          type: string
+          format: date-time
+          description: When the booking was last updated
+          example: '2025-07-18T14:30:00'
+        userEmail:
+          type: string
+          description: Email of the user who made the booking
+          example: 'user@example.com'
+        tourTitle:
+          type: string
+          description: Title of the booked tour
+          example: 'Sydney Harbour Bridge Climb'
+        tourDestination:
+          type: string
+          description: Destination of the booked tour
+          example: 'Sydney, Australia'
+      required:
+        - bookingId
+        - userId
+        - tourId
+        - bookingReference
+        - quantity
+        - unitPrice
+        - totalAmount
+        - travelDate
+        - status
+
+    Payment:
+      type: object
+      description: Payment transaction information
+      properties:
+        paymentId:
+          type: integer
+          format: int64
+          description: Unique payment identifier
+          example: 67890
+        bookingId:
+          type: integer
+          format: int64
+          description: Associated booking ID
+          example: 12345
+        stripeSessionId:
+          type: string
+          description: Stripe checkout session ID
+          example: 'cs_test_abc123'
+        stripePaymentIntentId:
+          type: string
+          description: Stripe payment intent ID
+          example: 'pi_test_def456'
+        amount:
+          type: number
+          format: decimal
+          description: Payment amount
+          example: 599.98
+        currency:
+          type: string
+          description: Currency code
+          example: 'AUD'
+        status:
+          type: string
+          enum: [ PENDING, PROCESSING, SUCCEEDED, FAILED, CANCELLED, REFUNDED ]
+          description: Current payment status
+          example: 'SUCCEEDED'
+        paymentMethod:
+          type: string
+          description: Payment method used
+          example: 'card'
+        refundAmount:
+          type: number
+          format: decimal
+          description: Amount refunded (if any)
+          example: 0.00
+        paidAt:
+          type: string
+          format: date-time
+          description: When payment was completed
+          example: '2025-07-18T14:35:00'
+        createTime:
+          type: string
+          format: date-time
+          description: When payment record was created
+          example: '2025-07-18T14:30:00'
+        bookingReference:
+          type: string
+          description: Associated booking reference in format DVINE-YYYYMMDD-XXXX
+          example: 'DVINE-20250815-1234'
+      required:
+        - paymentId
+        - bookingId
+        - amount
+        - currency
+        - status
+
+    PaymentStats:
+      type: object
+      description: Payment statistics and analytics data
+      properties:
+        totalRevenue:
+          type: number
+          format: decimal
+          description: Total revenue from all payments
+          example: 15789.50
+        totalTransactions:
+          type: integer
+          description: Total number of completed transactions
+          example: 127
+        successRate:
+          type: number
+          format: percentage
+          description: Payment success rate as percentage
+          example: 98.5
+        averageTransactionAmount:
+          type: number
+          format: decimal
+          description: Average amount per transaction
+          example: 124.33
+        totalRefunds:
+          type: number
+          format: decimal
+          description: Total amount refunded
+          example: 250.00
+        refundRate:
+          type: number
+          format: percentage
+          description: Refund rate as percentage
+          example: 1.6
+      required:
+        - totalRevenue
+        - totalTransactions
+        - successRate
+        - averageTransactionAmount
+
+    RegisterWithVerificationRequest:
+      type: object
+      description: User registration request with email verification code
+      properties:
+        user:
+          $ref: "#/components/schemas/UserRegistrationRequest"
+        verificationCode:
+          type: string
+          description: Email verification code
+          example: "123456"
+      required:
+        - user
+        - verificationCode
+    ResetPasswordRequest:
+      type: object
+      description: Password reset request with email verification
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: john.doe@example.com
+        verificationCode:
+          type: string
+          description: Email verification code for password reset
+          example: "123456"
+        newPassword:
+          type: string
+          description: New password for the user
+          example: NewSecurePassword123!
+      required:
+        - email
+        - verificationCode
+        - newPassword
+
   securitySchemes:
     bearerAuth:
       type: http
