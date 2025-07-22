@@ -426,7 +426,7 @@ export function AdminDashboard() {
 
                             {/* Right Column - Next Tour Box */}
                             <Grid item xs={12} md={9} sx={{ width: "50%" }}>
-                                {isAdmin && (
+                                {(isAdmin || isPartner) && (
                                     <Box
                                         sx={{
                                             mx: "10%",
@@ -449,7 +449,7 @@ export function AdminDashboard() {
                                                 }
                                             />
                                         )}
-                                        {activePanel === "users" && (
+                                        {isAdmin && activePanel === "users" && (
                                             <UserListForm
                                                 onClose={() =>
                                                     setActivePanel("home")
@@ -457,21 +457,24 @@ export function AdminDashboard() {
                                             />
                                         )}
 
-                                        {activePanel === "catalogue" && (
-                                            <CreateCatalogueForm
-                                                onComplete={() => {
-                                                    refreshCatalogues();
-                                                    setActivePanel("home");
-                                                }}
-                                                catalogueList={listOfCatalogues}
-                                                // onCatalogueCreated={
-                                                //     refreshCatalogues
-                                                // }
-                                                onClose={() =>
-                                                    setActivePanel("home")
-                                                }
-                                            />
-                                        )}
+                                        {isAdmin &&
+                                            activePanel === "catalogue" && (
+                                                <CreateCatalogueForm
+                                                    onComplete={() => {
+                                                        refreshCatalogues();
+                                                        setActivePanel("home");
+                                                    }}
+                                                    catalogueList={
+                                                        listOfCatalogues
+                                                    }
+                                                    // onCatalogueCreated={
+                                                    //     refreshCatalogues
+                                                    // }
+                                                    onClose={() =>
+                                                        setActivePanel("home")
+                                                    }
+                                                />
+                                            )}
 
                                         {activePanel === null && (
                                             <Box sx={{ mt: 4 }}>
