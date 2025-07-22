@@ -100,7 +100,7 @@ export default function CreateCatalogueForm({
         <>
             <Box
                 sx={{
-                    width: "100vh",
+                    width: "100%",
                     p: 2,
                     display: "flex",
                     flexDirection: "column",
