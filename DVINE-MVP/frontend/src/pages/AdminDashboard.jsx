@@ -26,6 +26,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { AuthContext } from "../components/AuthContext.jsx";
 import UserListModal from "../components/UserListModal.jsx";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import UserListForm from "../components/UserListForm.jsx";
 
 export function AdminDashboard() {
     const { token, userInfo } = useContext(AuthContext);
@@ -122,7 +123,7 @@ export function AdminDashboard() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", width: "100%" }}>
+        <Box sx={{ minHeight: "120vh", width: "100%" }}>
             {userInfo ? (
                 <Box
                     sx={{
@@ -208,15 +209,15 @@ export function AdminDashboard() {
                                                 textAlign: "start",
                                                 py: 2,
                                                 pl: 1,
-                                                // backgroundColor:
-                                                //     activePanel === "createTour"
-                                                //         ? "background.secondary"
-                                                //         : "transparent",
+                                                backgroundColor:
+                                                    activePanel === "users"
+                                                        ? "background.secondary"
+                                                        : "transparent",
                                             }}
                                         >
                                             <Button
                                                 onClick={() =>
-                                                    setUserListModalOpen(true)
+                                                    setActivePanel("users")
                                                 }
                                             >
                                                 <PeopleIcon
@@ -249,6 +250,7 @@ export function AdminDashboard() {
                                                 textAlign: "start",
                                                 py: 2,
                                                 pl: 1,
+                                                pr: 3,
                                                 // backgroundColor:
                                                 //     activePanel === "createTour"
                                                 //         ? "background.secondary"
@@ -379,6 +381,13 @@ export function AdminDashboard() {
                                         {activePanel === "createTour" && (
                                             <CreateTourForm
                                                 catalogueList={listOfCatalogues}
+                                                onClose={() =>
+                                                    setActivePanel(null)
+                                                }
+                                            />
+                                        )}
+                                        {activePanel === "users" && (
+                                            <UserListForm
                                                 onClose={() =>
                                                     setActivePanel(null)
                                                 }
