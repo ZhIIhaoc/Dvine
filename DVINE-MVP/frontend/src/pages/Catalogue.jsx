@@ -655,10 +655,10 @@ export function Catalogue() {
             />
 
             {/* All Tours Section */}
-            <Box sx={{ mb: 4 }}>
+            <Box sx={{ mb: 4, minHeight: "40vh" }}>
                 <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
                     {Object.keys(searchFilters).length > 0 &&
-                    filteredTours.length > 0
+                    filteredTours.length >= 0
                         ? `Search Results (${filteredTours.length} tours found)`
                         : "All Available Tours"}
                 </Typography>
@@ -672,7 +672,7 @@ export function Catalogue() {
                         },
                     }}
                 >
-                    {(filteredTours.length > 0 ? filteredTours : tours).map(
+                    {(filteredTours.length >= 0 ? filteredTours : tours).map(
                         (tour) => (
                             <Box
                                 key={tour.tourId}

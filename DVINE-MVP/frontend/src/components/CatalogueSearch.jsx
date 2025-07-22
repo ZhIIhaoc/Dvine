@@ -21,7 +21,7 @@ import {
 
 export default function CatalogueSearch({ onSearch, onClear }) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [priceRange, setPriceRange] = useState([0, 2000]);
+    const [priceRange, setPriceRange] = useState([0, 5000]);
     const [selectedCatalogue, setSelectedCatalogue] = useState("");
     const [location, setLocation] = useState("");
     const [duration, setDuration] = useState("");
@@ -190,7 +190,7 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                             }
                             valueLabelDisplay="auto"
                             min={0}
-                            max={2000}
+                            max={5000}
                             step={50}
                             sx={{ flexGrow: 1 }}
                         />
@@ -220,7 +220,7 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                     location ||
                     duration ||
                     priceRange[0] > 0 ||
-                    priceRange[1] < 2000) && (
+                    priceRange[1] < 5000) && (
                     <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {searchTerm && (
                             <Chip
@@ -306,10 +306,10 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                                 }}
                             />
                         )}
-                        {(priceRange[0] > 0 || priceRange[1] < 2000) && (
+                        {(priceRange[0] > 0 || priceRange[1] < 5000) && (
                             <Chip
                                 label={`Price: $${priceRange[0]} - $${priceRange[1]}`}
-                                onDelete={() => setPriceRange([0, 2000])}
+                                onDelete={() => setPriceRange([0, 5000])}
                                 size="small"
                                 sx={{
                                     backgroundColor: "primary.light",
