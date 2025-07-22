@@ -8,32 +8,75 @@ import {
     Link,
     Button,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import homepageImage from "/src/assets/homepage_pic.png";
 import { ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
+import FeaturedCarousel from "../components/FeaturedCarousel";
+import { fetchFeaturedTours } from "../endpoints/CatalogueEndpoints";
 
+// Mock data for fallback
 const tours = [
     {
-        id: 1,
-        title: "Coffs Harbour Tour",
-        image: "/src/assets/coffs_harbour.png",
+        tourId: 1,
+        title: "Coffs Harbour Adventure",
+        destination: "Coffs Harbour, NSW",
+        description:
+            "Experience the stunning coastline and vibrant marine life of Coffs Harbour.",
+        regularPrice: 299.99,
+        primaryImageUrl: "/src/assets/coffs_harbour.png",
+        catalogueId: 1,
+        catalogueTitle: "Adventure Collection",
+        creatorNickName: "DVINE Team",
     },
     {
-        id: 2,
+        tourId: 2,
         title: "Port Macquarie Sights Tour",
-        image: "/src/assets/port_macquarie.jpg",
+        destination: "Port Macquarie, NSW",
+        description:
+            "Discover the historic landmarks and beautiful beaches of Port Macquarie.",
+        regularPrice: 199.99,
+        primaryImageUrl: "/src/assets/port_macquarie.jpg",
+        catalogueId: 1,
+        catalogueTitle: "Adventure Collection",
+        creatorNickName: "DVINE Team",
     },
     {
-        id: 3,
+        tourId: 3,
         title: "VIP EXPERIENCE – The Ultimate Luxury Getaway",
-        image: "/src/assets/vip_experience.jpg",
+        destination: "Multiple Locations",
+        description:
+            "Exclusive luxury experience with premium accommodations and personalized service.",
+        regularPrice: 1299.99,
+        primaryImageUrl: "/src/assets/vip_experience.jpg",
+        catalogueId: 1,
+        catalogueTitle: "Luxury Collection",
+        creatorNickName: "DVINE Team",
     },
 ];
 
 export const Home = () => {
+    const [featuredTours, setFeaturedTours] = useState([]);
     const navigate = useNavigate();
+    useEffect(() => {
+        fetchFeaturedToursData();
+    }, []);
+    // Fetch featured tours from API
+    const fetchFeaturedToursData = async () => {
+        try {
+            const result = await fetchFeaturedTours(token);
+            if (result.code === 0) {
+                setFeaturedTours(result.data);
+            } else {
+                // Fallback to first 6 tours if no featured tours
+                setFeaturedTours([]);
+            }
+        } catch (error) {
+            console.error("Error fetching featured tours:", error);
+            setFeaturedTours([]);
+        }
+    };
     return (
         <Box>
             <Box
@@ -182,7 +225,15 @@ export const Home = () => {
                             Explore your next all inclusive tour
                         </Typography>
                     </Link>
-                    <Grid container spacing={4} justifyContent="center">
+                    <FeaturedCarousel
+                        tours={
+                            featuredTours.length > 0
+                                ? featuredTours
+                                : tours.slice(0, 6)
+                        }
+                        onTourClick={(tourId) => navigate(`/tour/${tourId}`)}
+                    />
+                    {/* <Grid container spacing={4} justifyContent="center">
                         {tours.map((tour) => (
                             <Grid item xs={12} sm={6} md={4} key={tour.id}>
                                 <Card sx={{ boxShadow: 1 }}>
@@ -212,7 +263,7 @@ export const Home = () => {
                                 </Card>
                             </Grid>
                         ))}
-                    </Grid>
+                    </Grid> */}
                 </Box>
             </Box>
         </Box>

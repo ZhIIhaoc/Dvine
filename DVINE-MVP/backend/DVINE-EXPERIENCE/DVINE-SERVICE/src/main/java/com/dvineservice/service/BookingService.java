@@ -17,7 +17,7 @@ public interface BookingService {
     /**
      * Create a new booking and Stripe payment session
      */
-    BookingSessionResponse createPaymentSession(CreateBookingRequest request) throws StripeException;
+    BookingSessionResponse createBookingPaymentSession(CreateBookingRequest request) throws StripeException;
     
     /**
      * Get booking details by ID with permission checking
