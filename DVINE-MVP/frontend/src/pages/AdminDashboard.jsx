@@ -29,6 +29,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UserListForm from "../components/UserListForm.jsx";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import CreateCatalogueForm from "../components/CreateCatalogueForm.jsx";
+import HomeIcon from "@mui/icons-material/Home";
 
 export function AdminDashboard() {
     const { token, userInfo } = useContext(AuthContext);
@@ -45,7 +46,7 @@ export function AdminDashboard() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isPartner, setIsPartner] = useState(false);
 
-    const [activePanel, setActivePanel] = useState(null);
+    const [activePanel, setActivePanel] = useState("home");
 
     const refreshCatalogues = () => {
         getCatalogueInfo();
@@ -171,6 +172,36 @@ export function AdminDashboard() {
                                     sx={{
                                         textAlign: "start",
                                         mt: 2,
+                                        py: 2,
+                                        pl: 1,
+                                        backgroundColor:
+                                            activePanel === "home"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => setActivePanel("home")}
+                                    >
+                                        <HomeIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Dashboard Home
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
                                         py: 2,
                                         pl: 1,
                                         backgroundColor:
@@ -403,18 +434,25 @@ export function AdminDashboard() {
                                             mb: 20,
                                         }}
                                     >
+                                        {activePanel === "home" && (
+                                            <Box sx={{ mt: 4 }}>
+                                                This is an admin dashboard.
+                                                Please select options on the
+                                                left. (Teemp Message)
+                                            </Box>
+                                        )}
                                         {activePanel === "createTour" && (
                                             <CreateTourForm
                                                 catalogueList={listOfCatalogues}
                                                 onClose={() =>
-                                                    setActivePanel(null)
+                                                    setActivePanel(home)
                                                 }
                                             />
                                         )}
                                         {activePanel === "users" && (
                                             <UserListForm
                                                 onClose={() =>
-                                                    setActivePanel(null)
+                                                    setActivePanel(home)
                                                 }
                                             />
                                         )}
@@ -423,14 +461,14 @@ export function AdminDashboard() {
                                             <CreateCatalogueForm
                                                 onComplete={() => {
                                                     refreshCatalogues();
-                                                    setActivePanel(null);
+                                                    setActivePanel(home);
                                                 }}
                                                 catalogueList={listOfCatalogues}
                                                 // onCatalogueCreated={
                                                 //     refreshCatalogues
                                                 // }
                                                 onClose={() =>
-                                                    setActivePanel(null)
+                                                    setActivePanel(home)
                                                 }
                                             />
                                         )}
