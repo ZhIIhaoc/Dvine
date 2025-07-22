@@ -358,7 +358,7 @@ export function AdminDashboard() {
                                                     }}
                                                 >
                                                     {" "}
-                                                    Pending Approvals
+                                                    Manage Tours
                                                 </Typography>
                                             </Button>
                                         </Badge>
