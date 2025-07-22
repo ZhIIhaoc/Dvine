@@ -28,7 +28,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             "/catalogues/**",    // /catalogues/list  |  /catalogues/123
             "/tours/**",          // /tours?catalogueId=3  |  /tours/101
             "/featured-tours",
-            "/faqs/**"           // /faqs  |  /faqs/123
+            "/faqs/**",           // /faqs  |  /faqs/123
+            "/bookings/{bookingId}"
     );
 
     /** URLs that skip JWT for all verbs (login, register, refresh…) */

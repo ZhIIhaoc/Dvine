@@ -87,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
     }
     
     @Override
-    @BookingOwnerCheck
+//    @BookingOwnerCheck
     public Booking getBookingDetails(Long bookingId) {
         return bookingMapper.findById(bookingId);
     }
