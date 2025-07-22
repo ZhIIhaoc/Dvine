@@ -181,7 +181,7 @@ export const DvineMoments = () => {
                             borderRadius: "8px",
                             width: "100%",
                             mb: 5,
-                            backgroundColor: "#EDE9E3",
+                            backgroundColor: "background.secondary",
                         }}
                     >
                         <Typography variant="h6" sx={{ fontWeight: "regular" }}>

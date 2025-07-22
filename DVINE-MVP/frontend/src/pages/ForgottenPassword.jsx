@@ -6,7 +6,7 @@ import {
     TextField,
     CircularProgress,
     IconButton,
-    InputAdornment
+    InputAdornment,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import MessageAlert from "../components/MessageAlert.jsx";
@@ -50,7 +50,10 @@ const ForgottenPassword = () => {
                 setStep(1); // move to step 2
                 setCooldown(10);
             } else {
-                showSnackbar(responseInfo.msg || "Failed to send reset code.", "error");
+                showSnackbar(
+                    responseInfo.msg || "Failed to send reset code.",
+                    "error"
+                );
             }
         } catch (error) {
             showSnackbar(`${error.message} Network error. Try again.`, "error");
@@ -71,24 +74,29 @@ const ForgottenPassword = () => {
 
         setSubmitting(true);
         try {
-            const response = await fetch("http://localhost:8080/auth/reset-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    "email": email,
-                    "verificationCode": verificationCode,
-                    "newPassword": newPassword,
-                }),
-            });
+            const response = await fetch(
+                "http://localhost:8080/auth/reset-password",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: email,
+                        verificationCode: verificationCode,
+                        newPassword: newPassword,
+                    }),
+                }
+            );
             const responseInfo = await response.json();
 
             if (responseInfo.code === 0) {
-
                 showSnackbar("Password reset successfully!", "success");
                 // optionally redirect to login
                 navigate("/login");
             } else {
-                showSnackbar(responseInfo.msg || "Failed to reset password.", "error");
+                showSnackbar(
+                    responseInfo.msg || "Failed to reset password.",
+                    "error"
+                );
             }
         } catch (error) {
             console.error("Error resetting password:", error);
@@ -109,6 +117,7 @@ const ForgottenPassword = () => {
     return (
         <Box
             sx={{
+                minHeight: "90vh",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -119,12 +128,22 @@ const ForgottenPassword = () => {
         >
             {step === 0 ? (
                 <>
-                    <Typography variant="h4" gutterBottom align="center" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="h4"
+                        gutterBottom
+                        align="center"
+                        sx={{ mb: 2 }}
+                    >
                         Forgotten Password
                     </Typography>
 
-                    <Typography variant="body1" align="center" sx={{ maxWidth: 400, mb: 4 }}>
-                        If you’ve forgotten your password, enter your email and we’ll send you a reset code to your email.
+                    <Typography
+                        variant="body1"
+                        align="center"
+                        sx={{ maxWidth: 400, mb: 4 }}
+                    >
+                        If you’ve forgotten your password, enter your email and
+                        we’ll send you a reset code to your email.
                     </Typography>
                     <TextField
                         label="Email"
@@ -133,6 +152,9 @@ const ForgottenPassword = () => {
                         sx={{ width: "70%", mb: 4 }}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        InputLabelProps={{
+                            sx: { color: "text.primary" },
+                        }}
                     />
                     <Button
                         variant="contained"
@@ -143,7 +165,10 @@ const ForgottenPassword = () => {
                         onClick={handleSendResetCode}
                     >
                         {submitting ? (
-                            <CircularProgress size={24} sx={{ color: "white" }} />
+                            <CircularProgress
+                                size={24}
+                                sx={{ color: "white" }}
+                            />
                         ) : cooldown > 0 ? (
                             `Resend (${cooldown})`
                         ) : (
@@ -153,7 +178,12 @@ const ForgottenPassword = () => {
                 </>
             ) : (
                 <>
-                    <Typography variant="h4" gutterBottom align="center" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="h4"
+                        gutterBottom
+                        align="center"
+                        sx={{ mb: 2 }}
+                    >
                         Reset Your Password
                     </Typography>
                     <TextField
@@ -176,10 +206,16 @@ const ForgottenPassword = () => {
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
-                                        onClick={() => setShowNewPassword((prev) => !prev)}
+                                        onClick={() =>
+                                            setShowNewPassword((prev) => !prev)
+                                        }
                                         edge="end"
                                     >
-                                        {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                        {showNewPassword ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
                                     </IconButton>
                                 </InputAdornment>
                             ),
@@ -197,10 +233,18 @@ const ForgottenPassword = () => {
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
-                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                        onClick={() =>
+                                            setShowConfirmPassword(
+                                                (prev) => !prev
+                                            )
+                                        }
                                         edge="end"
                                     >
-                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                        {showConfirmPassword ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
                                     </IconButton>
                                 </InputAdornment>
                             ),
@@ -214,7 +258,14 @@ const ForgottenPassword = () => {
                         sx={{ height: "56px", width: "70%", mb: 2 }}
                         onClick={handleResetPassword}
                     >
-                        {submitting ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Reset Password"}
+                        {submitting ? (
+                            <CircularProgress
+                                size={24}
+                                sx={{ color: "white" }}
+                            />
+                        ) : (
+                            "Reset Password"
+                        )}
                     </Button>
                 </>
             )}

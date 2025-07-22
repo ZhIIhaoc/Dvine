@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { AuthContext } from "../components/AuthContext.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
+import SearchIcon from "@mui/icons-material/Search";
 
 const permissionsLabels = {
     0: "Regular",

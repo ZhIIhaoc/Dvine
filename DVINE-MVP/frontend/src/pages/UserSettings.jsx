@@ -17,12 +17,18 @@ import { AuthContext } from "../components/AuthContext.jsx";
 
 const getPermissionLabel = (permission) => {
     switch (permission) {
-        case 0: return "Regular User";
-        case 1: return "Premium User";
-        case 2: return "Partner (Admin)";
-        case 3: return "Manager (Admin)";
-        case 4: return "Owner (Admin)";
-        default: return "Unknown";
+        case 0:
+            return "Regular User";
+        case 1:
+            return "Premium User";
+        case 2:
+            return "Partner (Admin)";
+        case 3:
+            return "Manager (Admin)";
+        case 4:
+            return "Owner (Admin)";
+        default:
+            return "Unknown";
     }
 };
 
@@ -49,12 +55,12 @@ const UserSettings = () => {
 
     const userFields = [
         { label: "Email", name: "email" },
-        { label: "Nickname", name: "nickName" },    
+        { label: "Nickname", name: "nickName" },
         { label: "First Name", name: "firstName" },
         { label: "Last Name", name: "lastName" },
         { label: "Phone", name: "phone" },
         { label: "Postcode", name: "postcode" },
-    ]
+    ];
 
     useEffect(() => {
         if (userInfo) {
@@ -77,14 +83,17 @@ const UserSettings = () => {
 
     const handleSave = async () => {
         try {
-            const response = await fetch("http://localhost:8080/users/profile", {
-                method: "PUT",
-                headers: {
-                    Authorization: token,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
+            const response = await fetch(
+                "http://localhost:8080/users/profile",
+                {
+                    method: "PUT",
+                    headers: {
+                        Authorization: token,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                }
+            );
             const data = await response.json();
             if (data.code === 0) {
                 showSnackbar("Profile updated successfully", "success");
@@ -99,38 +108,74 @@ const UserSettings = () => {
     };
 
     return (
-        <Box sx={{
-            minHeight: "80vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: "#f7f5f2"
-        }}>
-            <Paper elevation={8} sx={{
-                p: 5,
-                borderRadius: 5,
-                minWidth: 340,
-                maxWidth: 420,
-                width: "100%",
-                bgcolor: "rgba(255,255,255,0.95)",
-                boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.10)"
-            }}>
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
-                    <Avatar sx={{ bgcolor: "#7b1fa2", width: 80, height: 80, mb: 2 }}>
-                        <AccountCircleIcon sx={{ fontSize: 60, color: "#fff" }} />
+        <Box
+            sx={{
+                minHeight: "90vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "background.default",
+            }}
+        >
+            <Paper
+                elevation={8}
+                sx={{
+                    p: 5,
+                    borderRadius: 5,
+                    minWidth: 340,
+                    maxWidth: 520,
+                    width: "100%",
+                    bgcolor: "text.secondary",
+                    boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.1)",
+                }}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        mb: 2,
+                    }}
+                >
+                    <Avatar
+                        sx={{
+                            bgcolor: "#7b1fa2",
+                            width: 80,
+                            height: 80,
+                            mb: 2,
+                        }}
+                    >
+                        <AccountCircleIcon
+                            sx={{ fontSize: 60, color: "#fff" }}
+                        />
                     </Avatar>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#5f0a87", mb: 1 }}>
+                    <Typography
+                        variant="h5"
+                        sx={{ fontWeight: 700, color: "text.tertiary", mb: 1 }}
+                    >
                         Account Settings
                     </Typography>
-                    <Typography variant="subtitle2" sx={{ color: "#7b1fa2", mb: 2 }}>
-                        {editMode ? "Edit your profile details" : "View your profile information"}
+                    <Typography
+                        variant="subtitle2"
+                        sx={{ color: "text.tertiary", mb: 2 }}
+                    >
+                        {editMode
+                            ? "Edit your profile details"
+                            : "View your profile information"}
                     </Typography>
                 </Box>
 
                 <Divider sx={{ mb: 3 }} />
 
                 {loading ? (
-                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", py: 4 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            py: 4,
+                        }}
+                    >
                         <CircularProgress sx={{ color: "#a4508b", mb: 2 }} />
                         <Typography>Loading your information...</Typography>
                     </Box>
@@ -146,17 +191,22 @@ const UserSettings = () => {
                                             name={name}
                                             value={formData[name]}
                                             onChange={handleChange}
+                                            InputLabelProps={{
+                                                sx: { color: "text.primary" },
+                                            }}
                                         />
                                     ) : (
                                         <Typography variant="body1">
-                                            <b>{label}:</b> {userInfo?.[name] || "Not set"}
+                                            <b>{label}:</b>{" "}
+                                            {userInfo?.[name] || "Not set"}
                                         </Typography>
                                     )}
                                 </Grid>
                             ))}
                             <Grid item xs={12}>
                                 <Typography variant="body1">
-                                    <b>Permission:</b> {getPermissionLabel(userInfo?.permission)}
+                                    <b>Permission:</b>{" "}
+                                    {getPermissionLabel(userInfo?.permission)}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -166,16 +216,8 @@ const UserSettings = () => {
                         {editMode ? (
                             <Box sx={{ display: "flex", gap: 2 }}>
                                 <Button
-                                    variant="contained"
-                                    color="success"
-                                    fullWidth
-                                    onClick={handleSave}
-                                >
-                                    Save Changes
-                                </Button>
-                                <Button
                                     variant="outlined"
-                                    color="secondary"
+                                    color="red"
                                     fullWidth
                                     onClick={() => {
                                         setEditMode(false);
@@ -189,11 +231,30 @@ const UserSettings = () => {
                                         });
                                     }}
                                 >
-                                    Cancel
+                                    <Typography
+                                        color="text.primary"
+                                        fontWeight="bold"
+                                    >
+                                        Cancel
+                                    </Typography>
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    fullWidth
+                                    onClick={handleSave}
+                                >
+                                    Save Changes
                                 </Button>
                             </Box>
                         ) : (
-                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 2,
+                                }}
+                            >
                                 <Button
                                     variant="contained"
                                     onClick={() => setEditMode(true)}
@@ -204,7 +265,13 @@ const UserSettings = () => {
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => navigate(getDashboardPath(userInfo?.permission))}
+                                    onClick={() =>
+                                        navigate(
+                                            getDashboardPath(
+                                                userInfo?.permission
+                                            )
+                                        )
+                                    }
                                     sx={{ borderRadius: 99, fontWeight: 600 }}
                                 >
                                     Go to Dashboard
