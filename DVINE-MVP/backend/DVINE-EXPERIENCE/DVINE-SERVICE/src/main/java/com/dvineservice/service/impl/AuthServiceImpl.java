@@ -11,10 +11,12 @@ import com.dvineservice.exception.InvalidTokenException;
 import com.dvineservice.exception.LoginCredentialIncorrectException;
 import com.dvineservice.service.AuthService;
 import com.dvineservice.service.EmailVerificationService;
+import com.dvineservice.service.S3Service;
 import com.dvineservice.util.TokenUtil;
 import com.dvineservice.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,6 +38,9 @@ public class AuthServiceImpl implements AuthService {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private EmailVerificationService emailVerificationService;
+
+    @Value("${aws.s3.default-avatar-url}")
+    private String defaultAvatarUrl;
     
     @Override
     public boolean sendVerificationCode(String email) {
@@ -55,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setPermission(PermissionLevel.REGULAR);
+        user.setAvatar(defaultAvatarUrl);
         userMapper.insertUser(user);
         
         emailVerificationService.removeVerificationCode(user.getEmail());
@@ -71,6 +77,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // set default permission level
         user.setPermission(PermissionLevel.REGULAR);
+        user.setAvatar(defaultAvatarUrl);
         // Insert user
         userMapper.insertUser(user);
         // Generate double tokens

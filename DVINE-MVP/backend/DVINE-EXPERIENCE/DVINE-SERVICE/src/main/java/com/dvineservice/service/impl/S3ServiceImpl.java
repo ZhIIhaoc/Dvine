@@ -1,5 +1,4 @@
 package com.dvineservice.service.impl;
-
 import com.dvineservice.service.S3Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,35 +12,31 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.Arrays;
 
-@Slf4j
 @Service
+@Slf4j
 public class S3ServiceImpl implements S3Service {
-    
+
     @Autowired
     private S3Client s3Client;
-    
+
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
-    
+
     @Value("${aws.s3.region}")
     private String region;
+
+    @Value("${aws.s3.default-avatar-url}")
+    private String defaultAvatarUrl;
     
     private static final String AVATAR_PREFIX = "avatars/";
-    private static final String TOUR_IMAGE_PREFIX = "tours/";
-    private static final String MOMENT_IMAGE_PREFIX = "moments/images/";
-    private static final String MOMENT_VIDEO_PREFIX = "moments/videos/";
-    
-    // supported image types
     private static final List<String> SUPPORTED_IMAGE_TYPES = Arrays.asList(
-        "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
+            "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
     );
-    
-    // max size for avatar
-    private static final long AVATAR_MAX_SIZE = 5 * 1024 * 1024;
+    private static final long AVATAR_MAX_SIZE = 5 * 1024 * 1024; // 5MB
     
     @Override
     public String uploadUserAvatar(Long userId, MultipartFile file) {
@@ -128,16 +123,6 @@ public class S3ServiceImpl implements S3Service {
         }
     }
 
-    private String getFilePrefixByType(String fileType) {
-        return switch (fileType.toLowerCase()) {
-            case "avatar" -> AVATAR_PREFIX;
-            case "tour-image" -> TOUR_IMAGE_PREFIX;
-            case "moment-image" -> MOMENT_IMAGE_PREFIX;
-            case "moment-video" -> MOMENT_VIDEO_PREFIX;
-            default -> "misc/";
-        };
-    }
-
     private String uploadFileToS3(String fileKey, MultipartFile file) {
         try {
             String contentType = file.getContentType();
@@ -151,11 +136,12 @@ public class S3ServiceImpl implements S3Service {
                     .contentType(contentType)
                     .contentLength(file.getSize())
                     .build();
-            
+
             s3Client.putObject(putRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-            
-            String fileUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileKey);
-            log.info("file upload success: {}", fileUrl);
+
+            String fileUrl = String.format("https://%s.s3.%s.amazonaws.com/%s",
+                    bucketName, region, fileKey);
+            log.info("Successfully uploaded file to S3: {}", fileUrl);
             return fileUrl;
             
         } catch (IOException e) {
@@ -186,13 +172,10 @@ public class S3ServiceImpl implements S3Service {
         if (fileUrl == null || !fileUrl.contains(bucketName)) {
             return null;
         }
-        
-        // https://bucket-name.s3.region.amazonaws.com/file-key
         String pattern = String.format("https://%s.s3.%s.amazonaws.com/", bucketName, region);
         if (fileUrl.startsWith(pattern)) {
             return fileUrl.substring(pattern.length());
         }
-        
         return null;
     }
 }
