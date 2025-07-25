@@ -29,24 +29,12 @@ public class S3ServiceImpl implements S3Service {
     @Value("${aws.s3.region}")
     private String region;
 
-    @Value("${aws.s3.default-avatar-url}")
-    private String defaultAvatarUrl;
+
     
-    private static final String AVATAR_PREFIX = "avatars/";
-    private static final List<String> SUPPORTED_IMAGE_TYPES = Arrays.asList(
-            "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
-    );
-    private static final long AVATAR_MAX_SIZE = 5 * 1024 * 1024; // 5MB
-    
-    @Override
-    public String uploadUserAvatar(Long userId, MultipartFile file) {
-        validateAvatarFile(file);
-        String fileKey = generateFileKey(AVATAR_PREFIX, userId, file.getOriginalFilename());
-        return uploadFileToS3(fileKey, file);
-    }
+
 
     @Override
-    public String uploadFile(Long entityId, MultipartFile file, String fileType, String prefix) {
+    public String uploadFile(Long entityId, MultipartFile file, String prefix) {
         String fileKey = generateFileKey(prefix, entityId, file.getOriginalFilename());
         return uploadFileToS3(fileKey, file);
     }
@@ -105,21 +93,6 @@ public class S3ServiceImpl implements S3Service {
         } catch (Exception e) {
             log.error("file not exist: {}", fileUrl, e);
             return false;
-        }
-    }
-    
-    private void validateAvatarFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("file is empty");
-        }
-        
-        if (file.getSize() > AVATAR_MAX_SIZE) {
-            throw new IllegalArgumentException("image size exceeds 5MB");
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !SUPPORTED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-            throw new IllegalArgumentException("image file type not supported");
         }
     }
 

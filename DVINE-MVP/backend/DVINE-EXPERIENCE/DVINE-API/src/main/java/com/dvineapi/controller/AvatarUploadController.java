@@ -1,9 +1,9 @@
- package com.dvineapi.controller;
+package com.dvineapi.controller;
 
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.User;
 import com.dvinedao.domain.UserQueryParam;
-import com.dvineservice.service.S3Service;
+import com.dvineservice.service.AvatarService;
 import com.dvineservice.service.UserService;
 import com.dvineservice.util.UserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +24,7 @@ import java.util.Map;
 public class AvatarUploadController {
     
     @Autowired
-    private S3Service s3Service;
-    
-    @Value("${aws.s3.default-avatar-url}")
-    private String defaultAvatarUrl;
+    private AvatarService avatarService;
 
     @Autowired
     private UserService userService;
@@ -35,7 +32,7 @@ public class AvatarUploadController {
     @ResponseStatus(HttpStatus.OK)
     public ReturnResult uploadAvatar(@RequestParam("file") MultipartFile file) {
         Long userId = UserUtil.getCurrentUserId();
-        String avatarUrl = s3Service.uploadUserAvatar(userId, file);
+        String avatarUrl = avatarService.uploadUserAvatar(userId, file);
 
         String oldAvatarUrl = userService.getUserProfileById(userId).getAvatar();
 
@@ -44,9 +41,9 @@ public class AvatarUploadController {
         user.setAvatar(avatarUrl);
         userService.updateUserProfile(user);
 
-        if (oldAvatarUrl != null && !oldAvatarUrl.isEmpty() &&
-            !oldAvatarUrl.contains("default")) {
-            s3Service.deleteFile(oldAvatarUrl);
+        // Delete old avatar (if not default avatar)
+        if (!avatarService.isDefaultAvatar(oldAvatarUrl)) {
+            avatarService.deleteUserAvatar(oldAvatarUrl);
         }
 
         Map<String, Object> result = new HashMap<>();
