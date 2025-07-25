@@ -23,7 +23,7 @@ VALUES
      'regularGuy',
      'Reg',
      'User',
-     'https://your-cdn.com/avatar0.jpg',
+     'https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg',
      0),
 
 /* 1 – premium member */
@@ -34,7 +34,7 @@ VALUES
      'premiumGal',
      'Pre',
      'Mium',
-     'https://your-cdn.com/avatar1.jpg',
+     'https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg',
      1),
 
 /* 2 – partner (lowest admin) */
@@ -45,7 +45,7 @@ VALUES
      'partnerPro',
      'Par',
      'Tner',
-     'https://your-cdn.com/avatar2.jpg',
+     'https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg',
      2),
 
 /* 3 – manager */
@@ -56,7 +56,7 @@ VALUES
      'managerMan',
      'Man',
      'Ager',
-     'https://your-cdn.com/avatar3.jpg',
+     'https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg',
      3),
 
 /* 4 – owner */
@@ -67,5 +67,5 @@ VALUES
      'bigOwner',
      'Own',
      'Er',
-     'https://your-cdn.com/avatar4.jpg',
+     'https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg',
      4);

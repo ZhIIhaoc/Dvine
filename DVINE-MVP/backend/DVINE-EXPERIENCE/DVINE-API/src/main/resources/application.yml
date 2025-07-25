@@ -46,6 +46,12 @@ aws:
     secret-key: 5eTJkSZ8v7E5IWX32BOMhXdshTvE6wT1pG/NLDva
     region: ap-southeast-2
     from-email: noreply@enmaai.online
+  s3:
+      access-key: AKIAYAF3XLATNGLF4YO4
+      secret-key: 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
+      region: ap-southeast-2
+      bucket-name: dvine-media
+      default-avatar-url: https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg
 
 email:
   verification:
