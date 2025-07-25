@@ -182,7 +182,7 @@ export default function TourDetails() {
         primaryImageUrl: "",
         images: [],
     });
-    // 删除与travelDate相关的state和DatePicker
+    // Remove state and DatePicker related to travelDate
 
     // Fetch tour details
     const fetchTourDetails = async () => {
