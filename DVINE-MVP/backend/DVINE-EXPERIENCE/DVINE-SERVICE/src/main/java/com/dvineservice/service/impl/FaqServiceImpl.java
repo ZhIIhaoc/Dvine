@@ -2,6 +2,7 @@ package com.dvineservice.service.impl;
 
 import com.dvinedao.domain.Faq;
 import com.dvinedao.mapper.FaqMapper;
+import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.FaqService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,11 @@ public class FaqServiceImpl implements FaqService {
 
     @Override
     public Faq findById(Long faqId) {
-        return faqMapper.findById(faqId);
+        Faq faq = faqMapper.findById(faqId);
+        if (faq == null) {
+            throw new NotFoundException("FAQ not found");
+        }
+        return faq;
     }
 
     @Override
@@ -36,13 +41,19 @@ public class FaqServiceImpl implements FaqService {
 
     @Override
     public void updateFaq(Faq faq, Long userId) {
-        faqMapper.updateFaq(faq);
+        int updateFaq = faqMapper.updateFaq(faq);
+        if (updateFaq == 0) {
+            throw new NotFoundException("FAQ not found");
+        }
         log.info("FAQ updated successfully by user: {}", userId);
     }
 
     @Override
     public void deleteFaq(Long faqId, Long userId) {
-        faqMapper.deleteFaq(faqId);
+        int deletedFaq = faqMapper.deleteFaq(faqId);
+        if (deletedFaq == 0) {
+            throw new NotFoundException("FAQ not found");
+        }
         log.info("FAQ deleted successfully by user: {}", userId);
     }
 }
