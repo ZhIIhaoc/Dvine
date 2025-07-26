@@ -406,52 +406,56 @@ export function AdminDashboard() {
                                                     : "transparent",
                                         }}
                                     >
-                                        <Badge
-                                            badgeContent={
-                                                adminApprovalsList.length
+                                        <Button
+                                            onClick={() =>
+                                                setActivePanel("manage_tours")
                                             }
-                                            color="error"
-                                            invisible={
-                                                adminApprovalsList.length === 0
-                                            }
-                                            overlap="rectangular"
-                                            sx={{ width: "100%" }}
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "action.hover",
+                                                },
+                                            }}
                                         >
-                                            <Button
-                                                onClick={() =>
-                                                    setActivePanel(
-                                                        "manage_tours"
-                                                    )
-                                                }
-                                                fullWidth
+                                            <ApprovalIcon
+                                                style={{ marginRight: 8 }}
                                                 sx={{
-                                                    justifyContent:
-                                                        "flex-start",
-                                                    textTransform: "none",
-                                                    py: 3,
-                                                    pl: 2,
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "action.hover",
-                                                    },
+                                                    color: "text.tertiary",
+                                                }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
                                                 }}
                                             >
-                                                <ApprovalIcon
-                                                    style={{ marginRight: 8 }}
-                                                    sx={{
-                                                        color: "text.tertiary",
-                                                    }}
-                                                />
-                                                <Typography
-                                                    sx={{
-                                                        color: "text.primary",
-                                                        fontWeight: "bold",
-                                                    }}
-                                                >
-                                                    Manage Tours
-                                                </Typography>
-                                            </Button>
-                                        </Badge>
+                                                Manage Tours
+                                            </Typography>
+                                            <Badge
+                                                badgeContent={
+                                                    adminApprovalsList.length
+                                                }
+                                                color="error"
+                                                invisible={
+                                                    adminApprovalsList.length ===
+                                                    0
+                                                }
+                                                overlap="rectangular"
+                                                sx={{
+                                                    ml: 4,
+                                                    "& .MuiBadge-badge": {
+                                                        fontSize: "1rem",
+                                                        minWidth: 24,
+                                                        minHeight: 24,
+                                                    },
+                                                }}
+                                            ></Badge>
+                                        </Button>
                                     </Box>
                                 )}
                                 {isAdmin && (
