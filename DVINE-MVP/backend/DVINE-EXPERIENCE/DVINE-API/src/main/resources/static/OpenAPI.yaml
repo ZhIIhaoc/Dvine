@@ -2929,15 +2929,6 @@ paths:
               example:
                 code: 1
                 msg: "User not logged in"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-              example:
-                code: 1
-                msg: "Internal server error occurred while retrieving bookings"
       security:
         - bearerAuth: []
 
