@@ -132,6 +132,116 @@ paths:
 
       security:
         - bearerAuth: []
+  /users/avatar:
+    post:
+      tags:
+        - Users
+      summary: Upload user avatar
+      description: Upload a new avatar image for the current user. Supports JPEG, PNG, and GIF formats. Maximum file size is 5MB.
+      operationId: uploadAvatar
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Avatar image file (JPEG, PNG, or GIF, max 5MB)
+              required:
+                - file
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when file is invalid, too large, or unsupported format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Empty File:
+                  description: No file provided
+                  value:
+                    code: 1
+                    msg: Avatar file cannot be empty
+                File Too Large:
+                  description: File exceeds size limit
+                  value:
+                    code: 1
+                    msg: Avatar file size cannot exceed 5MB
+                Unsupported Format:
+                  description: Unsupported file format
+                  value:
+                    code: 1
+                    msg: "Unsupported avatar file type, only supports: image/jpeg, image/png, image/gif"
+        "401":
+          description: Authentication failed - occurs when JWT token is missing, expired, or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "500":
+          description: Internal Server Error - occurs when file upload fails
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Avatar upload failed
+        "200":
+          description: Avatar uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: Avatar uploaded successfully
+                data:
+                  avatarUrl: https://example.com/avatars/user12.jpg
+      security:
+        - bearerAuth: []
+    get:
+      tags:
+        - Users
+      summary: Get user avatar information
+      description: Get current user's avatar URL and related information
+      operationId: getAvatarInfo
+      responses:
+        "401":
+          description: Authentication failed - occurs when JWT token is missing, expired, or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "200":
+           description: Avatar information retrieved successfully
+           content:
+             application/json:
+               schema:
+                 allOf:
+                   - $ref: "#/components/schemas/ReturnResult"
+                   - type: object
+                     properties:
+                       data:
+                         $ref: "#/components/schemas/AvatarInfo"
+               example:
+                 code: 0
+                 msg: success
+                 data:
+                   avatarUrl: https://example.com/avatars/user12.jpg
+                   isDefaultAvatar: false
+                   defaultAvatarUrl: https://example.com/default-avatar.png
+      security:
+        - bearerAuth: []
   /tours:
     get:
       tags:
@@ -3576,6 +3686,26 @@ components:
       required:
         - email
         - password
+    AvatarInfo:
+      type: object
+      description: User avatar information
+      properties:
+        avatarUrl:
+          type: string
+          description: URL of the user's current avatar image
+          example: https://example.com/avatars/user123.jpg
+        isDefaultAvatar:
+          type: boolean
+          description: Whether the current avatar is the default avatar
+          example: false
+        defaultAvatarUrl:
+          type: string
+          description: URL of the default avatar image
+          example: https://example.com/default-avatar.png
+      required:
+        - avatarUrl
+        - isDefaultAvatar
+        - defaultAvatarUrl
     TourPageQueryParam:
       type: object
       description: Tour search and filter parameters
