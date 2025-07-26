@@ -150,7 +150,6 @@ export function AdminDashboard() {
                         {" "}
                         Welcome Back {userName}{" "}
                     </Typography>
-                    {/* <DashboardHeaderCard /> */}
                     <Box
                         sx={{
                             width: "100%",
@@ -173,8 +172,6 @@ export function AdminDashboard() {
                                     sx={{
                                         textAlign: "start",
                                         mt: 2,
-                                        py: 2,
-                                        pl: 1,
                                         backgroundColor:
                                             activePanel === "home"
                                                 ? "background.secondary"
@@ -183,6 +180,16 @@ export function AdminDashboard() {
                                 >
                                     <Button
                                         onClick={() => setActivePanel("home")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
                                     >
                                         <HomeIcon
                                             style={{ marginRight: 8 }}
@@ -203,8 +210,6 @@ export function AdminDashboard() {
                                 <Box
                                     sx={{
                                         textAlign: "start",
-                                        py: 2,
-                                        pl: 1,
                                         backgroundColor:
                                             activePanel === "createTour"
                                                 ? "background.secondary"
@@ -215,6 +220,16 @@ export function AdminDashboard() {
                                         onClick={() =>
                                             setActivePanel("createTour")
                                         }
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
                                     >
                                         <AddCircleIcon
                                             style={{ marginRight: 8 }}
@@ -233,14 +248,12 @@ export function AdminDashboard() {
                                     </Button>
                                 </Box>
 
-                                {/* Button to open Users List Modal (only for Manager/Owner) */}
+                                {/* Button to open Users List  (only for Manager/Owner) */}
                                 {isAdmin && (
                                     <>
                                         <Box
                                             sx={{
                                                 textAlign: "start",
-                                                py: 2,
-                                                pl: 1,
                                                 backgroundColor:
                                                     activePanel === "users"
                                                         ? "background.secondary"
@@ -251,6 +264,18 @@ export function AdminDashboard() {
                                                 onClick={() =>
                                                     setActivePanel("users")
                                                 }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
                                             >
                                                 <PeopleIcon
                                                     style={{ marginRight: 8 }}
@@ -281,9 +306,6 @@ export function AdminDashboard() {
                                         <Box
                                             sx={{
                                                 textAlign: "start",
-                                                py: 2,
-                                                pl: 1,
-                                                pr: 3,
                                                 backgroundColor:
                                                     activePanel === "catalogue"
                                                         ? "background.secondary"
@@ -294,6 +316,19 @@ export function AdminDashboard() {
                                                 onClick={() =>
                                                     setActivePanel("catalogue")
                                                 }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    pr: 3,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
                                             >
                                                 <MenuBookIcon
                                                     style={{
@@ -348,8 +383,6 @@ export function AdminDashboard() {
                                     <Box
                                         sx={{
                                             textAlign: "start",
-                                            py: 2,
-                                            pl: 1,
                                             backgroundColor:
                                                 activePanel === "manage_tours"
                                                     ? "background.secondary"
@@ -365,6 +398,7 @@ export function AdminDashboard() {
                                                 adminApprovalsList.length === 0
                                             }
                                             overlap="rectangular"
+                                            sx={{ width: "100%" }}
                                         >
                                             <Button
                                                 onClick={() =>
@@ -372,6 +406,18 @@ export function AdminDashboard() {
                                                         "manage_tours"
                                                     )
                                                 }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
                                             >
                                                 <ApprovalIcon
                                                     style={{ marginRight: 8 }}
@@ -395,8 +441,6 @@ export function AdminDashboard() {
                                     <Box
                                         sx={{
                                             textAlign: "start",
-                                            py: 2,
-                                            pl: 1,
                                             // backgroundColor:
                                             //     activePanel === "createTour"
                                             //         ? "background.secondary"
@@ -405,6 +449,17 @@ export function AdminDashboard() {
                                     >
                                         <Button
                                             onClick={() => navigate("/faq")}
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "action.hover",
+                                                },
+                                            }}
                                         >
                                             <LiveHelpIcon
                                                 style={{ marginRight: 8 }}
