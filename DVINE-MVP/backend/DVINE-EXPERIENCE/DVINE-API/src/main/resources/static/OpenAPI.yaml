@@ -2640,10 +2640,11 @@ paths:
       parameters:
         - name: bookingReference
           in: path
-          description: Booking reference number
+          description: Booking reference number in format DVINE-YYYYMMDD-XXXX
           required: true
           schema:
             type: string
+            pattern: "^DVINE-\\d{8}-\\d{4}$"
           example: "DVINE-20240718-1234"
       responses:
         "200":
@@ -2681,7 +2682,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Invalid booking reference format. Expected format: DVINE-YYYY-XXXXXX"
+                msg: "Booking reference must follow format: DVINE-YYYYMMDD-XXXX (e.g., DVINE-20251213-2531)"
       security:
         - bearerAuth: []
 

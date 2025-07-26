@@ -7,6 +7,7 @@ import com.dvinedao.mapper.BookingMapper;
 import com.dvineservice.exception.BookingNotFoundException;
 import com.dvineservice.exception.PermissionDeniedException;
 import com.dvineservice.util.UserUtil;
+import com.dvineservice.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -41,7 +42,7 @@ public class BookingOwnerAspect {
         // Fetch booking from database
         Booking booking = bookingMapper.findById(bookingId);
         if (booking == null) {
-            throw new BookingNotFoundException("Booking not found: " + bookingId);
+            throw new BookingNotFoundException("Booking not found");
         }
 
         // Get current user
@@ -104,6 +105,9 @@ public class BookingOwnerAspect {
             }
 
             if (arg instanceof String bookingReference && "bookingReference".equals(paramName)) {
+                // Validate booking reference format first
+                ValidationUtil.validateBookingReferenceFormat(bookingReference);
+                
                 // If we have a booking reference, we can look it up
                 Booking booking = bookingMapper.findByReference(bookingReference);
                 if (booking != null) {
