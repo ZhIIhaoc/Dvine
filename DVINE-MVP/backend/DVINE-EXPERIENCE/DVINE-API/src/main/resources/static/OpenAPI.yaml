@@ -2385,11 +2385,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               examples:
-                Invalid Tour ID:
-                  description: Tour ID not found
-                  value:
-                    code: 1
-                    msg: "Tour with ID 999 not found"
                 Invalid Quantity:
                   description: Quantity exceeds maximum allowed
                   value:
@@ -2405,6 +2400,15 @@ paths:
                   value:
                     code: 1
                     msg: "Missing required field: tourId"
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Tour not found"
         "401":
           description: Invalid authentication token (only when token is provided but invalid)
           content:
@@ -2444,12 +2448,34 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Booking"
+              example:
+                code: 0
+                msg: success
+                data:
+                  bookingId: 12345
+                  userId: 1
+                  tourId: 1
+                  bookingReference: "DVINE-20250815-1234"
+                  quantity: 2
+                  unitPrice: 299.99
+                  totalAmount: 599.98
+                  currency: "AUD"
+                  travelDate: "2025-08-15"
+                  status: "CONFIRMED"
+                  customerNotes: "Anniversary celebration - vegetarian meals preferred"
+                  createTime: "2025-07-18T14:30:00Z"
+                  updateTime: "2025-07-18T14:35:00Z"
+                  tourTitle: "Amazing Sydney Harbor Tour"
+                  tourDestination: "Sydney, Australia"
         "404":
           description: Booking not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Booking not found"
       security:
         - bearerAuth: []
 
