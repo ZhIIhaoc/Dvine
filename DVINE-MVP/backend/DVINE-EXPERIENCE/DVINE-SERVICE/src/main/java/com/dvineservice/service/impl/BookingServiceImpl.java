@@ -89,7 +89,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
 //    @BookingOwnerCheck
     public Booking getBookingDetails(Long bookingId) {
-        return bookingMapper.findById(bookingId);
+        Booking booking = bookingMapper.findById(bookingId);
+        if (booking == null) {
+            log.error("Booking not found: {}", bookingId);
+            throw new BookingNotFoundException("Booking not found");
+        }
+        return booking;
     }
 
     @Override
