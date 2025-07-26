@@ -19,6 +19,7 @@ import {
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 import CreateTourForm from "../components/CreateTourForm.jsx";
+import ManageTourForm from "../components/AdminTourForm.jsx";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PeopleIcon from "@mui/icons-material/People";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -349,10 +350,10 @@ export function AdminDashboard() {
                                             textAlign: "start",
                                             py: 2,
                                             pl: 1,
-                                            // backgroundColor:
-                                            //     activePanel === "createTour"
-                                            //         ? "background.secondary"
-                                            //         : "transparent",
+                                            backgroundColor:
+                                                activePanel === "manage_tours"
+                                                    ? "background.secondary"
+                                                    : "transparent",
                                         }}
                                     >
                                         <Badge
@@ -367,8 +368,8 @@ export function AdminDashboard() {
                                         >
                                             <Button
                                                 onClick={() =>
-                                                    navigate(
-                                                        "/admin-tour-approval"
+                                                    setActivePanel(
+                                                        "manage_tours"
                                                     )
                                                 }
                                             >
@@ -424,7 +425,7 @@ export function AdminDashboard() {
                                 )}
                             </Grid>
 
-                            {/* Right Column - Next Tour Box */}
+                            {/* Right Column */}
                             <Grid item xs={12} md={9} sx={{ width: "50%" }}>
                                 {(isAdmin || isPartner) && (
                                     <Box
@@ -473,6 +474,20 @@ export function AdminDashboard() {
                                                     onClose={() =>
                                                         setActivePanel("home")
                                                     }
+                                                />
+                                            )}
+
+                                        {isAdmin &&
+                                            activePanel === "manage_tours" && (
+                                                <ManageTourForm
+                                                // onComplete={() => {
+                                                //     refreshCatalogues();
+                                                //     setActivePanel("home");
+                                                // }}
+
+                                                // onClose={() =>
+                                                //     setActivePanel("home")
+                                                // }
                                                 />
                                             )}
 
