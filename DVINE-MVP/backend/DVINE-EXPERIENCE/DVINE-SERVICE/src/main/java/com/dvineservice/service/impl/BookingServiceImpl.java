@@ -9,6 +9,7 @@ import com.dvinedao.mapper.PaymentMapper;
 import com.dvinedao.mapper.UserMapper;
 import com.dvineservice.exception.BookingNotFoundException;
 import com.dvineservice.exception.InvalidBookingStatusException;
+import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.BookingService;
 import com.dvineservice.service.PaymentService;
 import com.dvineservice.service.TourService;
@@ -48,7 +49,9 @@ public class BookingServiceImpl implements BookingService {
     
     @Autowired
     private PaymentService paymentService;
-    
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
     @Transactional
     public BookingSessionResponse createBookingPaymentSession(CreateBookingRequest request) throws StripeException {
@@ -107,11 +110,19 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @UserOwnerCheck
     public List<Booking> getUserBookings(Long userId) {
+        if (userMapper.findUserById(userId) == null) {
+            log.error("User not found");
+            throw new NotFoundException("User not found");
+        }
         return bookingMapper.findByUserId(userId);
     }
     
     @Override
     public List<Booking> getTourBookings(Long tourId) {
+        if (tourService.findById(tourId) == null) {
+            log.error("Tour not found)");
+            throw new NotFoundException("Tour not found");
+        }
         return bookingMapper.findByTourId(tourId);
     }
 
