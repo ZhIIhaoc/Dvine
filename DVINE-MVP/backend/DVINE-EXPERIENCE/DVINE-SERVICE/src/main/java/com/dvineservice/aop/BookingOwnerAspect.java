@@ -113,7 +113,7 @@ public class BookingOwnerAspect {
                 if (booking != null) {
                     return booking.getBookingId();
                 } else {
-                    throw new BookingNotFoundException("Booking not found for reference: " + bookingReference);
+                    throw new BookingNotFoundException("Booking not found");
                 }
             }
         }

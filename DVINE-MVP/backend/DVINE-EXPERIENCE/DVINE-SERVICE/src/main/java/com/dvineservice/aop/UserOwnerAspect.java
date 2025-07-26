@@ -2,6 +2,8 @@ package com.dvineservice.aop;
 
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.User;
+import com.dvinedao.mapper.UserMapper;
+import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.exception.PermissionDeniedException;
 import com.dvineservice.util.UserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,12 @@ import java.util.Objects;
 @Component
 @Slf4j
 public class UserOwnerAspect {
+
+    private final UserMapper userMapper;
+
+    public UserOwnerAspect(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
 
     /** runs *before* any method annotated with @UserOwnerCheck */
     @Before("@annotation(com.dvinedao.annotation.UserOwnerCheck)")
@@ -65,6 +73,10 @@ public class UserOwnerAspect {
 
             // Direct Long id with specific parameter name
             if (arg instanceof Long userId && "userId".equals(paramName)) {
+                // Ensure userId is not null
+                if (userMapper.findUserById(userId) == null) {
+                    throw new NotFoundException("User not found");
+                }
                 return userId;
             }
         }

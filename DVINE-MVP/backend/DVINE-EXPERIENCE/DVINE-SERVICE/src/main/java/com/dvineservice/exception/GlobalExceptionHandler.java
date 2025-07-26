@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,6 +108,35 @@ public class GlobalExceptionHandler {
     public ReturnResult handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("An error occurred:", e);
         return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error("Method argument type mismatch:", e);
+        
+        String paramName = e.getName();
+        Object value = e.getValue();
+        Class<?> requiredType = e.getRequiredType();
+        
+        // Handle Payment.PaymentStatus enum specifically
+        if (requiredType != null && requiredType.getSimpleName().equals("PaymentStatus")) {
+            return ReturnResult.error("Invalid payment status");
+        }
+        
+        // Handle other enum conversion errors
+        if (requiredType != null && requiredType.isEnum()) {
+            return ReturnResult.error("Invalid " + paramName + " value: '" + value + "'. Valid values are: " + 
+                                    String.join(", ", getEnumValues(requiredType)));
+        }
+        
+        return ReturnResult.error("Invalid " + paramName + " format: '" + value + "'");
+    }
+    
+    private String[] getEnumValues(Class<?> enumClass) {
+        return java.util.Arrays.stream(enumClass.getEnumConstants())
+                .map(Object::toString)
+                .toArray(String[]::new);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -228,5 +258,15 @@ public class GlobalExceptionHandler {
     public ReturnResult handleSignatureVerificationException(SignatureVerificationException e) {
         log.error("Stripe webhook signature verification failed:", e);
         return ReturnResult.error("Invalid webhook signature");
+    }
+
+    /**
+     * Handles payment status errors - operations attempted on payments with invalid status
+     */
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler
+    public ReturnResult handlePaymentStatusException(PaymentStatusException e) {
+        log.error("Payment status error:", e);
+        return ReturnResult.error(e.getMessage());
     }
 }

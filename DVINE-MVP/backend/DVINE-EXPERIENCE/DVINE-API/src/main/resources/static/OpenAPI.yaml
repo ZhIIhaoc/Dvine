@@ -2581,7 +2581,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "No payment found for booking ID 999"
+                msg: "Payment not found"
         "401":
           description: Authentication required
           content:
@@ -2761,6 +2761,15 @@ paths:
               example:
                 code: 1
                 msg: "User not logged in"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Partner"
       security:
         - bearerAuth: []
 
@@ -3012,7 +3021,7 @@ paths:
       tags:
         - Payments
       summary: Get user payments
-      description: Get all payments for a specific user
+      description: Get all payments for a specific user (Manager+ access required)
       operationId: getUserPayments
       parameters:
         - name: userId
@@ -3090,7 +3099,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "You can only access your own payment history"
+                msg: "You don't have permission to access this resource. Required level: Manager"
       security:
         - bearerAuth: []
 
@@ -3297,7 +3306,7 @@ paths:
                   description: Refund amount exceeds payment amount
                   value:
                     code: 1
-                    msg: "Refund amount $500.00 exceeds payment amount $259.98"
+                    msg: "Refund amount ($999.99) cannot exceed available refund amount ($599.98). Payment amount: $599.98, Already refunded: $0.00"
                 Negative Amount:
                   description: Refund amount must be positive
                   value:
@@ -3316,7 +3325,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Payment with ID 999 not found"
+                msg: "Payment not found"
         "401":
           description: Authentication required
           content:
@@ -3337,7 +3346,7 @@ paths:
                   description: Cannot refund failed payment
                   value:
                     code: 1
-                    msg: "Cannot refund payment with status FAILED"
+                    msg: "Can only refund succeeded payments. Current status: FAILED"
                 Stripe Error:
                   description: Stripe refund processing failed
                   value:

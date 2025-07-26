@@ -46,7 +46,7 @@ public class PaymentOwnerAspect {
         // Fetch payment from database
         Payment payment = paymentMapper.findById(paymentId);
         if (payment == null) {
-            throw new PaymentFailedException("Payment not found: " + paymentId);
+            throw new PaymentFailedException("Payment not found");
         }
 
         // Get current user
@@ -77,6 +77,9 @@ public class PaymentOwnerAspect {
 
             // Direct Long id with specific parameter name
             if (arg instanceof Long paymentId && "paymentId".equals(paramName)) {
+                if (paymentMapper.findById(paymentId) == null) {
+                    throw new NotFoundException("Payment not found");
+                }
                 return paymentId;
             } else if (arg instanceof Long bookingId && "bookingId".equals(paramName)) {
                 // If we find a bookingId, we can look up the payment by bookingId
@@ -84,7 +87,7 @@ public class PaymentOwnerAspect {
                 if (payment != null) {
                     return payment.getPaymentId();  // return the payment ID
                 } else {
-                    throw new NotFoundException("Payment not found for bookingId: " + bookingId);
+                    throw new NotFoundException("Payment not found");
                 }
             }
         }
@@ -113,7 +116,7 @@ public class PaymentOwnerAspect {
         // Regular user bookings - users can only access their own payments
         if (!booking.getUserId().equals(currentUser.getUserId()) && 
             currentUser.getPermission() < PermissionLevel.PARTNER) {
-            throw new PermissionDeniedException("You can only view your own payments");
+            throw new PermissionDeniedException("You can only access your own payment details");
         }
     }
 }
