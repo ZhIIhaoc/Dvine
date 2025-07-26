@@ -2751,7 +2751,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "User with ID 999 not found"
+                msg: "User not found"
         "401":
           description: Authentication required
           content:
@@ -2840,7 +2840,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Tour with ID 999 not found"
+                msg: "Tour not found"
         "401":
           description: Authentication required
           content:
