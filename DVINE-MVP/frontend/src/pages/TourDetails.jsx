@@ -187,7 +187,7 @@ export default function TourDetails() {
     // Fetch tour details
     const fetchTourDetails = async () => {
         try {
-            const result = await fetchTourById(id, token);
+            const result = await fetchTourById(id);
             if (result.code === 0) {
                 setTour(result.data);
             } else {

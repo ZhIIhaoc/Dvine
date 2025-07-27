@@ -48,6 +48,7 @@ import {
     createCatalogue,
     updateCatalogue,
     deleteCatalogue,
+    deleteTour,
 } from "../endpoints/CatalogueEndpoints";
 import CatalogueSearch from "../components/CatalogueSearch";
 import FeaturedCarousel from "../components/FeaturedCarousel";
@@ -153,7 +154,7 @@ export function Catalogue() {
     // Fetch catalogues from API
     const fetchCataloguesData = async () => {
         try {
-            const result = await fetchCatalogues(token);
+            const result = await fetchCatalogues();
             if (result.code === 0) {
                 setCatalogues(result.data);
             } else {
@@ -169,7 +170,7 @@ export function Catalogue() {
     // Fetch tours from API
     const fetchToursData = async () => {
         try {
-            const result = await fetchAllTours(token);
+            const result = await fetchAllTours();
             if (result.code === 0) {
                 setTours(result.data);
             } else {
@@ -187,7 +188,7 @@ export function Catalogue() {
     // Fetch featured tours from API
     const fetchFeaturedToursData = async () => {
         try {
-            const result = await fetchFeaturedTours(token);
+            const result = await fetchFeaturedTours();
             if (result.code === 0) {
                 setFeaturedTours(result.data);
             } else {
@@ -213,7 +214,7 @@ export function Catalogue() {
     // Create new catalogue
     const handleCreateCatalogue = async () => {
         try {
-            const result = await createCatalogue(catalogueForm, token);
+            const result = await createCatalogue(catalogueForm);
             if (result.code === 0) {
                 setCreateCatalogueOpen(false);
                 setCatalogueForm({
@@ -282,6 +283,29 @@ export function Catalogue() {
         } catch (error) {
             console.error("Error deleting catalogue:", error);
             setError("Failed to delete catalogue");
+        }
+    };
+
+    // Delete tour
+    const handleDeleteTour = async (tourId) => {
+        if (
+            !window.confirm(
+                "Are you sure you want to delete this tour?"
+            )
+        ) {
+            return;
+        }
+
+        try {
+            const result = await deleteTour(tourId, token);
+            if (result.code === 0) {
+                fetchToursData();
+            } else {
+                setError("Failed to delete tour");
+            }
+        } catch (error) {
+            console.error("Error deleting tour:", error);
+            setError("Failed to delete tour");
         }
     };
 
@@ -814,9 +838,7 @@ export function Catalogue() {
                                                 size="small"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDeleteCatalogue(
-                                                        tour.tourId
-                                                    );
+                                                    handleDeleteTour(tour.tourId);
                                                 }}
                                                 color="error"
                                             >

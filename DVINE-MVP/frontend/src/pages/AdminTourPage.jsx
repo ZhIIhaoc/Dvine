@@ -47,7 +47,7 @@ const mapStatus = (statusCode) => {
 };
 
 export const AdminTourPage = () => {
-    const { token } = useContext(AuthContext);
+    const { token, setToken } = useContext(AuthContext);
     // const navigate = useNavigate();
 
     const [pendingTourList, setPendingTourList] = useState([]);
@@ -74,9 +74,12 @@ export const AdminTourPage = () => {
     const fetchPendingTours = async () => {
         try {
             const response = await fetch("http://localhost:8080/approvals/pending-tours", {
-                headers: { Authorization: `${token}` },
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
-            const responseInfo = await response .json();
+            const responseInfo = await response.json();
             if (responseInfo.code === 0) setPendingTourList(responseInfo.data);
         } catch (err) {
             console.error("Error fetching pending tours:", err);
@@ -86,7 +89,10 @@ export const AdminTourPage = () => {
     const fetchFeaturedTours = async () => {
         try {
             const response = await fetch("http://localhost:8080/featured-tours/manage", {
-                headers: { Authorization: `${token}` },
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
@@ -100,7 +106,10 @@ export const AdminTourPage = () => {
     const fetchAllTours = async () => {
         try {
             const response = await fetch("http://localhost:8080/tours", {
-                headers: { Authorization: `${token}` },
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
             const responseInfo = await response.json();
             if (responseInfo.code === 0) setAllTours(responseInfo.data);
@@ -187,7 +196,7 @@ export const AdminTourPage = () => {
                 <Toolbar />
                 <Box sx={{ width: 240 }} onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
                     <List>
-                        <ListItem button>
+                        <ListItem>
                             <ListItemText primary="Manage Tours" />
                         </ListItem>
                     </List>
