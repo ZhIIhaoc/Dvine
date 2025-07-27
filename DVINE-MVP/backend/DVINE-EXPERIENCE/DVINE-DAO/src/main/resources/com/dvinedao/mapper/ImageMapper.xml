@@ -6,10 +6,10 @@
 
 
     <update id="createImages">
-        INSERT INTO images (imageUrl, caption, tourId, isPrimary)
+        INSERT INTO images (imageUrl, tourId, isPrimary)
         VALUES
         <foreach collection="images" item="image" separator=",">
-            (#{image.imageUrl}, #{image.caption}, #{image.tourId}, #{image.isPrimary})
+            (#{image.imageUrl}, #{image.tourId}, #{image.isPrimary})
         </foreach>
     </update>
 
@@ -25,7 +25,6 @@
         SELECT
             i.imageId,
             i.imageUrl,
-            i.caption,
             i.tourId,
             i.isPrimary
         FROM

@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS images (
     imageId BIGINT AUTO_INCREMENT PRIMARY KEY,
     tourId BIGINT NOT NULL,
     imageUrl VARCHAR(255) NOT NULL,
-    caption VARCHAR(255),
     isPrimary BOOLEAN DEFAULT FALSE COMMENT "Tour Primary image, each tour only have 1 primary image",
     FOREIGN KEY (tourId) REFERENCES tours(tourId)
 );
@@ -78,7 +77,6 @@ CREATE TABLE IF NOT EXISTS pending_tour_images (
     pendingImageId BIGINT AUTO_INCREMENT PRIMARY KEY,
     pendingTourId BIGINT NOT NULL,
     imageUrl VARCHAR(255) NOT NULL,
-    caption VARCHAR(255),
     isPrimary BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (pendingTourId) REFERENCES pending_tours(pendingTourId) ON DELETE CASCADE
 );
