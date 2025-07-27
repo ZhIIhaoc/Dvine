@@ -13,7 +13,6 @@ import TourPurchaseFail from "./pages/TourPurchaseFail.jsx";
 import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import { CurrentUploadedTours } from "./pages/CurrentUploadedTours.jsx";
-import { AdminTourPage } from "./pages/AdminTourPage.jsx";
 import ForgottenPassword from "./pages/ForgottenPassword.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
@@ -27,8 +26,8 @@ import Checkout from "./pages/Checkout";
 
 function App() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem("themeMode") === "dark";
-});
+        return localStorage.getItem("themeMode") === "dark";
+    });
 
     // useEffect(() => {
     //     const saved = localStorage.getItem("themeMode");
@@ -94,12 +93,11 @@ function App() {
                             path="/password-reset"
                             element={<ForgottenPassword />}
                         />
-                        <Route
-                            path="admin-tour-approval"
-                            element={<AdminTourPage />}
-                        />
                         <Route path="*" element={<NotFound />} />
-                        <Route path="/checkout/:tourId" element={<Checkout />} />
+                        <Route
+                            path="/checkout/:tourId"
+                            element={<Checkout />}
+                        />
                     </Route>
                     <Route
                         path="/login"
