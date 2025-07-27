@@ -11,8 +11,8 @@ public final class PermissionLevel {
     public static final int ADMIN    = 2;  // this one only used for admin check, not a real permission level
 
     /** quick helper to validate */
-    public static boolean isValid(int code) {
-        return code >= GUEST && code <= OWNER;
+    public static boolean isValidToUpdate(int code) {
+        return code >= REGULAR && code <= OWNER;
     }
 
     public static boolean isGuest(Integer code) {

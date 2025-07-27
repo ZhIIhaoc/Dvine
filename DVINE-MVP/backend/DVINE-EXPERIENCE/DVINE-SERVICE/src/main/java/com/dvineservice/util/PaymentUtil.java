@@ -5,7 +5,9 @@ import com.dvinedao.domain.Payment;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.User;
+import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.exception.PaymentFailedException;
+import com.dvineservice.exception.PaymentStatusException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -154,7 +156,7 @@ public class PaymentUtil {
      */
     public static void validateRefundRequest(Payment payment, BigDecimal refundAmount) {
         if (payment == null) {
-            throw new IllegalArgumentException("Payment cannot be null");
+            throw new NotFoundException("Payment not found");
         }
         
         if (refundAmount == null) {
@@ -167,7 +169,7 @@ public class PaymentUtil {
         
         // Check payment status - only succeeded payments can be refunded
         if (payment.getStatus() != Payment.PaymentStatus.SUCCEEDED) {
-            throw new IllegalArgumentException("Can only refund succeeded payments. Current status: " + payment.getStatus());
+            throw new PaymentStatusException("Can only refund succeeded payments. Current status: " + payment.getStatus());
         }
         
         // Check if Stripe payment intent ID exists for refund processing

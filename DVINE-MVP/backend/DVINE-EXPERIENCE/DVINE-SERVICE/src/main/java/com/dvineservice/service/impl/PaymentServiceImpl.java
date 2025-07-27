@@ -61,6 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> getPaymentsByStatus(Payment.PaymentStatus status) {
+
         return paymentMapper.findByStatus(status);
     }
     

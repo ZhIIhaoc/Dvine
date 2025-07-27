@@ -132,6 +132,116 @@ paths:
 
       security:
         - bearerAuth: []
+  /users/avatar:
+    post:
+      tags:
+        - Users
+      summary: Upload user avatar
+      description: Upload a new avatar image for the current user. Supports JPEG, PNG, and GIF formats. Maximum file size is 5MB.
+      operationId: uploadAvatar
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Avatar image file (JPEG, PNG, or GIF, max 5MB)
+              required:
+                - file
+        required: true
+      responses:
+        "400":
+          description: Bad Request - occurs when file is invalid, too large, or unsupported format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Empty File:
+                  description: No file provided
+                  value:
+                    code: 1
+                    msg: Avatar file cannot be empty
+                File Too Large:
+                  description: File exceeds size limit
+                  value:
+                    code: 1
+                    msg: Avatar file size cannot exceed 5MB
+                Unsupported Format:
+                  description: Unsupported file format
+                  value:
+                    code: 1
+                    msg: "Unsupported avatar file type, only supports: image/jpeg, image/png, image/gif"
+        "401":
+          description: Authentication failed - occurs when JWT token is missing, expired, or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "500":
+          description: Internal Server Error - occurs when file upload fails
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Avatar upload failed
+        "200":
+          description: Avatar uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: Avatar uploaded successfully
+                data:
+                  avatarUrl: https://example.com/avatars/user12.jpg
+      security:
+        - bearerAuth: []
+    get:
+      tags:
+        - Users
+      summary: Get user avatar information
+      description: Get current user's avatar URL and related information
+      operationId: getAvatarInfo
+      responses:
+        "401":
+          description: Authentication failed - occurs when JWT token is missing, expired, or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "200":
+           description: Avatar information retrieved successfully
+           content:
+             application/json:
+               schema:
+                 allOf:
+                   - $ref: "#/components/schemas/ReturnResult"
+                   - type: object
+                     properties:
+                       data:
+                         $ref: "#/components/schemas/AvatarInfo"
+               example:
+                 code: 0
+                 msg: success
+                 data:
+                   avatarUrl: https://example.com/avatars/user12.jpg
+                   isDefaultAvatar: false
+                   defaultAvatarUrl: https://example.com/default-avatar.png
+      security:
+        - bearerAuth: []
   /tours:
     get:
       tags:
@@ -2385,11 +2495,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
               examples:
-                Invalid Tour ID:
-                  description: Tour ID not found
-                  value:
-                    code: 1
-                    msg: "Tour with ID 999 not found"
                 Invalid Quantity:
                   description: Quantity exceeds maximum allowed
                   value:
@@ -2405,6 +2510,15 @@ paths:
                   value:
                     code: 1
                     msg: "Missing required field: tourId"
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Tour not found"
         "401":
           description: Invalid authentication token (only when token is provided but invalid)
           content:
@@ -2444,12 +2558,34 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Booking"
+              example:
+                code: 0
+                msg: success
+                data:
+                  bookingId: 12345
+                  userId: 1
+                  tourId: 1
+                  bookingReference: "DVINE-20250815-1234"
+                  quantity: 2
+                  unitPrice: 299.99
+                  totalAmount: 599.98
+                  currency: "AUD"
+                  travelDate: "2025-08-15"
+                  status: "CONFIRMED"
+                  customerNotes: "Anniversary celebration - vegetarian meals preferred"
+                  createTime: "2025-07-18T14:30:00Z"
+                  updateTime: "2025-07-18T14:35:00Z"
+                  tourTitle: "Amazing Sydney Harbor Tour"
+                  tourDestination: "Sydney, Australia"
         "404":
           description: Booking not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "Booking not found"
       security:
         - bearerAuth: []
 
@@ -2555,7 +2691,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "No payment found for booking ID 999"
+                msg: "Payment not found"
         "401":
           description: Authentication required
           content:
@@ -2614,10 +2750,11 @@ paths:
       parameters:
         - name: bookingReference
           in: path
-          description: Booking reference number
+          description: Booking reference number in format DVINE-YYYYMMDD-XXXX
           required: true
           schema:
             type: string
+            pattern: "^DVINE-\\d{8}-\\d{4}$"
           example: "DVINE-20240718-1234"
       responses:
         "200":
@@ -2655,7 +2792,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Invalid booking reference format. Expected format: DVINE-YYYY-XXXXXX"
+                msg: "Booking reference must follow format: DVINE-YYYYMMDD-XXXX (e.g., DVINE-20251213-2531)"
       security:
         - bearerAuth: []
 
@@ -2724,7 +2861,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "User with ID 999 not found"
+                msg: "User not found"
         "401":
           description: Authentication required
           content:
@@ -2734,6 +2871,15 @@ paths:
               example:
                 code: 1
                 msg: "User not logged in"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Partner"
       security:
         - bearerAuth: []
 
@@ -2813,7 +2959,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Tour with ID 999 not found"
+                msg: "Tour not found"
         "401":
           description: Authentication required
           content:
@@ -2902,15 +3048,6 @@ paths:
               example:
                 code: 1
                 msg: "User not logged in"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-              example:
-                code: 1
-                msg: "Internal server error occurred while retrieving bookings"
       security:
         - bearerAuth: []
 
@@ -2994,7 +3131,7 @@ paths:
       tags:
         - Payments
       summary: Get user payments
-      description: Get all payments for a specific user
+      description: Get all payments for a specific user (Manager+ access required)
       operationId: getUserPayments
       parameters:
         - name: userId
@@ -3072,7 +3209,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "You can only access your own payment history"
+                msg: "You don't have permission to access this resource. Required level: Manager"
       security:
         - bearerAuth: []
 
@@ -3279,7 +3416,7 @@ paths:
                   description: Refund amount exceeds payment amount
                   value:
                     code: 1
-                    msg: "Refund amount $500.00 exceeds payment amount $259.98"
+                    msg: "Refund amount ($999.99) cannot exceed available refund amount ($599.98). Payment amount: $599.98, Already refunded: $0.00"
                 Negative Amount:
                   description: Refund amount must be positive
                   value:
@@ -3298,7 +3435,7 @@ paths:
                 $ref: "#/components/schemas/ReturnResult"
               example:
                 code: 1
-                msg: "Payment with ID 999 not found"
+                msg: "Payment not found"
         "401":
           description: Authentication required
           content:
@@ -3319,7 +3456,7 @@ paths:
                   description: Cannot refund failed payment
                   value:
                     code: 1
-                    msg: "Cannot refund payment with status FAILED"
+                    msg: "Can only refund succeeded payments. Current status: FAILED"
                 Stripe Error:
                   description: Stripe refund processing failed
                   value:
@@ -3576,6 +3713,26 @@ components:
       required:
         - email
         - password
+    AvatarInfo:
+      type: object
+      description: User avatar information
+      properties:
+        avatarUrl:
+          type: string
+          description: URL of the user's current avatar image
+          example: https://example.com/avatars/user123.jpg
+        isDefaultAvatar:
+          type: boolean
+          description: Whether the current avatar is the default avatar
+          example: false
+        defaultAvatarUrl:
+          type: string
+          description: URL of the default avatar image
+          example: https://example.com/default-avatar.png
+      required:
+        - avatarUrl
+        - isDefaultAvatar
+        - defaultAvatarUrl
     TourPageQueryParam:
       type: object
       description: Tour search and filter parameters

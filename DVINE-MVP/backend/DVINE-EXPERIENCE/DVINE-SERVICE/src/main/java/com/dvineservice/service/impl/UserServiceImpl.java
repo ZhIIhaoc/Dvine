@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User ID and permission cannot be null");
         }
 
-        if (!PermissionLevel.isValid(newPermission)) {
+        if (!PermissionLevel.isValidToUpdate(newPermission)) {
             throw new IllegalArgumentException("Invalid permission level");
         }
 
