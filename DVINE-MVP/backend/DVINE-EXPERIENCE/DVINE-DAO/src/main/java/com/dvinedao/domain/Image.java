@@ -13,7 +13,6 @@ public class Image {
     private Long imageId;
     private Long tourId;
     private String imageUrl;
-    private String caption;
     private Boolean isPrimary;
 
 
@@ -29,12 +28,11 @@ public class Image {
         Image image = (Image) obj;
         return Objects.equals(imageUrl, image.imageUrl) &&
                 Objects.equals(tourId, image.tourId) &&
-                Objects.equals(caption, image.caption) &&
                 Objects.equals(isPrimary, image.isPrimary);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(imageUrl, tourId, caption, isPrimary);
+        return Objects.hash(imageUrl, tourId, isPrimary);
     }
 }
