@@ -14,5 +14,6 @@ public class PendingTourImage {
     private Long pendingImageId;
     private Long pendingTourId;
     private String imageUrl;
+
     private Boolean isPrimary;
 }
