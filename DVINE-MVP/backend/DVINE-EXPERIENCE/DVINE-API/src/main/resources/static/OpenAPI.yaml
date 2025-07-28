@@ -2109,11 +2109,13 @@ paths:
                 data:
                   - featuredTourId: 1
                     tourId: 5
+                    title: "Amazing Sydney Harbor Tour"
                     displayOrder: 1
                     createTime: '2025-07-15T10:30:00'
                     updateTime: '2025-07-15T10:30:00'
                   - featuredTourId: 2
                     tourId: 8
+                    title: "Kyoto Temple Journey"
                     displayOrder: 2
                     createTime: '2025-07-15T11:00:00'
                     updateTime: '2025-07-15T11:00:00'
