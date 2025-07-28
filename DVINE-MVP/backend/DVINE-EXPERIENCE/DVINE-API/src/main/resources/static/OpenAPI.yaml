@@ -1549,6 +1549,466 @@ paths:
                       totalPages: 1
                       hasNext: false
                       hasPrevious: false
+  /tours/{tourId}/images:
+    post:
+      tags:
+        - Tours
+      summary: Upload images for a tour
+      description: Upload multiple images for a specific tour (Partner permission required, tour owner only)
+      operationId: uploadTourImages
+      parameters:
+        - name: tourId
+          in: path
+          description: Tour ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: isPrimary
+          in: query
+          description: Whether to set one of the uploaded images as primary
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: false
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Image files to upload (JPEG, PNG, GIF, WebP supported, max 10MB each, max 20 images per tour)
+              required:
+                - files
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                No Files:
+                  description: No files provided
+                  value:
+                    code: 1
+                    msg: No files provided
+                Too Many Files:
+                  description: Too many files
+                  value:
+                    code: 1
+                    msg: Cannot upload more than 20 images at once
+                File Too Large:
+                  description: File size exceeded
+                  value:
+                    code: 1
+                    msg: Image file size cannot exceed 10MB
+                Unsupported Format:
+                  description: Unsupported file format
+                  value:
+                    code: 1
+                    msg: "Unsupported image file type, only supports: image/jpeg, image/jpg, image/png, image/gif, image/webp"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not tour owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Partner"
+                Not Tour Owner:
+                  description: Not tour owner
+                  value:
+                    code: 1
+                    msg: You can only modify tours you created
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Failed to upload images
+        "200":
+          description: Images uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  imageUrls:
+                    - https://s3.amazonaws.com/bucket/tours/1/image1.jpg
+                    - https://s3.amazonaws.com/bucket/tours/1/image2.jpg
+                  message: Tour images uploaded successfully
+                  uploadedBy: 123
+      security:
+        - bearerAuth: []
+    get:
+      tags:
+        - Tours
+      summary: Get all images for a tour
+      description: Retrieve all images associated with a specific tour
+      operationId: getTourImages
+      parameters:
+        - name: tourId
+          in: path
+          description: Tour ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour not found
+        "200":
+          description: Tour images retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  images:
+                    - imageId: 1
+                      imageUrl: https://s3.amazonaws.com/bucket/tours/1/image1.jpg
+                      isPrimary: true
+                      tourId: 1
+                    - imageId: 2
+                      imageUrl: https://s3.amazonaws.com/bucket/tours/1/image2.jpg
+                      isPrimary: false
+                      tourId: 1
+  /tours/{tourId}/images/{imageId}:
+    put:
+      tags:
+        - Tours
+      summary: Update tour image properties
+      description: Update properties of a specific tour image (Partner permission required, tour owner only)
+      operationId: updateTourImage
+      parameters:
+        - name: tourId
+          in: path
+          description: Tour ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: imageId
+          in: path
+          description: Image ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: isPrimary
+          in: query
+          description: Whether to set this image as primary
+          required: false
+          schema:
+            type: boolean
+          example: true
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not tour owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Partner"
+                Not Tour Owner:
+                  description: Not tour owner
+                  value:
+                    code: 1
+                    msg: You can only modify tours you created
+        "404":
+          description: Tour or image not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Tour Not Found:
+                  description: Tour not found
+                  value:
+                    code: 1
+                    msg: Tour not found
+                Image Not Found:
+                  description: Image not found
+                  value:
+                    code: 1
+                    msg: Image not found
+        "200":
+          description: Image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  imageId: 1
+                  message: Tour image updated successfully
+                  updatedBy: 123
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Tours
+      summary: Delete a tour image
+      description: Delete a specific image from a tour (Partner permission required, tour owner only)
+      operationId: deleteTourImage
+      parameters:
+        - name: tourId
+          in: path
+          description: Tour ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: imageId
+          in: path
+          description: Image ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not tour owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Partner"
+                Not Tour Owner:
+                  description: Not tour owner
+                  value:
+                    code: 1
+                    msg: You can only modify tours you created
+        "404":
+          description: Tour or image not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Tour Not Found:
+                  description: Tour not found
+                  value:
+                    code: 1
+                    msg: Tour not found
+                Image Not Found:
+                  description: Image not found
+                  value:
+                    code: 1
+                    msg: Image not found
+        "200":
+          description: Image deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  imageId: 1
+                  message: Tour image deleted successfully
+                  deletedBy: 123
+      security:
+        - bearerAuth: []
+  /tours/{tourId}/images/primary:
+    post:
+      tags:
+        - Tours
+      summary: Replace primary image for a tour
+      description: Replace the current primary image of a tour with a new one (Partner permission required, tour owner only)
+      operationId: replacePrimaryImage
+      parameters:
+        - name: tourId
+          in: path
+          description: Tour ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: New primary image file (JPEG, PNG, GIF, WebP supported, max 10MB)
+              required:
+                - file
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                No File:
+                  description: No file provided
+                  value:
+                    code: 1
+                    msg: Image file cannot be empty
+                File Too Large:
+                  description: File size exceeded
+                  value:
+                    code: 1
+                    msg: Image file size cannot exceed 10MB
+                Unsupported Format:
+                  description: Unsupported file format
+                  value:
+                    code: 1
+                    msg: "Unsupported image file type, only supports: image/jpeg, image/jpg, image/png, image/gif, image/webp"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not tour owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Partner"
+                Not Tour Owner:
+                  description: Not tour owner
+                  value:
+                    code: 1
+                    msg: You can only modify tours you created
+        "404":
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Tour not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Failed to replace primary image
+        "200":
+          description: Primary image replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  tourId: 1
+                  primaryImageUrl: https://s3.amazonaws.com/bucket/tours/1/primary.jpg
+                  message: Primary image replaced successfully
+                  updatedBy: 123
+      security:
+        - bearerAuth: []
   /catalogues/{catalogueId}:
     get:
       tags:
