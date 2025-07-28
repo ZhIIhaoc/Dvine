@@ -32,4 +32,13 @@
         WHERE
             i.tourId = #{tourId}
     </select>
+
+    <update id="updateImage">
+        UPDATE images
+        SET
+            imageUrl = #{imageUrl},
+            isPrimary = #{isPrimary}
+        WHERE
+            imageId = #{imageId}
+    </update>
 </mapper>
