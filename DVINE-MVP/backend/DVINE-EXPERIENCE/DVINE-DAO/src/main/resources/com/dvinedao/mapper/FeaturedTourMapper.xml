@@ -6,6 +6,7 @@
     <resultMap id="FeaturedTourResultMap" type="com.dvinedao.domain.FeaturedTour">
         <id property="featuredTourId" column="featuredTourId"/>
         <result property="tourId" column="tourId"/>
+        <result property="title" column="title"/>
         <result property="displayOrder" column="displayOrder"/>
         <result property="createTime" column="createTime"/>
         <result property="updateTime" column="updateTime"/>
@@ -35,9 +36,16 @@
 
     <!-- Get all featured tour entries for management -->
     <select id="getAllFeaturedTours" resultMap="FeaturedTourResultMap">
-        SELECT featuredTourId, tourId, displayOrder, createTime, updateTime
-        FROM featured_tours
-        ORDER BY displayOrder
+        SELECT 
+            ft.featuredTourId, 
+            ft.tourId, 
+            t.title,
+            ft.displayOrder, 
+            ft.createTime, 
+            ft.updateTime
+        FROM featured_tours ft
+        JOIN tours t ON ft.tourId = t.tourId
+        ORDER BY ft.displayOrder
     </select>
 
     <!-- Add a tour to featured list -->
