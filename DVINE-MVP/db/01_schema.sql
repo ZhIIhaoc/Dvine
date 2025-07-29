@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
      phone       VARCHAR(20),
      postcode    VARCHAR(20),
      avatar      VARCHAR(255),
-     permission  INT DEFAULT 0 COMMENT "0 Regular member, 1 premium member, 2 partner(lowest admin), 3 manager, 4 owner",
+     permission  INT DEFAULT 0 COMMENT "0 Regular, 1 Premium, 2 Partner(unpaid), 3 Partner(paid/admin), 4 Manager, 5 Owner",
      createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
      updateTime DATETIME DEFAULT CURRENT_TIMESTAMP
          ON UPDATE CURRENT_TIMESTAMP
