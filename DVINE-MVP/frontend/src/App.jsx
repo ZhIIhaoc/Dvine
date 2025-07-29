@@ -89,16 +89,17 @@ function App() {
                             path="/booking/cancel/:id"
                             element={<TourPurchaseFail />}
                         />
-                        <Route
-                            path="/password-reset"
-                            element={<ForgottenPassword />}
-                        />
+
                         <Route path="*" element={<NotFound />} />
                         <Route
                             path="/checkout/:tourId"
                             element={<Checkout />}
                         />
                     </Route>
+                    <Route
+                        path="/password-reset"
+                        element={<ForgottenPassword isDarkMode={isDarkMode} />}
+                    />
                     <Route
                         path="/login"
                         element={<Login isDarkMode={isDarkMode} />}

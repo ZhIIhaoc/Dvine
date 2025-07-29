@@ -1,19 +1,23 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import {
     Typography,
+    Grid,
     Box,
     Button,
     TextField,
     CircularProgress,
     IconButton,
     InputAdornment,
+    Link,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import MessageAlert from "../components/MessageAlert.jsx";
 import { useNavigate } from "react-router-dom";
 import SubmitForgottenPasswordRequest from "../endpoints/SubmitForgottenPasswordRequest.jsx";
+import Logo from "../components/Logo.jsx";
 
-const ForgottenPassword = () => {
+const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -27,6 +31,7 @@ const ForgottenPassword = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState("info");
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [windowSize, setWindowSize] = React.useState(getWindowSize());
 
     const showSnackbar = (message, severity = "info") => {
         setSnackbarMessage(message);
@@ -107,6 +112,15 @@ const ForgottenPassword = () => {
     };
 
     useEffect(() => {
+        function handleWindowResize() {
+            // console.log(getWindowSize());
+            setWindowSize(getWindowSize());
+        }
+        window.addEventListener("resize", handleWindowResize);
+
+        return () => {
+            window.removeEventListener("resize", handleWindowResize);
+        };
         let timer;
         if (cooldown > 0) {
             timer = setTimeout(() => setCooldown((prev) => prev - 1), 1000);
@@ -114,169 +128,413 @@ const ForgottenPassword = () => {
         return () => clearTimeout(timer);
     }, [cooldown]);
 
+    function getWindowSize() {
+        const { innerWidth, innerHeight } = window;
+        return { innerWidth, innerHeight };
+    }
+
     return (
-        <Box
-            sx={{
-                minHeight: "90vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-                px: 4,
-            }}
-        >
-            {step === 0 ? (
-                <>
-                    <Typography
-                        variant="h4"
-                        gutterBottom
-                        align="center"
-                        sx={{ mb: 2 }}
+        <>
+            <Grid container sx={{ minHeight: "100vh", overflow: "hidden" }}>
+                {/*left side of the page*/}
+                <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            px: 4,
+                        }}
                     >
-                        Forgotten Password
-                    </Typography>
+                        <Box sx={{ pl: { xs: 0, md: 12 } }}>
+                            <Logo isDarkMode={isDarkMode} />
+                        </Box>
 
-                    <Typography
-                        variant="body1"
-                        align="center"
-                        sx={{ maxWidth: 400, mb: 4 }}
-                    >
-                        If you’ve forgotten your password, enter your email and
-                        we’ll send you a reset code to your email.
-                    </Typography>
-                    <TextField
-                        label="Email"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ width: "70%", mb: 4 }}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        InputLabelProps={{
-                            sx: { color: "text.primary" },
-                        }}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        disabled={submitting || cooldown > 0}
-                        sx={{ height: "56px", width: "70%", mb: 2 }}
-                        onClick={handleSendResetCode}
-                    >
-                        {submitting ? (
-                            <CircularProgress
-                                size={24}
-                                sx={{ color: "white" }}
-                            />
-                        ) : cooldown > 0 ? (
-                            `Resend (${cooldown})`
-                        ) : (
-                            "Send Code"
-                        )}
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <Typography
-                        variant="h4"
-                        gutterBottom
-                        align="center"
-                        sx={{ mb: 2 }}
-                    >
-                        Reset Your Password
-                    </Typography>
-                    <TextField
-                        label="Verification Code"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ width: "70%", mb: 2 }}
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                    />
-                    <TextField
-                        label="New Password"
-                        variant="outlined"
-                        type={showNewPassword ? "text" : "password"}
-                        fullWidth
-                        sx={{ width: "70%", mb: 2 }}
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() =>
-                                            setShowNewPassword((prev) => !prev)
-                                        }
-                                        edge="end"
+                        <Box
+                            sx={{
+                                height: "calc(100% - 120px)",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            {step === 0 ? (
+                                <>
+                                    <Typography
+                                        variant="h4"
+                                        gutterBottom
+                                        align="center"
+                                        sx={{ mb: 2 }}
                                     >
-                                        {showNewPassword ? (
-                                            <VisibilityOff />
-                                        ) : (
-                                            <Visibility />
-                                        )}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                    <TextField
-                        label="Confirm New Password"
-                        variant="outlined"
-                        type={showConfirmPassword ? "text" : "password"}
-                        fullWidth
-                        sx={{ width: "70%", mb: 4 }}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() =>
-                                            setShowConfirmPassword(
-                                                (prev) => !prev
-                                            )
-                                        }
-                                        edge="end"
-                                    >
-                                        {showConfirmPassword ? (
-                                            <VisibilityOff />
-                                        ) : (
-                                            <Visibility />
-                                        )}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        disabled={submitting}
-                        sx={{ height: "56px", width: "70%", mb: 2 }}
-                        onClick={handleResetPassword}
-                    >
-                        {submitting ? (
-                            <CircularProgress
-                                size={24}
-                                sx={{ color: "white" }}
-                            />
-                        ) : (
-                            "Reset Password"
-                        )}
-                    </Button>
-                </>
-            )}
+                                        Forgotten Password
+                                    </Typography>
 
-            <MessageAlert
-                open={snackbarOpen}
-                onClose={() => setSnackbarOpen(false)}
-                message={snackbarMessage}
-                severity={snackbarSeverity}
-            />
-        </Box>
+                                    <Typography
+                                        variant="body1"
+                                        align="center"
+                                        sx={{ maxWidth: 400, mb: 4 }}
+                                    >
+                                        If you’ve forgotten your password, enter
+                                        your email and we’ll send you a reset
+                                        code to your email.
+                                    </Typography>
+                                    <TextField
+                                        label="Email"
+                                        variant="outlined"
+                                        fullWidth
+                                        sx={{ width: "70%", mb: 4 }}
+                                        value={email}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
+                                        InputLabelProps={{
+                                            sx: { color: "text.primary" },
+                                        }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        disabled={submitting || cooldown > 0}
+                                        sx={{
+                                            height: "56px",
+                                            width: "70%",
+                                            mb: 2,
+                                        }}
+                                        onClick={handleSendResetCode}
+                                    >
+                                        {submitting ? (
+                                            <CircularProgress
+                                                size={24}
+                                                sx={{ color: "white" }}
+                                            />
+                                        ) : cooldown > 0 ? (
+                                            `Resend (${cooldown})`
+                                        ) : (
+                                            "Send Code"
+                                        )}
+                                    </Button>
+                                    <Typography
+                                        variant="body2"
+                                        align="center"
+                                        sx={{ mt: 4 }}
+                                    >
+                                        Don't have an account?{" "}
+                                        <Link
+                                            underline="hover"
+                                            color="secondary"
+                                            sx={{ cursor: "pointer", ml: 2 }}
+                                            onClick={() =>
+                                                navigate("/register")
+                                            }
+                                        >
+                                            Sign up
+                                        </Link>
+                                    </Typography>
+                                </>
+                            ) : (
+                                <>
+                                    <Typography
+                                        variant="h4"
+                                        gutterBottom
+                                        align="center"
+                                        sx={{ mb: 2 }}
+                                    >
+                                        Reset Your Password
+                                    </Typography>
+                                    <TextField
+                                        label="Verification Code"
+                                        variant="outlined"
+                                        fullWidth
+                                        sx={{ width: "70%", mb: 2 }}
+                                        value={verificationCode}
+                                        onChange={(e) =>
+                                            setVerificationCode(e.target.value)
+                                        }
+                                    />
+                                    <TextField
+                                        label="New Password"
+                                        variant="outlined"
+                                        type={
+                                            showNewPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        fullWidth
+                                        sx={{ width: "70%", mb: 2 }}
+                                        value={newPassword}
+                                        onChange={(e) =>
+                                            setNewPassword(e.target.value)
+                                        }
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            setShowNewPassword(
+                                                                (prev) => !prev
+                                                            )
+                                                        }
+                                                        edge="end"
+                                                    >
+                                                        {showNewPassword ? (
+                                                            <VisibilityOff />
+                                                        ) : (
+                                                            <Visibility />
+                                                        )}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    <TextField
+                                        label="Confirm New Password"
+                                        variant="outlined"
+                                        type={
+                                            showConfirmPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        fullWidth
+                                        sx={{ width: "70%", mb: 4 }}
+                                        value={confirmPassword}
+                                        onChange={(e) =>
+                                            setConfirmPassword(e.target.value)
+                                        }
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            setShowConfirmPassword(
+                                                                (prev) => !prev
+                                                            )
+                                                        }
+                                                        edge="end"
+                                                    >
+                                                        {showConfirmPassword ? (
+                                                            <VisibilityOff />
+                                                        ) : (
+                                                            <Visibility />
+                                                        )}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        disabled={submitting}
+                                        sx={{
+                                            height: "56px",
+                                            width: "70%",
+                                            mb: 2,
+                                        }}
+                                        onClick={handleResetPassword}
+                                    >
+                                        {submitting ? (
+                                            <CircularProgress
+                                                size={24}
+                                                sx={{ color: "white" }}
+                                            />
+                                        ) : (
+                                            "Reset Password"
+                                        )}
+                                    </Button>
+                                </>
+                            )}
+                        </Box>
+                    </Box>
+                </Grid>
+                {windowSize.innerWidth >= 900 && (
+                    <Grid size={6}>
+                        <img
+                            src="../src/assets/background.png"
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                            }}
+                        />
+                    </Grid>
+                )}
+                <MessageAlert
+                    open={snackbarOpen}
+                    onClose={() => setSnackbarOpen(false)}
+                    message={snackbarMessage}
+                    severity={snackbarSeverity}
+                />
+            </Grid>
+            {/* <Box
+                sx={{
+                    minHeight: "90vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                    px: 4,
+                }}
+            >
+                {step === 0 ? (
+                    <>
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            align="center"
+                            sx={{ mb: 2 }}
+                        >
+                            Forgotten Password
+                        </Typography>
+
+                        <Typography
+                            variant="body1"
+                            align="center"
+                            sx={{ maxWidth: 400, mb: 4 }}
+                        >
+                            If you’ve forgotten your password, enter your email
+                            and we’ll send you a reset code to your email.
+                        </Typography>
+                        <TextField
+                            label="Email"
+                            variant="outlined"
+                            fullWidth
+                            sx={{ width: "70%", mb: 4 }}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            InputLabelProps={{
+                                sx: { color: "text.primary" },
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            disabled={submitting || cooldown > 0}
+                            sx={{ height: "56px", width: "70%", mb: 2 }}
+                            onClick={handleSendResetCode}
+                        >
+                            {submitting ? (
+                                <CircularProgress
+                                    size={24}
+                                    sx={{ color: "white" }}
+                                />
+                            ) : cooldown > 0 ? (
+                                `Resend (${cooldown})`
+                            ) : (
+                                "Send Code"
+                            )}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            align="center"
+                            sx={{ mb: 2 }}
+                        >
+                            Reset Your Password
+                        </Typography>
+                        <TextField
+                            label="Verification Code"
+                            variant="outlined"
+                            fullWidth
+                            sx={{ width: "70%", mb: 2 }}
+                            value={verificationCode}
+                            onChange={(e) =>
+                                setVerificationCode(e.target.value)
+                            }
+                        />
+                        <TextField
+                            label="New Password"
+                            variant="outlined"
+                            type={showNewPassword ? "text" : "password"}
+                            fullWidth
+                            sx={{ width: "70%", mb: 2 }}
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() =>
+                                                setShowNewPassword(
+                                                    (prev) => !prev
+                                                )
+                                            }
+                                            edge="end"
+                                        >
+                                            {showNewPassword ? (
+                                                <VisibilityOff />
+                                            ) : (
+                                                <Visibility />
+                                            )}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                        <TextField
+                            label="Confirm New Password"
+                            variant="outlined"
+                            type={showConfirmPassword ? "text" : "password"}
+                            fullWidth
+                            sx={{ width: "70%", mb: 4 }}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() =>
+                                                setShowConfirmPassword(
+                                                    (prev) => !prev
+                                                )
+                                            }
+                                            edge="end"
+                                        >
+                                            {showConfirmPassword ? (
+                                                <VisibilityOff />
+                                            ) : (
+                                                <Visibility />
+                                            )}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            disabled={submitting}
+                            sx={{ height: "56px", width: "70%", mb: 2 }}
+                            onClick={handleResetPassword}
+                        >
+                            {submitting ? (
+                                <CircularProgress
+                                    size={24}
+                                    sx={{ color: "white" }}
+                                />
+                            ) : (
+                                "Reset Password"
+                            )}
+                        </Button>
+                    </>
+                )}
+
+                <MessageAlert
+                    open={snackbarOpen}
+                    onClose={() => setSnackbarOpen(false)}
+                    message={snackbarMessage}
+                    severity={snackbarSeverity}
+                />
+            </Box> */}
+        </>
     );
 };
 
