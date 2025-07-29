@@ -63,6 +63,28 @@ public class TourOperationServiceImpl implements TourOperationService {
 //        tourQueryParam.setPage(1000);
         
         List<Tour> tour = tourMapper.search(tourQueryParam);
+        
+        // If searching by createdBy (user's own tours), return empty list instead of throwing exception
+        // This allows users to see their tours page even if they haven't created any tours yet
+        if (tour.isEmpty() && tourQueryParam.getCreatedBy() != null) {
+            return tour; // Return empty list for user's own tours
+        }
+        
+        // For general searches (no specific criteria) or when no tours exist in the system,
+        // return empty list instead of throwing exception
+        // This allows admin pages to load even when there are no tours in the system
+        if (tour.isEmpty() && 
+            tourQueryParam.getTourId() == null && 
+            tourQueryParam.getCatalogueId() == null && 
+            tourQueryParam.getCatalogueName() == null && 
+            tourQueryParam.getTitle() == null && 
+            tourQueryParam.getDestination() == null && 
+            tourQueryParam.getMinPrice() == null && 
+            tourQueryParam.getMaxPrice() == null) {
+            return tour; // Return empty list for general searches
+        }
+        
+        // For other search criteria with specific filters, throw exception if no tours found
         if (tour.isEmpty()) {
             throw new NotFoundException("Tour not found");
         }

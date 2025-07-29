@@ -38,7 +38,7 @@ const getDashboardPath = (permission) => {
 
 const UserSettings = () => {
     const navigate = useNavigate();
-    const { token, userInfo, setUserInfo } = useContext(AuthContext);
+    const { token, userInfo, setUserInfo, setToken } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
@@ -88,7 +88,6 @@ const UserSettings = () => {
                 {
                     method: "PUT",
                     headers: {
-                        Authorization: token,
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(formData),

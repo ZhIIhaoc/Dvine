@@ -18,13 +18,7 @@ export const AuthProvider = ({ children }) => {
     }, [token]);
     const fetchUserProfile = async () => {
         try {
-            const response = await fetch('http://localhost:8080/users/profile', {
-                method: 'GET',
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await fetch('http://localhost:8080/users/profile');
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 setUserInfo(responseInfo.data);
