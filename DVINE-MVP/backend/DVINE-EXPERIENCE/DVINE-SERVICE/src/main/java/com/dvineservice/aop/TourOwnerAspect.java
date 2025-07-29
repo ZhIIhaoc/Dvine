@@ -46,14 +46,20 @@ public class TourOwnerAspect {
         Long currentUser = UserUtil.getCurrentUserId();
         int perm = userMapper.findPermissionById(currentUser);
 
-        // Check if the current user is the creator of the tour
-        // Managers and above can modify any tour (administrative override)
-        // Partners can only modify tours they created
-        if (PermissionLevel.isPartner(perm) && 
-            !PermissionLevel.isManager(perm) &&
-            !existing.getCreatedBy().equals(currentUser)) {
-            throw new PermissionDeniedException(
-                    "Partner can only modify the tour created by themselves");
+        // Business Rule: Only Managers (4) and Owners (5) can modify any tour
+        // Everyone else (Regular, Premium, Partner_Unpaid, Partner) can only modify their own tours
+        
+        boolean isManagerOrOwner = (perm >= PermissionLevel.MANAGER);
+        boolean isOwnerOfTour = existing.getCreatedBy().equals(currentUser);
+        
+        if (!isManagerOrOwner && !isOwnerOfTour) {
+            if (PermissionLevel.isAnyPartner(perm)) {
+                throw new PermissionDeniedException(
+                        "Partner can only modify the tour created by themselves");
+            } else {
+                throw new PermissionDeniedException(
+                        "You can only modify tours you created");
+            }
         }
         /* nothing else — returning void continues execution */
     }

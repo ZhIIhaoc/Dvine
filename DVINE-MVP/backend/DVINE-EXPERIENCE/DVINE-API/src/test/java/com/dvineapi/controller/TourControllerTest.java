@@ -91,7 +91,7 @@ public class TourControllerTest {
                 "See the cliffs and beaches.",
                 new BigDecimal("129.99"),
                 "https://your-cdn.com/tour101.jpg",
-                5L  // Owner user ID
+                6L  // Owner user ID
         );
         this.tour2 = makeTour(
                 c.getCatalogueId(),
@@ -100,7 +100,7 @@ public class TourControllerTest {
                 "Explore the heart of Australia.",
                 new BigDecimal("499.99"),
                 "https://your-cdn.com/tour102.jpg",
-                5L  // Owner user ID
+                6L  // Owner user ID
         );
 
     }
@@ -434,7 +434,7 @@ public class TourControllerTest {
                 "Tour created by partner for deletion test",
                 new BigDecimal("299.99"),
                 "https://cdn/partner-tour-delete.jpg",
-                3L  // Partner user ID
+                4L  // Partner user ID
         );
 
         // 3. Partner deletes their own created tour (should submit to pending_tours for approval)
@@ -549,7 +549,7 @@ public class TourControllerTest {
                 "Original Description",
                 new BigDecimal("199.99"),
                 "https://cdn/original-tour.jpg",
-                3L  // Partner user ID
+                4L  // Partner user ID
         );
 
         // Partner tries to update this tour
@@ -648,7 +648,7 @@ public class TourControllerTest {
                 "Tour created by partner and already approved",
                 new BigDecimal("299.99"),
                 "https://cdn/partner-tour.jpg",
-                3L  // Partner user ID
+                4L  // Partner user ID
         );
 
         // 3. Partner updates their own created tour (should submit to pending_tours for re-approval)
@@ -706,7 +706,7 @@ public class TourControllerTest {
                 "Tour created by owner",
                 new BigDecimal("199.99"),
                 "https://cdn/owner-tour.jpg",
-                5L  // Owner user ID
+                6L  // Owner user ID
         );
 
         // 2. Partner tries to update Owner's created tour should return 403

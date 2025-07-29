@@ -43,7 +43,9 @@ public class PermissionCheckAspect {
         if (level.equals(PermissionLevel.OWNER)) return "Owner";
         if (level.equals(PermissionLevel.MANAGER)) return "Manager";
         if (level.equals(PermissionLevel.PARTNER)) return "Partner";
-        if (level.equals(PermissionLevel.ADMIN)) return "Admin";
+        if (level.equals(PermissionLevel.PARTNER_UNPAID)) return "Partner (Unpaid)";
+        if (level.equals(PermissionLevel.PREMIUM)) return "Premium";
+        if (level.equals(PermissionLevel.REGULAR)) return "Regular";
         return "Unknown";
     }
 

@@ -99,7 +99,7 @@ class UserIntegrationTest {
     public void updateUserPermission_invalidPermissionValue_shouldReturn400() throws Exception {
         String token = loginAndGetToken("i_am_manager@example.com");
         
-        String requestBody = "{\"userId\": 1, \"permission\": 5}"; // Invalid permission value (>4)
+        String requestBody = "{\"userId\": 1, \"permission\": 6}"; // Invalid permission value (>5)
         
         mockMvc.perform(put("/users/permission")
                         .header("Authorization", token)
@@ -188,7 +188,7 @@ class UserIntegrationTest {
     public void updateUserPermission_managerTryingToSetPartnerLevel_shouldReturn403() throws Exception {
         String token = loginAndGetToken("i_am_manager@example.com");
         
-        String requestBody = "{\"userId\": 1, \"permission\": 2}"; // Partner level - Manager can't set this
+        String requestBody = "{\"userId\": 1, \"permission\": 3}"; // Partner level - Manager can't set this
         
         mockMvc.perform(put("/users/permission")
                         .header("Authorization", token)
@@ -203,7 +203,7 @@ class UserIntegrationTest {
     public void updateUserPermission_managerTryingToSetManagerLevel_shouldReturn403() throws Exception {
         String token = loginAndGetToken("i_am_manager@example.com");
         
-        String requestBody = "{\"userId\": 1, \"permission\": 3}"; // Manager level - Manager can't set this
+        String requestBody = "{\"userId\": 1, \"permission\": 4}"; // Manager level - Manager can't set this
         
         mockMvc.perform(put("/users/permission")
                         .header("Authorization", token)
@@ -218,7 +218,7 @@ class UserIntegrationTest {
     public void updateUserPermission_tryingToSetOwnerLevel_shouldReturn403() throws Exception {
         String token = loginAndGetToken("i_am_owner@example.com");
         
-        String requestBody = "{\"userId\": 1, \"permission\": 4}"; // Owner level - Cannot be assigned to others
+        String requestBody = "{\"userId\": 1, \"permission\": 5}"; // Owner level - Cannot be assigned to others
         
         mockMvc.perform(put("/users/permission")
                         .header("Authorization", token)
@@ -284,7 +284,7 @@ class UserIntegrationTest {
     public void updateUserPermission_ownerSetPartnerLevel_shouldReturn200() throws Exception {
         String token = loginAndGetToken("i_am_owner@example.com");
         
-        String requestBody = "{\"userId\": 1, \"permission\": 2}"; // Partner level - Owner can set this
+        String requestBody = "{\"userId\": 1, \"permission\": 3}"; // Partner level - Owner can set this
         
         mockMvc.perform(put("/users/permission")
                         .header("Authorization", token)
@@ -299,7 +299,7 @@ class UserIntegrationTest {
     public void updateUserPermission_ownerSetManagerLevel_shouldReturn200() throws Exception {
         String token = loginAndGetToken("i_am_owner@example.com");
         
-        String requestBody = "{\"userId\": 1, \"permission\": 3}"; // Manager level - Owner can set this
+        String requestBody = "{\"userId\": 1, \"permission\": 4}"; // Manager level - Owner can set this
         
         mockMvc.perform(put("/users/permission")
                         .header("Authorization", token)

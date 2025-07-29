@@ -105,17 +105,17 @@ public class PaymentOwnerAspect {
             throw new PaymentFailedException("Associated booking not found");
         }
         
-        // Guest bookings (userId is null) can only be accessed by partner and above
+        // Guest bookings (userId is null) can only be accessed by paid partner and above
         if (booking.getUserId() == null) {
-            if (currentUser.getPermission() < PermissionLevel.PARTNER) {
-                throw new PermissionDeniedException("Guest booking payments can only be accessed by managers and above");
+            if (!PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
+                throw new PermissionDeniedException("Guest booking payments can only be accessed by paid partners and above");
             }
             return;
         }
         
-        // Regular user bookings - users can only access their own payments
+        // Regular user bookings - users can only access their own payments OR have admin privileges
         if (!booking.getUserId().equals(currentUser.getUserId()) && 
-            currentUser.getPermission() < PermissionLevel.PARTNER) {
+            !PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
             throw new PermissionDeniedException("You can only access your own payment details");
         }
     }

@@ -61,15 +61,15 @@ public class BookingOwnerAspect {
      * - Regular bookings: require ownership OR Partner+ permission to access
      */
     private void validateBookingAccess(Booking booking, User currentUser) {
-        // Guest bookings (null userId) can only be accessed by partners or higher
+        // Guest bookings (null userId) can only be accessed by paid partners or higher
         if (booking.getUserId() == null) {
-            if (currentUser.getPermission() < PermissionLevel.PARTNER) {
-                throw new PermissionDeniedException("Guest bookings can only be accessed by partners or higher");
+            if (!PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
+                throw new PermissionDeniedException("Guest bookings can only be accessed by paid partners or higher");
             }
         } else {
-            // Regular user booking - check ownership or partner access
+            // Regular user booking - check ownership or admin access
             if (!booking.getUserId().equals(currentUser.getUserId()) && 
-                currentUser.getPermission() < PermissionLevel.PARTNER) {
+                !PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
                 throw new PermissionDeniedException("You can only view your own bookings");
             }
         }

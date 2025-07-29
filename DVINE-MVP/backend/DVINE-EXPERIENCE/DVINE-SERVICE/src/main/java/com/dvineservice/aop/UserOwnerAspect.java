@@ -45,9 +45,9 @@ public class UserOwnerAspect {
         User currentUser = UserUtil.getCurrentUser();
         
         // Apply user ownership logic:
-        // Users can only access their own data OR have Partner+ permission
+        // Users can only access their own data OR have paid Partner+ permission (admin privileges)
         if (!Objects.equals(targetUserId, currentUser.getUserId()) && 
-            currentUser.getPermission() < PermissionLevel.PARTNER) {
+            !PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
             throw new PermissionDeniedException("You can only view your own info");
         }
         

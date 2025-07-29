@@ -88,7 +88,7 @@ public class ApprovalControllerTest {
         tour.setRegularPrice(new BigDecimal("199.99"));
         tour.setPremiumPrice(new BigDecimal("179.99"));
         tour.setPrimaryImageUrl("https://cdn/test-tour.jpg");
-        tour.setCreatedBy(3L); // Partner user ID
+        tour.setCreatedBy(4L); // Partner user ID
         tourMapper.createTour(tour);
         this.testTour = tour;
 
@@ -103,7 +103,7 @@ public class ApprovalControllerTest {
         pendingTour.setPremiumPrice(new BigDecimal("269.99"));
         pendingTour.setPrimaryImageUrl("https://cdn/pending-tour.jpg");
         pendingTour.setOperationType(PendingTour.OperationType.UPDATE);
-        pendingTour.setSubmittedBy(3L); // Partner user ID
+        pendingTour.setSubmittedBy(4L); // Partner user ID
         pendingTour.setStatus(0); // PENDING status
         pendingTourMapper.createPendingTour(pendingTour);
         this.testPendingTour = pendingTour;
@@ -131,7 +131,7 @@ public class ApprovalControllerTest {
                 .andExpect(jsonPath("$.data[0].premiumPrice").value(269.99))
                 .andExpect(jsonPath("$.data[0].primaryImageUrl").value("https://cdn/pending-tour.jpg"))
                 .andExpect(jsonPath("$.data[0].operationType").value("UPDATE"))
-                .andExpect(jsonPath("$.data[0].submittedBy").value(3)) // Partner user ID
+                .andExpect(jsonPath("$.data[0].submittedBy").value(4)) // Partner user ID
                 .andExpect(jsonPath("$.data[0].status").value(0)) // PENDING status
                 .andExpect(jsonPath("$.data[0].originalTourId").value(testTour.getTourId().intValue()));
     }
@@ -263,7 +263,7 @@ public class ApprovalControllerTest {
         // Verify the pending tour status is updated to approved
         PendingTour updatedPendingTour = pendingTourMapper.findById(testPendingTour.getPendingTourId());
         assertThat(updatedPendingTour.getStatus()).isEqualTo(1); // APPROVED status
-        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(4L); // Manager user ID
+        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(5L); // Manager user ID
     }
 
     @Test
@@ -280,7 +280,7 @@ public class ApprovalControllerTest {
         // Verify the pending tour status is updated to approved
         PendingTour updatedPendingTour = pendingTourMapper.findById(testPendingTour.getPendingTourId());
         assertThat(updatedPendingTour.getStatus()).isEqualTo(1); // APPROVED status
-        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(5L); // Owner user ID
+        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(6L); // Owner user ID
     }
 
     // Test POST /approvals/tours/{pendingTourId}/approve - Error cases
@@ -332,7 +332,7 @@ public class ApprovalControllerTest {
         // Verify the pending tour status is updated to rejected
         PendingTour updatedPendingTour = pendingTourMapper.findById(testPendingTour.getPendingTourId());
         assertThat(updatedPendingTour.getStatus()).isEqualTo(2); // REJECTED status
-        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(4L); // Manager user ID
+        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(5L); // Manager user ID
     }
 
     @Test
@@ -349,7 +349,7 @@ public class ApprovalControllerTest {
         // Verify the pending tour status is updated to rejected
         PendingTour updatedPendingTour = pendingTourMapper.findById(testPendingTour.getPendingTourId());
         assertThat(updatedPendingTour.getStatus()).isEqualTo(2); // REJECTED status
-        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(5L); // Owner user ID
+        assertThat(updatedPendingTour.getReviewedBy()).isEqualTo(6L); // Owner user ID
     }
 
     // Test POST /approvals/tours/{pendingTourId}/reject - Error cases
@@ -533,6 +533,6 @@ public class ApprovalControllerTest {
         // Verify the tour was approved
         PendingTour approvedTour = pendingTourMapper.findById(testPendingTour.getPendingTourId());
         assertThat(approvedTour.getStatus()).isEqualTo(1); // APPROVED status
-        assertThat(approvedTour.getReviewedBy()).isEqualTo(4L); // Manager user ID
+        assertThat(approvedTour.getReviewedBy()).isEqualTo(5L); // Manager user ID
     }
 }
