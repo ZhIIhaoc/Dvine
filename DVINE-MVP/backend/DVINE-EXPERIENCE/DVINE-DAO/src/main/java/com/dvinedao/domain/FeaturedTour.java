@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class FeaturedTour {
     private Long featuredTourId;
     private Long tourId;
+    private String title;
     private Integer displayOrder;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
