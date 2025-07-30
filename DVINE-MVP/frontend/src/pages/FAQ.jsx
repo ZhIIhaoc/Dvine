@@ -324,54 +324,49 @@ export function FAQ() {
                     filteredFaqs.map((faq) => (
                         <Accordion key={faq.faqId} sx={{ mb: 2 }}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography
+                                    variant="h6"
+                                    fontWeight="medium"
+                                    sx={{ flexGrow: 1 }}
+                                >
+                                    {faq.question}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
                                 <Box
                                     sx={{
                                         display: "flex",
                                         justifyContent: "space-between",
-                                        alignItems: "center",
+                                        alignItems: "flex-start",
                                         width: "100%",
                                     }}
                                 >
                                     <Typography
-                                        variant="h6"
-                                        fontWeight="medium"
+                                        variant="body1"
+                                        color="text.primary"
+                                        sx={{ lineHeight: 1.6, flexGrow: 1 }}
                                     >
-                                        {faq.question}
+                                        {faq.answer}
                                     </Typography>
                                     {isAdmin && (
-                                        <Box sx={{ display: "flex", gap: 1 }}>
+                                        <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
                                             <IconButton
                                                 size="small"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleEditFAQ(faq);
-                                                }}
+                                                onClick={() => handleEditFAQ(faq)}
                                                 color="primary"
                                             >
                                                 <EditIcon />
                                             </IconButton>
                                             <IconButton
                                                 size="small"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteFAQ(faq.faqId);
-                                                }}
+                                                onClick={() => handleDeleteFAQ(faq.faqId)}
                                                 color="error"
                                             >
-                                                <DeleteIcon sx={{ mr: 3 }} />
+                                                <DeleteIcon />
                                             </IconButton>
                                         </Box>
                                     )}
                                 </Box>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography
-                                    variant="body1"
-                                    color="text.primary"
-                                    sx={{ lineHeight: 1.6 }}
-                                >
-                                    {faq.answer}
-                                </Typography>
                             </AccordionDetails>
                         </Accordion>
                     ))

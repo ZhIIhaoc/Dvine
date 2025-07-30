@@ -14,7 +14,6 @@ import {
     Divider,
     Chip
 } from '@mui/material';
-import { apiGet, apiPut, handleApiResponse } from '../utils/apiUtils.js';
 
 const TestUserProfile = ({ setToken }) => {
     const navigate = useNavigate();
@@ -67,17 +66,10 @@ const TestUserProfile = ({ setToken }) => {
     const loadUserProfile = async () => {
         setLoading(true);
         try {
-            const response = await apiGet(
-                'http://localhost:8080/users/profile',
-                {},
-                setToken,
-                navigate,
-                showMessage
-            );
+            const response = await fetch('http://localhost:8080/users/profile');
+            const data = await response.json();
             
-            const data = await handleApiResponse(response);
-            
-            if (data.success) {
+            if (data.code === 0) {
                 setUserProfile(data.data);
                 setFormData({
                     email: data.data.email || '',
@@ -115,18 +107,17 @@ const TestUserProfile = ({ setToken }) => {
     const updateProfile = async () => {
         setUpdating(true);
         try {
-            const response = await apiPut(
-                'http://localhost:8080/users/profile',
-                formData,
-                {},
-                setToken,
-                navigate,
-                showMessage
-            );
+            const response = await fetch('http://localhost:8080/users/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
             
-            const data = await handleApiResponse(response);
+            const data = await response.json();
             
-            if (data.success) {
+            if (data.code === 0) {
                 showMessage('User profile updated successfully', 'success');
                 // Reload profile to get updated data
                 await loadUserProfile();

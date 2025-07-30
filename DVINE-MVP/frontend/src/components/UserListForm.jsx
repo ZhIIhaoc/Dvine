@@ -24,7 +24,7 @@ const permissionsLabels = {
     3: "Manager",
 };
 export default function UserListForm({ onClose }) {
-    const { token, userInfo } = useContext(AuthContext);
+    const { token, userInfo, setToken } = useContext(AuthContext);
     const isOwner = userInfo?.permission === 4;
 
     const [users, setUsers] = useState([]);
@@ -48,7 +48,6 @@ export default function UserListForm({ onClose }) {
             const response = await fetch("http://localhost:8080/users/list", {
                 method: "GET",
                 headers: {
-                    Authorization: token,
                     "Content-Type": "application/json",
                 },
             });

@@ -40,7 +40,7 @@ const mapStatus = (statusCode) => {
 };
 
 export const CurrentUploadedTours = () => {
-    const { token, userInfo } = useContext(AuthContext);
+    const { token, userInfo, setToken } = useContext(AuthContext);
     const [currentUserToursList, setCurrentUserToursList] = useState([]);
     const navigate = useNavigate();
     const [gottenMyTours, setGottenMyTours] = useState(false);
@@ -70,13 +70,10 @@ export const CurrentUploadedTours = () => {
                     'Content-Type': 'application/json',
                 },
             });
-
             const responseInfo = await response.json();
-
             if (responseInfo.code === 0) {
                 setGottenAllTours(true);
                 setCurrentUserAllToursList(responseInfo.data);
-
             } else {
                 console.error("Failed to fetch tours:", responseInfo.msg);
             }
@@ -89,13 +86,10 @@ export const CurrentUploadedTours = () => {
             const response = await fetch("http://localhost:8080/approvals/my-submissions", {
                 method: "GET",
                 headers: {
-                    Authorization: `${token}`,
                     "Content-Type": "application/json",
                 },
             });
-
             const responseInfo = await response.json();
-
             if (responseInfo.code === 0) {
                 setCurrentUserToursList(responseInfo.data);
                 setGottenMyTours(true);

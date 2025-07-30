@@ -65,7 +65,7 @@ export const Home = () => {
     // Fetch featured tours from API
     const fetchFeaturedToursData = async () => {
         try {
-            const result = await fetchFeaturedTours(token);
+            const result = await fetchFeaturedTours();
             if (result.code === 0) {
                 setFeaturedTours(result.data);
             } else {

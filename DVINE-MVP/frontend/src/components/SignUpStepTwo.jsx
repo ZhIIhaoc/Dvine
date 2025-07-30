@@ -34,6 +34,9 @@ const SignUpStepTwo = (props) => {
                 <Step>
                     <StepLabel />{" "}
                 </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
             </Stepper>
             <TextField
                 label="First Name"
