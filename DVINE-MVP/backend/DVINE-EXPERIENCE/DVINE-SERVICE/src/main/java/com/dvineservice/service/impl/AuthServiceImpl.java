@@ -59,7 +59,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setPermission(PermissionLevel.REGULAR);
         user.setAvatar(defaultAvatarUrl);
         userMapper.insertUser(user);
         
@@ -75,8 +74,6 @@ public class AuthServiceImpl implements AuthService {
         
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // set default permission level
-        user.setPermission(PermissionLevel.REGULAR);
         user.setAvatar(defaultAvatarUrl);
         // Insert user
         userMapper.insertUser(user);

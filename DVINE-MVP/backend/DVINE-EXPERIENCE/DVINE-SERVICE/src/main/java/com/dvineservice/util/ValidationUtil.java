@@ -1,5 +1,6 @@
 package com.dvineservice.util;
 
+import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.User;
 import org.springframework.util.StringUtils;
 import java.util.regex.Pattern;
@@ -19,6 +20,13 @@ public class ValidationUtil {
             !StringUtils.hasText(user.getFirstName()) || 
             !StringUtils.hasText(user.getLastName())) {
             throw new IllegalArgumentException("Registration fields cannot be empty or contain only spaces");
+        }
+        
+        // Initialize permission to REGULAR if not specified
+        if (user.getPermission() == null) {
+            user.setPermission(PermissionLevel.REGULAR);
+        } else if (!PermissionLevel.isValidToRegister(user.getPermission())) {
+            throw new IllegalArgumentException("Invalid permission level for registration. Only regular member or unpaid partner allowed");
         }
     }
     

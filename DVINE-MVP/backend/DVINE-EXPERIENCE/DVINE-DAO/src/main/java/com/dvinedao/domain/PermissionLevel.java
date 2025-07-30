@@ -50,5 +50,13 @@ public final class PermissionLevel {
         return code >= PARTNER;
     }
 
+    /**
+     * Check if permission level is valid for user registration
+     * Only REGULAR and PARTNER_UNPAID are allowed for new registrations
+     */
+    public static boolean isValidToRegister(Integer code) {
+        return code == REGULAR || code == PARTNER_UNPAID;
+    }
+
 
 }

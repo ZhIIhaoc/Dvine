@@ -754,7 +754,7 @@ paths:
       tags:
         - Authentication
       summary: Register user with email verification
-      description: Register a new user account using email verification code
+      description: "Register a new user account using email verification code. Permission field can be specified with 2 choices: regular member (0) or partner_unpaid (2). If permission field is not specified, it defaults to regular (0). Other permission levels are prohibited for registration."
       operationId: registerWithVerification
       requestBody:
         description: User registration data with verification code
@@ -762,15 +762,30 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/RegisterWithVerificationRequest"
-            example:
-              user:
-                email: newUser@example.com
-                phone: "+61412345678"
-                password: SecurePassword12!
-                postcode: "2017"
-                firstName: new
-                lastName: user
-              verificationCode: "123456"
+            examples:
+              Regular Member Registration:
+                description: Register as regular member (default permission)
+                value:
+                  user:
+                    email: newUser@example.com
+                    phone: "+61412345678"
+                    password: SecurePassword12!
+                    postcode: "2017"
+                    firstName: new
+                    lastName: user
+                  verificationCode: "123456"
+              Non-paid Partner Registration:
+                description: Register as non-paid partner (permission level 2)
+                value:
+                  user:
+                    email: partner@example.com
+                    phone: "+61412345678"
+                    password: SecurePassword12!
+                    postcode: "2017"
+                    firstName: new
+                    lastName: partner
+                    permission: 2
+                  verificationCode: "123456"
         required: true
       responses:
         "400":
@@ -812,8 +827,7 @@ paths:
       tags:
         - Authentication
       summary: Register a new user
-      description: "Create a new user account with email, phone, password, postcode,\
-        \ firstName, and lastName"
+      description: "Create a new user account with email, phone, password, postcode, firstName, and lastName. Permission field can be specified with 2 choices: regular member (0) or partner_unpaid (2). If permission field is not specified, it defaults to regular (0). Other permission levels are prohibited for registration."
       operationId: register
       requestBody:
         description: User registration data
@@ -821,13 +835,26 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UserRegistrationRequest"
-            example:
-              email: john.doe@example.com
-              phone: "+61412345678"
-              password: SecurePassword123!
-              postcode: "2000"
-              firstName: John
-              lastName: Doe
+            examples:
+              Regular Member Registration:
+                description: Register as regular member (default permission)
+                value:
+                  email: john.doe@example.com
+                  phone: "+61412345678"
+                  password: SecurePassword123!
+                  postcode: "2000"
+                  firstName: John
+                  lastName: Doe
+              Non-paid Partner Registration:
+                description: Register as non-paid partner (permission level 2)
+                value:
+                  email: partner.doe@example.com
+                  phone: "+61412345678"
+                  password: SecurePassword123!
+                  postcode: "2000"
+                  firstName: Partner
+                  lastName: Doe
+                  permission: 2
         required: true
       responses:
         "400":
@@ -4145,6 +4172,11 @@ components:
           type: string
           description: User's last name
           example: Doe
+        permission:
+          type: integer
+          description: "User's permission level (optional). Defaults to 0 (regular member) if not specified. Can be 0 (regular member) or 2 (non-paid partner). Any other permission level will be prohibited."
+          example: 0
+          enum: [0, 2]
       required:
         - email
         - firstName
