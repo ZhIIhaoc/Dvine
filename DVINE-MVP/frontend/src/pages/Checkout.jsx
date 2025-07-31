@@ -5,61 +5,129 @@ import BookNowButton from "../components/BookNowButton";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Box, Typography, CircularProgress, TextField } from "@mui/material";
+import {
+    Box,
+    Typography,
+    CircularProgress,
+    TextField,
+    Button,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function Checkout() {
-  const { tourId } = useParams();
-  const navigate = useNavigate();
-  const [tour, setTour] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [travelDate, setTravelDate] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+    const { tourId } = useParams();
+    const navigate = useNavigate();
+    const [tour, setTour] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [travelDate, setTravelDate] = useState(null);
+    const [quantity, setQuantity] = useState(1);
 
-  useEffect(() => {
-    async function loadTour() {
-      const result = await fetchTourById(tourId);
-      if (result.code === 0) setTour(result.data);
-      setLoading(false);
-    }
-    loadTour();
-  }, [tourId]);
+    useEffect(() => {
+        async function loadTour() {
+            const result = await fetchTourById(tourId);
+            if (result.code === 0) setTour(result.data);
+            setLoading(false);
+        }
+        loadTour();
+    }, [tourId]);
 
-  if (loading) return <CircularProgress />;
-  if (!tour) return <Typography>Tour not found.</Typography>;
+    if (loading) return <CircularProgress />;
+    if (!tour) return <Typography>Tour not found.</Typography>;
 
-  return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 6, p: 3, bgcolor: "background.paper", borderRadius: 2 }}>
-      <Typography variant="h4" gutterBottom>Checkout</Typography>
-      <Typography variant="h6">{tour.title}</Typography>
-      <Typography color="text.secondary">{tour.destination}</Typography>
-      <Typography sx={{ my: 2 }}>{tour.description}</Typography>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker
-          label="Select Travel Date"
-          value={travelDate}
-          onChange={setTravelDate}
-          minDate={new Date()}
-          maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 2))}
-          slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
-        />
-      </LocalizationProvider>
-      <TextField
-        label="Quantity"
-        type="number"
-        value={quantity}
-        onChange={e => setQuantity(Number(e.target.value))}
-        inputProps={{ min: 1, max: 10 }}
-        fullWidth
-        margin="normal"
-      />
-      <Box sx={{ mt: 3 }}>
-        <BookNowButton
-          tourId={tour.tourId}
-          quantity={quantity}
-          travelDate={travelDate ? travelDate.toISOString().split('T')[0] : undefined}
-          disabled={!travelDate}
-        />
-      </Box>
-    </Box>
-  );
-} 
+    return (
+        <Box
+            sx={{
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "90vh",
+                mx: "6%",
+            }}
+        >
+            {/* Back Button */}
+            <Button
+                startIcon={<ArrowBackIcon />}
+                onClick={() => navigate(`/tour/${tourId}`)}
+                sx={{
+                    position: "absolute",
+                    top: 16,
+                    left: 16,
+                }}
+            >
+                Back to Experience Page
+            </Button>
+            <Box
+                sx={{
+                    maxWidth: 600,
+                    mx: "auto",
+                    p: 3,
+                    mt: 3,
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                }}
+            >
+                <Typography variant="h4" gutterBottom>
+                    Checkout
+                </Typography>
+                <Typography variant="h6">{tour.title}</Typography>
+                <Typography color="text.secondary">
+                    {tour.destination}
+                </Typography>
+                <Typography sx={{ my: 2 }}>{tour.description}</Typography>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                        label="Select Travel Date"
+                        value={travelDate}
+                        onChange={setTravelDate}
+                        minDate={new Date()}
+                        maxDate={
+                            new Date(
+                                new Date().setFullYear(
+                                    new Date().getFullYear() + 2
+                                )
+                            )
+                        }
+                        slotProps={{
+                            textField: {
+                                fullWidth: true,
+                                margin: "normal",
+                                InputLabelProps: {
+                                    shrink: true,
+                                    sx: { color: "text.primary" },
+                                },
+                            },
+                        }}
+                    />
+                </LocalizationProvider>
+                <TextField
+                    label="Quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    inputProps={{ min: 1, max: 10 }}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                        sx: (theme) => ({
+                            color: "text.primary",
+                        }),
+                    }}
+                />
+                <Box sx={{ mt: 3 }}>
+                    <BookNowButton
+                        tourId={tour.tourId}
+                        quantity={quantity}
+                        travelDate={
+                            travelDate
+                                ? travelDate.toISOString().split("T")[0]
+                                : undefined
+                        }
+                        disabled={!travelDate}
+                    />
+                </Box>
+            </Box>
+        </Box>
+    );
+}

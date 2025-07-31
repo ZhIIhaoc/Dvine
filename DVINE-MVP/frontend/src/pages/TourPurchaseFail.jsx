@@ -1,44 +1,98 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-
+import { Box, Typography, Button } from "@mui/material";
+import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const TourPurchaseFail = () => {
     const [pageInfo, setPageInfo] = React.useState({});
     const [gottenInfo, setGottenInfo] = React.useState(false);
     const { id } = useParams();
+    const navigate = useNavigate();
+
     const getToursInfo = async () => {
         // Fetch tour information using the tour ID
         try {
             const localHost = "http://localhost:8080";
-        const response = await fetch(`${localHost}/tours/${id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+            const response = await fetch(`${localHost}/tours/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const responseInfo = await response.json();
+            if (responseInfo.code === 0) {
+                setPageInfo(responseInfo.data);
+                setGottenInfo(true);
             }
-        });
-        const responseInfo = await response.json();
-        if (responseInfo.code === 0) {
-            setPageInfo(responseInfo.data);
-            setGottenInfo(true);
-        }
         } catch (error) {
             console.error("Error fetching tour information:", error);
         }
-    }
+    };
     React.useEffect(() => {
         getToursInfo();
     }, [id]);
 
     return (
         <>
-        {gottenInfo && (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-            <h1 className="text-4xl font-bold text-red-600 mb-4">Purchase Failed! for Tour ID: {pageInfo.title}</h1>
-            <p className="text-lg text-gray-700 mb-6">We're sorry, but your purchase could not be completed.</p>
-        </div>
-        )}
+            {gottenInfo && (
+                <Box
+                    sx={{
+                        height: "90vh",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        bgcolor: "background.default",
+                        mx: "10%",
+                    }}
+                >
+                    <Typography
+                        variant="h4"
+                        color="error"
+                        fontWeight="bold"
+                        gutterBottom
+                    >
+                        Purchase Failed for Tour ID: {pageInfo.title}
+                    </Typography>
+                    <Typography
+                        variant="h6"
+                        color="text.primary"
+                        fontWeight="regular"
+                    >
+                        We're sorry, but your purchase could not be completed.
+                    </Typography>
+
+                    <Button
+                        startIcon={<ArrowBackIcon />}
+                        variant="contained"
+                        color="secondary"
+                        size="large"
+                        sx={{
+                            mt: 9,
+                            borderRadius: 99,
+                            px: 6,
+                            py: 1.5,
+                            fontSize: "1rem",
+                            background:
+                                "linear-gradient(90deg, #a4508b 0%, #5f0a87 100%)",
+                            boxShadow: "0 2px 12px 0 #a4508b33",
+                            transition: "all 0.2s",
+                            color: "white",
+                            "&:hover": {
+                                background:
+                                    "linear-gradient(90deg, #5f0a87 0%, #a4508b 100%)",
+                                transform: "scale(1.02)",
+                                boxShadow: "0 4px 24px 0 #a4508b44",
+                            },
+                        }}
+                        onClick={() => navigate(`/tour/${id}`)}
+                    >
+                        Go back to the experience page
+                    </Button>
+                </Box>
+            )}
         </>
     );
-}
+};
 
 export default TourPurchaseFail;
