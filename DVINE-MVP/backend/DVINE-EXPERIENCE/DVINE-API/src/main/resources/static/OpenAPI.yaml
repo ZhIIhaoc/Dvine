@@ -31,9 +31,166 @@ tags:
     description: Tour booking and payment session management operations
   - name: Payments
     description: Payment processing and transaction management operations
+  - name: Subscriptions
+    description: User subscription management and billing operations
   - name: Webhooks
     description: External webhook integrations (Stripe)
 paths:
+  /subscription/checkout/{type}:
+    post:
+      tags:
+        - Subscriptions
+      summary: Create subscription checkout session
+      description: Create a Stripe checkout session for subscription upgrade. Type can be 'PREMIUM' (REGULAR→PREMIUM, $9.99/month) or 'PARTNER' (PARTNER_UNPAID→PARTNER, $99.99/week). User must have appropriate permission level to subscribe. Success/cancel URLs are generated automatically by the backend.
+      operationId: createSubscriptionCheckout
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: Subscription type enum
+          schema:
+            type: string
+            enum: [PREMIUM, PARTNER]
+          examples:
+            PREMIUM:
+              value: PREMIUM
+              description: Premium subscription for regular members
+            PARTNER:
+              value: PARTNER
+              description: Partner subscription for unpaid partners
+      responses:
+        "201":
+          description: Checkout session created successfully
+          content:
+            application/json:
+              example:
+                code: 0
+                msg: success
+                data:
+                  checkoutUrl: "https://checkout.stripe.com/pay/cs_test_..."
+                  sessionId: "cs_test_..."
+        "400":
+          description: Bad Request - invalid subscription type
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: "Invalid subscription type enum"
+        "401":
+          description: Unauthorized - user not logged in
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: "User not logged in"
+        "403":
+          description: Forbidden - user does not have permission for this subscription type
+          content:
+            application/json:
+              examples:
+                Premium Denied:
+                  value:
+                    code: 1
+                    msg: "Premium subscription is only available for regular members"
+                Partner Denied:
+                  value:
+                    code: 1
+                    msg: "Partner subscription is only available for unpaid partners"
+        "409":
+          description: User already has active subscription
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: "User already has an active subscription"
+      security:
+        - bearerAuth: []
+  /subscription/status:
+    get:
+      tags:
+        - Subscriptions
+      summary: Get subscription status
+      description: Get current user's subscription status and access information
+      operationId: getSubscriptionStatus
+      responses:
+        "200":
+          description: Subscription status retrieved successfully
+          content:
+            application/json:
+              examples:
+                No Subscription:
+                  description: User has no subscription
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      hasActiveSubscription: false
+                      hasAccess: false
+                      currentPermission: 0
+                Active Premium:
+                  description: User has active premium subscription
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      hasActiveSubscription: true
+                      subscriptionType: "PREMIUM"
+                      status: "ACTIVE"
+                      currentPeriodEnd: "2024-02-15T10:30:00"
+                      hasAccess: true
+                      currentPermission: 1
+                Canceled Partner:
+                  description: User has canceled partner subscription but still has access
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      hasActiveSubscription: true
+                      subscriptionType: "PARTNER"
+                      status: "CANCELED"
+                      currentPeriodEnd: "2024-01-20T15:45:00"
+                      hasAccess: true
+                      currentPermission: 3
+        "401":
+          description: Unauthorized - user not logged in
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
+  /subscription/unsubscribe:
+    post:
+      tags:
+        - Subscriptions
+      summary: Unsubscribe from subscription
+      description: Unsubscribe current user from their subscription. Access will continue until the end of current billing period.
+      operationId: unsubscribeUser
+      responses:
+        "200":
+          description: User unsubscribed successfully
+          content:
+            application/json:
+              example:
+                code: 0
+                msg: success
+        "400":
+          description: No active subscription found
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: "No active subscription found for user"
+        "401":
+          description: Unauthorized - user not logged in
+          content:
+            application/json:
+              example:
+                code: 1
+                msg: "User not logged in"
+      security:
+        - bearerAuth: []
   /users/profile:
     get:
       tags:
@@ -991,6 +1148,11 @@ paths:
                     value:
                       email: i_am_partner@example.com
                       password: 1234
+                Partner(Unpaid) Login Example:
+                  description: Example of partner login request
+                  value:
+                    email: i_am_partner_unpaid@example.com
+                    password: 1234
                 Premium Member Login Example:
                     description: Example of premium member login request
                     value:
@@ -3997,15 +4159,6 @@ paths:
               example:
                 code: 1
                 msg: "User not logged in"
-        "500":
-          description: Error calculating statistics
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReturnResult"
-              example:
-                code: 1
-                msg: "Internal server error occurred while calculating payment statistics"
       security:
         - bearerAuth: []
 components:

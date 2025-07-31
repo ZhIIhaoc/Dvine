@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.SubscriptionMapper">
+
+    <!-- Result map for Subscription entity -->
+    <resultMap id="SubscriptionResultMap" type="com.dvinedao.domain.Subscription">
+        <id property="subscriptionId" column="subscriptionId"/>
+        <result property="userId" column="userId"/>
+        <result property="subscriptionType" column="subscriptionType"/>
+        <result property="stripeSubscriptionId" column="stripeSubscriptionId"/>
+        <result property="status" column="status"/>
+        <result property="currentPeriodEnd" column="currentPeriodEnd"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <!-- Additional fields for joined queries -->
+        <result property="userEmail" column="userEmail"/>
+        <result property="userFirstName" column="userFirstName"/>
+        <result property="userLastName" column="userLastName"/>
+    </resultMap>
+
+    <!-- Insert subscription -->
+    <insert id="insertSubscription" parameterType="com.dvinedao.domain.Subscription" 
+            useGeneratedKeys="true" keyProperty="subscriptionId">
+        INSERT INTO subscriptions (
+            userId, subscriptionType, stripeSubscriptionId, status, currentPeriodEnd
+        ) VALUES (
+            #{userId}, #{subscriptionType}, #{stripeSubscriptionId}, #{status}, #{currentPeriodEnd}
+        )
+    </insert>
+
+    <!-- Select subscription by ID -->
+    <select id="selectSubscriptionById" resultMap="SubscriptionResultMap">
+        SELECT 
+            s.subscriptionId, s.userId, s.subscriptionType, s.stripeSubscriptionId, 
+            s.status, s.currentPeriodEnd, s.createTime, s.updateTime,
+            u.email as userEmail, u.firstName as userFirstName, u.lastName as userLastName
+        FROM subscriptions s
+        LEFT JOIN users u ON s.userId = u.userId
+        WHERE s.subscriptionId = #{subscriptionId}
+    </select>
+
+    <!-- Select active subscription by user ID -->
+    <select id="selectActiveSubscriptionByUserId" resultMap="SubscriptionResultMap">
+        SELECT 
+            s.subscriptionId, s.userId, s.subscriptionType, s.stripeSubscriptionId, 
+            s.status, s.currentPeriodEnd, s.createTime, s.updateTime
+        FROM subscriptions s
+        WHERE s.userId = #{userId} 
+        AND s.status IN ('ACTIVE', 'CANCELED')
+        ORDER BY s.createTime DESC
+        LIMIT 1
+    </select>
+
+    <!-- Select subscription by Stripe subscription ID -->
+    <select id="selectSubscriptionByStripeId" resultMap="SubscriptionResultMap">
+        SELECT 
+            s.subscriptionId, s.userId, s.subscriptionType, s.stripeSubscriptionId, 
+            s.status, s.currentPeriodEnd, s.createTime, s.updateTime,
+            u.email as userEmail, u.firstName as userFirstName, u.lastName as userLastName
+        FROM subscriptions s
+        LEFT JOIN users u ON s.userId = u.userId
+        WHERE s.stripeSubscriptionId = #{stripeSubscriptionId}
+    </select>
+
+    <!-- Update subscription status and period end -->
+    <update id="updateSubscriptionStatus">
+        UPDATE subscriptions 
+        SET status = #{status}, 
+            currentPeriodEnd = #{currentPeriodEnd},
+            updateTime = CURRENT_TIMESTAMP
+        WHERE subscriptionId = #{subscriptionId}
+    </update>
+
+    <!-- Update subscription by Stripe subscription ID -->
+    <update id="updateSubscriptionByStripeId">
+        UPDATE subscriptions 
+        SET status = #{status}, 
+            currentPeriodEnd = #{currentPeriodEnd},
+            updateTime = CURRENT_TIMESTAMP
+        WHERE stripeSubscriptionId = #{stripeSubscriptionId}
+    </update>
+
+    <!-- Select all subscriptions for a user -->
+    <select id="selectSubscriptionsByUserId" resultMap="SubscriptionResultMap">
+        SELECT 
+            s.subscriptionId, s.userId, s.subscriptionType, s.stripeSubscriptionId, 
+            s.status, s.currentPeriodEnd, s.createTime, s.updateTime
+        FROM subscriptions s
+        WHERE s.userId = #{userId}
+        ORDER BY s.createTime DESC
+    </select>
+
+    <!-- Select expired canceled subscriptions that need to be set to INACTIVE -->
+    <select id="selectExpiredCanceledSubscriptions" resultMap="SubscriptionResultMap">
+        SELECT 
+            s.subscriptionId, s.userId, s.subscriptionType, s.stripeSubscriptionId, 
+            s.status, s.currentPeriodEnd, s.createTime, s.updateTime
+        FROM subscriptions s
+        WHERE s.status = 'CANCELED' 
+        AND s.currentPeriodEnd &lt; NOW()
+    </select>
+
+    <!-- Delete subscription -->
+    <delete id="deleteSubscription">
+        DELETE FROM subscriptions WHERE subscriptionId = #{subscriptionId}
+    </delete>
+
+</mapper>
