@@ -14,6 +14,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
 import MessageAlert from "../components/MessageAlert.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
+import AvatarUpload from "../components/AvatarUpload.jsx";
 
 const getPermissionLabel = (permission) => {
     switch (permission) {
@@ -81,6 +82,11 @@ const UserSettings = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleAvatarUpdate = (newAvatarUrl) => {
+        setUserInfo((prev) => ({ ...prev, avatar: newAvatarUrl }));
+        showSnackbar("Avatar updated successfully", "success");
+    };
+
     const handleSave = async () => {
         try {
             const response = await fetch(
@@ -136,21 +142,16 @@ const UserSettings = () => {
                         mb: 2,
                     }}
                 >
-                    <Avatar
-                        sx={{
-                            bgcolor: "#7b1fa2",
-                            width: 80,
-                            height: 80,
-                            mb: 2,
-                        }}
-                    >
-                        <AccountCircleIcon
-                            sx={{ fontSize: 60, color: "#fff" }}
-                        />
-                    </Avatar>
+                    <AvatarUpload
+                        currentAvatarUrl={userInfo?.avatar}
+                        onAvatarUpdate={handleAvatarUpdate}
+                        size={120}
+                        showUploadButton={editMode}
+                        showDeleteButton={editMode}
+                    />
                     <Typography
                         variant="h5"
-                        sx={{ fontWeight: 700, color: "text.tertiary", mb: 1 }}
+                        sx={{ fontWeight: 700, color: "text.tertiary", mb: 1, mt: 2 }}
                     >
                         Account Settings
                     </Typography>
