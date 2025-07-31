@@ -1,12 +1,14 @@
-import { Height } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const TourPurchaseFail = () => {
     const [pageInfo, setPageInfo] = React.useState({});
     const [gottenInfo, setGottenInfo] = React.useState(false);
     const { id } = useParams();
+    const navigate = useNavigate();
+
     const getToursInfo = async () => {
         // Fetch tour information using the tour ID
         try {
@@ -41,6 +43,7 @@ const TourPurchaseFail = () => {
                         alignItems: "center",
                         justifyContent: "center",
                         bgcolor: "background.default",
+                        mx: "10%",
                     }}
                 >
                     <Typography
@@ -49,7 +52,7 @@ const TourPurchaseFail = () => {
                         fontWeight="bold"
                         gutterBottom
                     >
-                        Purchase Failed! for Tour ID: {pageInfo.title}
+                        Purchase Failed for Tour ID: {pageInfo.title}
                     </Typography>
                     <Typography
                         variant="h6"
@@ -58,6 +61,34 @@ const TourPurchaseFail = () => {
                     >
                         We're sorry, but your purchase could not be completed.
                     </Typography>
+
+                    <Button
+                        startIcon={<ArrowBackIcon />}
+                        variant="contained"
+                        color="secondary"
+                        size="large"
+                        sx={{
+                            mt: 9,
+                            borderRadius: 99,
+                            px: 6,
+                            py: 1.5,
+                            fontSize: "1rem",
+                            background:
+                                "linear-gradient(90deg, #a4508b 0%, #5f0a87 100%)",
+                            boxShadow: "0 2px 12px 0 #a4508b33",
+                            transition: "all 0.2s",
+                            color: "white",
+                            "&:hover": {
+                                background:
+                                    "linear-gradient(90deg, #5f0a87 0%, #a4508b 100%)",
+                                transform: "scale(1.02)",
+                                boxShadow: "0 4px 24px 0 #a4508b44",
+                            },
+                        }}
+                        onClick={() => navigate(`/tour/${id}`)}
+                    >
+                        Go back to the experience page
+                    </Button>
                 </Box>
             )}
         </>
