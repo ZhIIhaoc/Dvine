@@ -108,6 +108,7 @@ class PaymentControllerTest {
         Payment payment = new Payment();
         payment.setUserId(userId);
         payment.setBookingId(bookingId);
+        payment.setPaymentType(Payment.PaymentType.BOOKING);
         payment.setStripeSessionId("cs_test_a1B2c3D4e5F6g7H8i9J0k1L2");
         payment.setStripePaymentIntentId("pi_3MtwBw2eZvKYlo2C0KQC1234");
         payment.setAmount(BigDecimal.valueOf(599.98));

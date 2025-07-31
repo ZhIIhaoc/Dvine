@@ -127,6 +127,7 @@ public class PaymentUtil {
         Payment payment = new Payment();
         payment.setUserId(booking.getUserId());
         payment.setBookingId(booking.getBookingId());
+        payment.setPaymentType(Payment.PaymentType.BOOKING);
         payment.setAmount(booking.getTotalAmount());
         payment.setCurrency(booking.getCurrency());
         payment.setStatus(Payment.PaymentStatus.PENDING);
@@ -142,6 +143,7 @@ public class PaymentUtil {
         Payment payment = new Payment();
         payment.setUserId(userId);
         payment.setBookingId(null); // No booking for subscription payments
+        payment.setPaymentType(Payment.PaymentType.SUBSCRIPTION);
         payment.setAmount(amount);
         payment.setCurrency(currency);
         payment.setStatus(Payment.PaymentStatus.PENDING);
