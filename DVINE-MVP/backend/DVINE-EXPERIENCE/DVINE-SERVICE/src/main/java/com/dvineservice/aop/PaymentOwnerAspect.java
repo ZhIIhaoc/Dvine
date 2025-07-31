@@ -100,11 +100,18 @@ public class PaymentOwnerAspect {
      */
     private void validatePaymentAccess(Payment payment, User currentUser) {
         // Get the booking to check user ownership
+        if (payment.getBookingId() != null) {
+            validateBookingAccess(payment, currentUser);
+        }
+
+    }
+
+    private void validateBookingAccess(Payment payment, User currentUser) {
         Booking booking = bookingMapper.findById(payment.getBookingId());
         if (booking == null) {
             throw new PaymentFailedException("Associated booking not found");
         }
-        
+
         // Guest bookings (userId is null) can only be accessed by paid partner and above
         if (booking.getUserId() == null) {
             if (!PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
@@ -112,9 +119,9 @@ public class PaymentOwnerAspect {
             }
             return;
         }
-        
+
         // Regular user bookings - users can only access their own payments OR have admin privileges
-        if (!booking.getUserId().equals(currentUser.getUserId()) && 
+        if (!booking.getUserId().equals(currentUser.getUserId()) &&
             !PermissionLevel.hasAdminPrivileges(currentUser.getPermission())) {
             throw new PermissionDeniedException("You can only access your own payment details");
         }
