@@ -12,6 +12,7 @@ import TourPurchasesSuccess from "./pages/TourPurchasesSuccess.jsx";
 import TourPurchaseFail from "./pages/TourPurchaseFail.jsx";
 import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
+import { PartnerDashboard } from "./pages/PartnerDashboard.jsx";
 import { CurrentUploadedTours } from "./pages/CurrentUploadedTours.jsx";
 import ForgottenPassword from "./pages/ForgottenPassword.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
@@ -89,8 +90,10 @@ function App() {
                             path="/booking/cancel/:id"
                             element={<TourPurchaseFail />}
                         />
-
-                        <Route path="*" element={<NotFound />} />
+                        <Route
+                            path="/partner-dashboard"
+                            element={<PartnerDashboard />}
+                        />
                         <Route
                             path="/checkout/:tourId"
                             element={<Checkout />}
@@ -108,6 +111,7 @@ function App() {
                         path="/register"
                         element={<Register isDarkMode={isDarkMode} />}
                     />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </ThemeProvider>
         </>

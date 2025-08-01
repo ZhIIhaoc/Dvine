@@ -22,10 +22,12 @@ const getPermissionLabel = (permission) => {
         case 1:
             return "Premium User";
         case 2:
-            return "Partner (Admin)";
+            return "Partner (Unpaid)";
         case 3:
-            return "Manager (Admin)";
+            return "Partner (Paid)";
         case 4:
+            return "Manager (Admin)";
+        case 5:
             return "Owner (Admin)";
         default:
             return "Unknown";
@@ -38,7 +40,7 @@ const getDashboardPath = (permission) => {
 
 const UserSettings = () => {
     const navigate = useNavigate();
-    const { token, userInfo, setUserInfo, setToken } = useContext(AuthContext);
+    const { userInfo, setUserInfo } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
@@ -101,7 +103,7 @@ const UserSettings = () => {
             } else {
                 showSnackbar(data.msg || "Update failed", "error");
             }
-        } catch (err) {
+        } catch (error) {
             showSnackbar("Network error. Try again.", "error");
         }
     };

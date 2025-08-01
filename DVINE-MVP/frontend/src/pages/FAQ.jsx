@@ -26,7 +26,6 @@ import {
     Delete as DeleteIcon,
     Search as SearchIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 
 // FAQ API endpoints
@@ -110,9 +109,8 @@ export function FAQ() {
         answer: "",
     });
 
-    const navigate = useNavigate();
     const { userInfo, token } = useAuth();
-    const isAdmin = userInfo?.permission >= 3;
+    const isAdmin = userInfo?.permission >= 4;
 
     // Fetch FAQs from API
     const fetchFAQsData = async () => {
