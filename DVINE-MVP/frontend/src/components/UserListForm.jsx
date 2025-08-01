@@ -20,12 +20,14 @@ import SearchIcon from "@mui/icons-material/Search";
 const permissionsLabels = {
     0: "Regular",
     1: "Premium",
-    2: "Partner",
-    3: "Manager",
+    2: "Partner (Unpaid)",
+    3: "Partner (Paid)",
+    4: "Manager (Admin)",
+    5: "Owner (Admin)",
 };
 export default function UserListForm({ onClose }) {
-    const { token, userInfo, setToken } = useContext(AuthContext);
-    const isOwner = userInfo?.permission === 4;
+    const { token, userInfo} = useContext(AuthContext);
+    const isOwner = userInfo?.permission === 5;
 
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -244,11 +246,16 @@ export default function UserListForm({ onClose }) {
                                             </MenuItem>
                                             {isOwner && (
                                                 <MenuItem value={2}>
-                                                    Partner
+                                                    Partner (Unpaid)
                                                 </MenuItem>
                                             )}
                                             {isOwner && (
                                                 <MenuItem value={3}>
+                                                    Partner (Paid)
+                                                </MenuItem>
+                                            )}
+                                            {isOwner && (
+                                                <MenuItem value={4}>
                                                     Manager
                                                 </MenuItem>
                                             )}

@@ -150,8 +150,8 @@ export default function AdminTourPage() {
                 fetchFeaturedTours();
                 showSnackbar("Removed from featured", "success");
             } else showSnackbar(responseInfo.msg, "error");
-        } catch (err) {
-            showSnackbar("Failed to remove", "error");
+        } catch (error) {
+            showSnackbar("Failed to remove", error);
         }
     };
 
@@ -304,11 +304,8 @@ export default function AdminTourPage() {
                                     }
                                 >
                                     <ListItemText
-                                        primary={`Tour ID: ${item.tourId}`}
+                                        primary={`Tour Name: ${item.title}`}
                                         secondary={`Display Order: ${item.displayOrder}`}
-                                        secondaryTypographyProps={{
-                                            color: "text.primary",
-                                        }}
                                     />
                                 </ListItem>
                             ))}

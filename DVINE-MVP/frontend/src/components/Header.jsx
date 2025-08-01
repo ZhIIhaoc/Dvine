@@ -43,11 +43,10 @@ export function Header({ isDarkMode, setIsDarkMode }) {
     useEffect(() => {
         if (userInfo) {
             setIsAdmin(
-                userInfo.permission == 2 ||
-                    userInfo.permission == 3 ||
-                    userInfo.permission == 4
+                    userInfo.permission == 4 ||
+                    userInfo.permission == 5
             );
-            setIsPartner(userInfo.permission == 2);
+            setIsPartner(userInfo.permission == 2 || userInfo.permission == 3);
         }
     }, [userInfo]);
     const theme = useTheme();
@@ -127,7 +126,6 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 alignItems: "center",
                                 justifyContent: "flex-end",
                                 height: "100%",
-                                display: { xs: "none", md: "flex" },
                             }}
                         >
                             {isAdmin ? (
@@ -154,13 +152,13 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                         color: "text.primary",
                                         mr: 3,
                                         borderBottom:
-                                            currentPath === "/admin-dashboard"
+                                            currentPath === "/partner-dashboard"
                                                 ? "2px solid"
                                                 : "none",
                                         borderColor: "text.tertiary",
                                         borderRadius: 0,
                                     }}
-                                    onClick={() => navigate("/admin-dashboard")}
+                                    onClick={() => navigate("/partner-dashboard")}
                                 >
                                     Partner Dashboard
                                 </Button>
@@ -468,7 +466,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                     sx={{
                                         color: "text.primary",
                                         borderBottom:
-                                            currentPath === "/admin-dashboard"
+                                            currentPath === "/partner-dashboard"
                                                 ? "2px solid"
                                                 : "none",
                                         borderColor: "text.tertiary",
@@ -477,7 +475,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                         justifyContent: "flex-start",
                                     }}
                                     onClick={() => {
-                                        navigate("/admin-dashboard");
+                                        navigate("/partner-dashboard");
                                         toggleMobileMenu();
                                     }}
                                 >
@@ -551,7 +549,6 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 justifyContent: "flex-end",
                                 pb: 4,
                                 width: 200,
-                                justifyContent: "flex-start",
                             }}
                         >
                             <Button
