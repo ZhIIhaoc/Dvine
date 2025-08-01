@@ -166,7 +166,7 @@ export const AdminTourPage = () => {
                 showSnackbar("Removed from featured", "success");
             } else showSnackbar(responseInfo.msg, "error");
         } catch (error) {
-            showSnackbar("Failed to remove", error);
+            showSnackbar("Failed to remove", "error");
         }
     };
 

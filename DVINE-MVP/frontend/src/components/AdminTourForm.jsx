@@ -133,7 +133,21 @@ export default function AdminTourPage() {
     };
 
     const handleDeleteTour = async (tourId) => {
-        // Implement reject logic
+        try {
+            const response = await fetch(`http://localhost:8080/approvals/tours/${tourId}/reject`, {
+                method: "POST",
+                headers: { Authorization: `${token}` },
+            });
+            const responseInfo = await response.json();
+            if (responseInfo.code === 0) {
+                showSnackbar("Tour rejected successfully!", "success");
+                fetchPendingTours();
+                fetchAllTours();
+            } else showSnackbar(responseInfo.msg, "error");
+        } catch (error) {
+            showSnackbar("Rejection failed", "error");
+            console.error("Error rejecting tour:", error);
+        }
     };
 
     const removeFeaturedTour = async (tourId) => {
@@ -151,7 +165,7 @@ export default function AdminTourPage() {
                 showSnackbar("Removed from featured", "success");
             } else showSnackbar(responseInfo.msg, "error");
         } catch (error) {
-            showSnackbar("Failed to remove", error);
+            showSnackbar("Failed to remove", "error");
         }
     };
 

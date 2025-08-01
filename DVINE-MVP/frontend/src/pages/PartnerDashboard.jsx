@@ -30,7 +30,7 @@ export function PartnerDashboard() {
         getCatalogueInfo();
     }, []);
 
-    
+
 
     const getCatalogueInfo = async () => {
         try {
@@ -53,224 +53,224 @@ export function PartnerDashboard() {
     };
 
     return (
-        isPartner ?  (
-        <Box sx={{ minHeight: "120vh", width: "100%" }}>
-            {userInfo ? (
-                <Box
-                    sx={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                    }}
-                >
-                    {/* Title */}
-                    <Typography
-                        sx={{
-                            textAlign: "center",
-                            mt: 3,
-                            mb: 6,
-                            fontSize: "2rem",
-                            fontWeight: "bold",
-                            color: "text.tertiary",
-                        }}
-                    >
-                        Welcome Back {userName}
-                    </Typography>
-
-                    {/* Dashboard Layout */}
+        isPartner ? (
+            <Box sx={{ minHeight: "120vh", width: "100%" }}>
+                {userInfo ? (
                     <Box
                         sx={{
                             width: "100%",
-                            height: "100%",
-                            flex: 1,
-                            ml: "20%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
                         }}
                     >
-                        <Grid container spacing={3}>
-                            {/* Sidebar */}
-                            <Grid
-                                item
-                                xs={12}
-                                md={3}
-                                sx={{
-                                    borderRight: "1px solid gray",
-                                    height: "100vh",
-                                }}
-                            >
-                                {/* Dashboard Home */}
-                                <Box
-                                    sx={{
-                                        textAlign: "start",
-                                        mt: 2,
-                                        backgroundColor:
-                                            activePanel === "home"
-                                                ? "background.secondary"
-                                                : "transparent",
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() => setActivePanel("home")}
-                                        fullWidth
-                                        sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
-                                        }}
-                                    >
-                                        <HomeIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{ color: "text.tertiary" }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            Dashboard Home
-                                        </Typography>
-                                    </Button>
-                                </Box>
+                        {/* Title */}
+                        <Typography
+                            sx={{
+                                textAlign: "center",
+                                mt: 3,
+                                mb: 6,
+                                fontSize: "2rem",
+                                fontWeight: "bold",
+                                color: "text.tertiary",
+                            }}
+                        >
+                            Welcome Back {userName}
+                        </Typography>
 
-                                {/* Create Tour */}
-                                <Box
+                        {/* Dashboard Layout */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                height: "100%",
+                                flex: 1,
+                                ml: "20%",
+                            }}
+                        >
+                            <Grid container spacing={3}>
+                                {/* Sidebar */}
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={3}
                                     sx={{
-                                        textAlign: "start",
-                                        backgroundColor:
-                                            activePanel === "createTour"
-                                                ? "background.secondary"
-                                                : "transparent",
+                                        borderRight: "1px solid gray",
+                                        height: "100vh",
                                     }}
                                 >
-                                    <Button
-                                        onClick={() => setActivePanel("createTour")}
-                                        fullWidth
+                                    {/* Dashboard Home */}
+                                    <Box
                                         sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
+                                            textAlign: "start",
+                                            mt: 2,
+                                            backgroundColor:
+                                                activePanel === "home"
+                                                    ? "background.secondary"
+                                                    : "transparent",
                                         }}
                                     >
-                                        <AddCircleIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{ color: "text.tertiary" }}
-                                        />
-                                        <Typography
+                                        <Button
+                                            onClick={() => setActivePanel("home")}
+                                            fullWidth
                                             sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor: "action.hover",
+                                                },
                                             }}
                                         >
-                                            Create Tour
-                                        </Typography>
-                                    </Button>
-                                </Box>
+                                            <HomeIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{ color: "text.tertiary" }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Dashboard Home
+                                            </Typography>
+                                        </Button>
+                                    </Box>
 
-                                {/* Your Uploaded Tours */}
-                                <Box
-                                    sx={{
-                                        textAlign: "start",
-                                        backgroundColor:
-                                            activePanel === "uploaded_tours"
-                                                ? "background.secondary"
-                                                : "transparent",
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() => setActivePanel("uploaded_tours")}
-                                        fullWidth
+                                    {/* Create Tour */}
+                                    <Box
                                         sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            pr: 3,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
+                                            textAlign: "start",
+                                            backgroundColor:
+                                                activePanel === "createTour"
+                                                    ? "background.secondary"
+                                                    : "transparent",
                                         }}
                                     >
-                                        <FormatListNumberedIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{ color: "text.tertiary" }}
-                                        />
-                                        <Typography
+                                        <Button
+                                            onClick={() => setActivePanel("createTour")}
+                                            fullWidth
                                             sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor: "action.hover",
+                                                },
                                             }}
                                         >
-                                            Your Uploaded Tours
-                                        </Typography>
-                                    </Button>
-                                </Box>
+                                            <AddCircleIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{ color: "text.tertiary" }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Create Tour
+                                            </Typography>
+                                        </Button>
+                                    </Box>
+
+                                    {/* Your Uploaded Tours */}
+                                    <Box
+                                        sx={{
+                                            textAlign: "start",
+                                            backgroundColor:
+                                                activePanel === "uploaded_tours"
+                                                    ? "background.secondary"
+                                                    : "transparent",
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() => setActivePanel("uploaded_tours")}
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                pr: 3,
+                                                "&:hover": {
+                                                    backgroundColor: "action.hover",
+                                                },
+                                            }}
+                                        >
+                                            <FormatListNumberedIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{ color: "text.tertiary" }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Your Uploaded Tours
+                                            </Typography>
+                                        </Button>
+                                    </Box>
+                                </Grid>
+
+                                {/* Main Content Area */}
+                                <Grid item xs={12} md={9} sx={{ width: "50%" }}>
+                                    <Box
+                                        sx={{
+                                            mx: "10%",
+                                            width: "100%",
+                                            mb: 20,
+                                        }}
+                                    >
+                                        {/* Panels */}
+                                        {activePanel === "home" && (
+                                            <Box sx={{ mt: 4 }}>
+                                                This is the Partner Dashboard.
+                                                Please select an option on the left.
+                                            </Box>
+                                        )}
+
+                                        {activePanel === "createTour" && (
+                                            <CreateTourForm
+                                                catalogueList={listOfCatalogues}
+                                                onClose={() => setActivePanel("home")}
+                                            />
+                                        )}
+
+                                        {activePanel === "uploaded_tours" && (
+                                            <UploadedTourForm />
+                                        )}
+
+                                        {activePanel === null && (
+                                            <Box sx={{ mt: 4 }}>
+                                                This is the Partner Dashboard.
+                                                Please select options on the left.
+                                            </Box>
+                                        )}
+                                    </Box>
+                                </Grid>
                             </Grid>
-
-                            {/* Main Content Area */}
-                            <Grid item xs={12} md={9} sx={{ width: "50%" }}>
-                                <Box
-                                    sx={{
-                                        mx: "10%",
-                                        width: "100%",
-                                        mb: 20,
-                                    }}
-                                >
-                                    {/* Panels */}
-                                    {activePanel === "home" && (
-                                        <Box sx={{ mt: 4 }}>
-                                            This is the Partner Dashboard.  
-                                            Please select an option on the left.
-                                        </Box>
-                                    )}
-
-                                    {activePanel === "createTour" && (
-                                        <CreateTourForm
-                                            catalogueList={listOfCatalogues}
-                                            onClose={() => setActivePanel("home")}
-                                        />
-                                    )}
-
-                                    {activePanel === "uploaded_tours" && (
-                                        <UploadedTourForm />
-                                    )}
-
-                                    {activePanel === null && (
-                                        <Box sx={{ mt: 4 }}>
-                                            This is the Partner Dashboard.  
-                                            Please select options on the left.
-                                        </Box>
-                                    )}
-                                </Box>
-                            </Grid>
-                        </Grid>
+                        </Box>
                     </Box>
-                </Box>
-            ) : (
-                // Loading State
-                <Box sx={{ textAlign: "center", mt: 5 }}>
-                    <Typography variant="h4">
-                        Loading User Information...
-                    </Typography>
-                    <CircularProgress />
-                </Box>
-            )}
-        </Box>
-    ) : (
-        <Box sx={{ textAlign: "center", mt: 5 }}>
-            <Typography variant="h4">Access Denied</Typography>
-            <Typography variant="body1">
-                You do not have permission to access this page.
-            </Typography>
-        </Box>
-    )
+                ) : (
+                    // Loading State
+                    <Box sx={{ textAlign: "center", mt: 5 }}>
+                        <Typography variant="h4">
+                            Loading User Information...
+                        </Typography>
+                        <CircularProgress />
+                    </Box>
+                )}
+            </Box>
+        ) : (
+            <Box sx={{ textAlign: "center", mt: 5 }}>
+                <Typography variant="h4">Access Denied</Typography>
+                <Typography variant="body1">
+                    You do not have permission to access this page.
+                </Typography>
+            </Box>
+        )
     );
 }
