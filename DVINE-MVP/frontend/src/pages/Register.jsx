@@ -25,6 +25,7 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
         firstName: "",
         lastName: "",
     });
+    const [role, setRole] = React.useState("user"); // Default role
     const [verificationCode, setVerificationCode] = React.useState("");
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState("");
@@ -140,7 +141,8 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                 userInfo.postcode,
                 userInfo.firstName,
                 userInfo.lastName,
-                verificationCode
+                verificationCode,
+                role
             );
             const responseInfo = await response.json();
             console.log(responseInfo);
@@ -201,13 +203,59 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                     >
                         {/* Multi-step registration implementation */}
                         {page === 0 && (
+                            <Box sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "100%",
+                            }}>
+                                <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+                                    Are you registering as a user or a partner?
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "50%",
+                                        height: "100px",
+                                        fontSize: "1.5rem",
+                                        borderRadius: "12px",
+                                        mb: 5,
+                                    }}
+                                    onClick={() => {
+                                        setRole("user");
+                                        pageNext();
+                                    }}
+                                >
+                                    Register as User
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "50%",
+                                        height: "100px",
+                                        fontSize: "1.5rem",
+                                        borderRadius: "12px",
+                                        backgroundColor: "#6f42c1",
+                                        "&:hover": { backgroundColor: "#5a32a3" },
+                                    }}
+                                    onClick={() => {
+                                        setRole("partner");
+                                        pageNext();
+                                    }}
+                                >
+                                    Register as Partner
+                                </Button>
+                            </Box>
+                        )}
+                        {page === 1 && (
                             <SignUpStepOne
                                 userInfo={userInfo}
                                 changeState={changeState}
                                 pageNext={pageNext}
                             />
                         )}
-                        {page === 1 && (
+                        {page === 2 && (
                             <SignUpStepTwo
                                 userInfo={userInfo}
                                 changeState={changeState}
@@ -215,7 +263,7 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                                 confirmEmail={confirmEmail}
                             />
                         )}
-                        {page === 2 && (
+                        {page === 3 && (
                             <SignUpStepThree
                                 verificationCode={verificationCode}
                                 setVerificationCode={setVerificationCode}
@@ -223,6 +271,7 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                                 resendCode={resendCode} // ← pass this in
                             />
                         )}
+
                     </Box>
                 </Box>
             </Grid>

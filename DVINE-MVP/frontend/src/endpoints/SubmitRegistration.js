@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 const SubmitRegistration = async (
     registerEmail,
     phone,
@@ -5,9 +6,14 @@ const SubmitRegistration = async (
     postcode,
     firstName,
     lastName,
-    verificationCode
+    verificationCode,
+    role
 ) => {
     const localHost = "http://localhost:8080";
+    let roleNumber = 0; // Default role is user
+    if (role === "partner") {
+        roleNumber = 2; // Set to partner role
+    }
     const response = await fetch(`${localHost}/auth/register-with-verification`, {
         method: "POST",
         headers: {
@@ -21,6 +27,7 @@ const SubmitRegistration = async (
                 postcode: postcode,
                 firstName: firstName,
                 lastName: lastName,
+                permission: roleNumber,
             },
             verificationCode: verificationCode,
         }),

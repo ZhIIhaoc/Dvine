@@ -20,6 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import CreateTourForm from "../components/CreateTourForm.jsx";
 import ManageTourForm from "../components/AdminTourForm.jsx";
+import BookingPanel  from "../components/BookingPanel.jsx";
 import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PeopleIcon from "@mui/icons-material/People";
@@ -32,6 +33,7 @@ import UserListForm from "../components/UserListForm.jsx";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import CreateCatalogueForm from "../components/CreateCatalogueForm.jsx";
 import HomeIcon from "@mui/icons-material/Home";
+import BookOnLineIcon from "@mui/icons-material/BookOnline";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 
 export function AdminDashboard() {
@@ -412,6 +414,42 @@ export function AdminDashboard() {
                                     <Box
                                         sx={{
                                             textAlign: "start",
+                                            backgroundColor:
+                                                activePanel === "bookings"
+                                                    ? "background.secondary"
+                                                    : "transparent",
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() => setActivePanel("bookings")}
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor: "action.hover",
+                                                },
+                                            }}
+                                        >
+                                            <BookOnLineIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{ color: "text.tertiary" }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Your Bookings
+                                            </Typography>
+                                        </Button>
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            textAlign: "start",
                                             // backgroundColor:
                                             //     activePanel === "createTour"
                                             //         ? "background.secondary"
@@ -516,6 +554,10 @@ export function AdminDashboard() {
                                             "uploaded_tours" && (
                                                 <UploadedTourForm />
                                             )}
+
+                                        {activePanel === "bookings" && (
+                                            <BookingPanel userId={userInfo?.userId} />
+                                        )}
 
                                         {activePanel === null && (
                                             <Box sx={{ mt: 4 }}>
