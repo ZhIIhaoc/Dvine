@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Button, CircularProgress } from "@mui/material";
+import { AuthContext } from "./AuthContext";
 
 const STRIPE_PUBLIC_KEY = "pk_test_51Rm729GfQkMoi85mj5PvXe7k8AmUiMPTEsV6Pnxp3CWzcXc6emlYgQUwoLLa38sjOwqdJlXzI6U7lKKGCWRK9iIq00VLMXP3Tz";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 export default function BookNowButton({ tourId, quantity = 1, travelDate, disabled }) {
   const [loading, setLoading] = useState(false);
+  const { token } = useContext(AuthContext);
 
   const handleBookNow = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("accessToken");
       const response = await fetch("http://localhost:8080/bookings/create-session", {
         method: "POST",
         headers: {

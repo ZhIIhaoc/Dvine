@@ -5,6 +5,7 @@ import BookNowButton from "../components/BookNowButton";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import enGB from "date-fns/locale/en-GB"; // Import English locale
 import {
     Box,
     Typography,
@@ -76,7 +77,7 @@ export default function Checkout() {
                     {tour.destination}
                 </Typography>
                 <Typography sx={{ my: 2 }}>{tour.description}</Typography>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
                     <DatePicker
                         label="Select Travel Date"
                         value={travelDate}
@@ -106,14 +107,8 @@ export default function Checkout() {
                     type="number"
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
-                    inputProps={{ min: 1, max: 10 }}
                     fullWidth
                     margin="normal"
-                    InputLabelProps={{
-                        sx: (theme) => ({
-                            color: "text.primary",
-                        }),
-                    }}
                 />
                 <Box sx={{ mt: 3 }}>
                     <BookNowButton

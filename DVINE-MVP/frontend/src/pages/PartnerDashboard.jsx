@@ -10,11 +10,14 @@ import {
 import { AuthContext } from "../components/AuthContext.jsx";
 import CreateTourForm from "../components/CreateTourForm.jsx";
 import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
+import BookingPanel from "../components/BookingPanel.jsx";
 
 // Icons
 import HomeIcon from "@mui/icons-material/Home";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import BookOnLineIcon from "@mui/icons-material/BookOnline";
+
 
 export function PartnerDashboard() {
     const { userInfo } = useContext(AuthContext);
@@ -23,7 +26,8 @@ export function PartnerDashboard() {
     const [activePanel, setActivePanel] = useState("home");
     const [listOfCatalogues, setListOfCatalogues] = useState([]);
 
-    const isPartner = userInfo?.permission === 2 || userInfo?.permission === 3;
+    const isPartner = userInfo?.permission === 3 || userInfo?.permission === 2;
+    const premiumPartner = userInfo?.permission === 3;
 
     // Fetch catalogues (still relevant for partner when creating tours)
     useEffect(() => {
@@ -136,70 +140,109 @@ export function PartnerDashboard() {
                                             </Typography>
                                         </Button>
                                     </Box>
-
                                     {/* Create Tour */}
-                                    <Box
-                                        sx={{
-                                            textAlign: "start",
-                                            backgroundColor:
-                                                activePanel === "createTour"
-                                                    ? "background.secondary"
-                                                    : "transparent",
-                                        }}
-                                    >
-                                        <Button
-                                            onClick={() => setActivePanel("createTour")}
-                                            fullWidth
+                                    {premiumPartner && (
+                                        <Box
                                             sx={{
-                                                justifyContent: "flex-start",
-                                                textTransform: "none",
-                                                py: 3,
-                                                pl: 2,
-                                                "&:hover": {
-                                                    backgroundColor: "action.hover",
-                                                },
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "createTour"
+                                                        ? "background.secondary"
+                                                        : "transparent",
                                             }}
                                         >
-                                            <AddCircleIcon
-                                                style={{ marginRight: 8 }}
-                                                sx={{ color: "text.tertiary" }}
-                                            />
-                                            <Typography
+                                            <Button
+                                                onClick={() => setActivePanel("createTour")}
+                                                fullWidth
                                                 sx={{
-                                                    color: "text.primary",
-                                                    fontWeight: "bold",
+                                                    justifyContent: "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor: "action.hover",
+                                                    },
                                                 }}
                                             >
-                                                Create Tour
-                                            </Typography>
-                                        </Button>
-                                    </Box>
-
+                                                <AddCircleIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{ color: "text.tertiary" }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Create Tour
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                    )}
                                     {/* Your Uploaded Tours */}
+                                    {premiumPartner && (
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "uploaded_tours"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() => setActivePanel("uploaded_tours")}
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent: "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    pr: 3,
+                                                    "&:hover": {
+                                                        backgroundColor: "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <FormatListNumberedIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{ color: "text.tertiary" }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Your Uploaded Tours
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                    )}
+                                    {/*view tyour bookings*/}
                                     <Box
                                         sx={{
                                             textAlign: "start",
                                             backgroundColor:
-                                                activePanel === "uploaded_tours"
+                                                activePanel === "bookings"
                                                     ? "background.secondary"
                                                     : "transparent",
                                         }}
                                     >
                                         <Button
-                                            onClick={() => setActivePanel("uploaded_tours")}
+                                            onClick={() => setActivePanel("bookings")}
                                             fullWidth
                                             sx={{
                                                 justifyContent: "flex-start",
                                                 textTransform: "none",
                                                 py: 3,
                                                 pl: 2,
-                                                pr: 3,
                                                 "&:hover": {
                                                     backgroundColor: "action.hover",
                                                 },
                                             }}
                                         >
-                                            <FormatListNumberedIcon
+                                            <BookOnLineIcon
                                                 style={{ marginRight: 8 }}
                                                 sx={{ color: "text.tertiary" }}
                                             />
@@ -209,7 +252,7 @@ export function PartnerDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Your Uploaded Tours
+                                                Your Bookings
                                             </Typography>
                                         </Button>
                                     </Box>
@@ -241,6 +284,9 @@ export function PartnerDashboard() {
 
                                         {activePanel === "uploaded_tours" && (
                                             <UploadedTourForm />
+                                        )}
+                                        {activePanel === "bookings" && (
+                                            <BookingPanel userId={userInfo?.userId}/>
                                         )}
 
                                         {activePanel === null && (
