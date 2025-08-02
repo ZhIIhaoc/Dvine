@@ -18,6 +18,8 @@ public class Payment {
     private Long paymentId;
     private Long userId;
     private Long bookingId;
+    private Long subscriptionId;
+    private PaymentType paymentType;
     private String stripeSessionId;
     private String stripePaymentIntentId;
     private BigDecimal amount;
@@ -37,5 +39,9 @@ public class Payment {
     
     public enum PaymentStatus {
         PENDING, PROCESSING, SUCCEEDED, FAILED, CANCELLED, REFUNDED
+    }
+    
+    public enum PaymentType {
+        BOOKING, SUBSCRIPTION
     }
 }

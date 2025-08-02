@@ -139,10 +139,36 @@ CREATE TABLE IF NOT EXISTS bookings (
     FOREIGN KEY (tourId) REFERENCES tours(tourId)
 );
 
+-- ===================================================================
+-- SUBSCRIPTION SYSTEM EXTENSION
+-- ===================================================================
+-- Extends existing schema to support subscription-based permission upgrades
+-- Users can upgrade: REGULAR(0) -> PREMIUM(1) or PARTNER_UNPAID(2) -> PARTNER(3)
+
+-- User subscriptions table - tracks individual subscription records
+CREATE TABLE IF NOT EXISTS subscriptions (
+                                             subscriptionId BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                             userId BIGINT NOT NULL COMMENT "Subscription owner",
+                                             subscriptionType ENUM('PREMIUM', 'PARTNER') NOT NULL COMMENT "Premium or Partner subscription",
+                                             stripeSubscriptionId VARCHAR(255) UNIQUE NOT NULL COMMENT "Stripe Subscription ID for billing management",
+                                             status ENUM('ACTIVE', 'CANCELED', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT "ACTIVE=paid&current, CANCELED=cancelled but access until period end, INACTIVE=no access",
+                                             currentPeriodEnd DATETIME NOT NULL COMMENT "When current billing period ends",
+                                             createTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "When subscription was created",
+                                             updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Last status update",
+                                             FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE,
+                                             INDEX idx_user_subscription (userId, status),
+                                             INDEX idx_stripe_subscription (stripeSubscriptionId),
+                                             INDEX idx_period_end (currentPeriodEnd, status),
+                                             INDEX idx_status_dates (status, createTime DESC)
+);
+
+-- Payments table - tracks all payments made by users
 CREATE TABLE IF NOT EXISTS payments (
     paymentId BIGINT AUTO_INCREMENT PRIMARY KEY,
     userId BIGINT NULL COMMENT "User who made the payment - direct relationship for performance and subscription support",
     bookingId BIGINT NULL COMMENT "Links to the booking this payment is for (NULL for subscription payments)",
+    subscriptionId BIGINT NULL COMMENT "Links to subscription for subscription payments (NULL for booking payments)",
+    paymentType ENUM('BOOKING', 'SUBSCRIPTION') DEFAULT 'BOOKING' COMMENT "Type of payment - booking or subscription",
     stripeSessionId VARCHAR(255) UNIQUE COMMENT "Stripe Checkout Session ID for tracking payment flow",
     stripePaymentIntentId VARCHAR(255) COMMENT "Stripe Payment Intent ID after successful payment - used for refunds",
     amount DECIMAL(10,2) NOT NULL COMMENT "Amount in dollars (e.g., 99.50 for $99.50)",
@@ -156,8 +182,13 @@ CREATE TABLE IF NOT EXISTS payments (
     createTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "When payment record was created",
     updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Last status update time",
     FOREIGN KEY (userId) REFERENCES users(userId),
-    FOREIGN KEY (bookingId) REFERENCES bookings(bookingId)
+    FOREIGN KEY (bookingId) REFERENCES bookings(bookingId),
+    FOREIGN KEY (subscriptionId) REFERENCES subscriptions(subscriptionId)
 );
+
+-- Additional indexes for subscription payments
+CREATE INDEX idx_payments_subscription ON payments (subscriptionId, createTime DESC);
+CREATE INDEX idx_payments_type_status ON payments (paymentType, status);
 
 -- Performance indexes for payment system
 CREATE INDEX idx_bookings_user_date ON bookings (userId, createTime DESC);

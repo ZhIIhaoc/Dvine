@@ -31,10 +31,13 @@ stripe:
   public:
     key: pk_test_51Rm729GfQkMoi85mj5PvXe7k8AmUiMPTEsV6Pnxp3CWzcXc6emlYgQUwoLLa38sjOwqdJlXzI6U7lKKGCWRK9iIq00VLMXP3Tz
 
+
 app:
   frontend:
     success-url: ${FRONTEND_SUCCESS_URL:http://localhost:5173/booking/success}
     cancel-url: ${FRONTEND_CANCEL_URL:http://localhost:5173/booking/cancel}
+    subscription-success-url: ${FRONTEND_SUBSCRIPTION_SUCCESS_URL:http://localhost:5173/subscription/success}
+    subscription-cancel-url: ${FRONTEND_SUBSCRIPTION_CANCEL_URL:http://localhost:5173/subscription/cancel}
   booking:
     session-expiry-minutes: 30
     cancellation-hours: 48

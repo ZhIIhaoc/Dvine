@@ -13,7 +13,7 @@ import java.util.List;
 public interface PaymentMapper {
     
     /**
-     * Create a new payment record
+     * Create a new payment record (supports both booking and subscription payments)
      */
     void createPayment(Payment payment);
     

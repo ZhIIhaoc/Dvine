@@ -1,7 +1,10 @@
 package com.dvineservice.util;
 
 import com.dvinedao.domain.PermissionLevel;
+import com.dvinedao.domain.Subscription;
 import com.dvinedao.domain.User;
+import com.dvineservice.exception.ActiveSubscriptionException;
+import com.dvineservice.exception.PermissionDeniedException;
 import org.springframework.util.StringUtils;
 import java.util.regex.Pattern;
 
@@ -70,6 +73,27 @@ public class ValidationUtil {
         
         if (!BOOKING_REFERENCE_PATTERN.matcher(bookingReference).matches()) {
             throw new IllegalArgumentException("Booking reference must follow format: DVINE-YYYYMMDD-XXXX");
+        }
+    }
+
+    /**
+     * Validate that user can subscribe to the given subscription type
+     */
+    public static void validateUserCanSubscribe(User user, Subscription.SubscriptionType subscriptionType) {
+        if (subscriptionType == Subscription.SubscriptionType.PREMIUM) {
+            // PREMIUM subscription: user must be REGULAR (0)
+            if (user.getPermission() == PermissionLevel.PREMIUM) {
+                throw new ActiveSubscriptionException("User already has an active subscription");
+            } else if (user.getPermission() != PermissionLevel.REGULAR) {
+                throw new PermissionDeniedException("Premium subscription is only available for regular members");
+            }
+        } else if (subscriptionType == Subscription.SubscriptionType.PARTNER) {
+            // PARTNER subscription: user must be PARTNER_UNPAID (2)
+            if (user.getPermission() == PermissionLevel.PARTNER) {
+                throw new ActiveSubscriptionException("User already has an active subscription");
+            } else if (user.getPermission() != PermissionLevel.PARTNER_UNPAID) {
+                throw new PermissionDeniedException("Partner subscription is only available for unpaid partners");
+            }
         }
     }
 }

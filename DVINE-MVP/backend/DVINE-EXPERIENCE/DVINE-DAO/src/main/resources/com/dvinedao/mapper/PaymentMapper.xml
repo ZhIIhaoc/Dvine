@@ -8,6 +8,8 @@
         <id property="paymentId" column="paymentId"/>
         <result property="userId" column="userId"/>
         <result property="bookingId" column="bookingId"/>
+        <result property="subscriptionId" column="subscriptionId"/>
+        <result property="paymentType" column="paymentType"/>
         <result property="stripeSessionId" column="stripeSessionId"/>
         <result property="stripePaymentIntentId" column="stripePaymentIntentId"/>
         <result property="amount" column="amount"/>
@@ -28,10 +30,10 @@
     <!-- Create payment -->
     <insert id="createPayment" parameterType="com.dvinedao.domain.Payment" useGeneratedKeys="true" keyProperty="paymentId">
         INSERT INTO payments (
-            userId, bookingId, stripeSessionId, stripePaymentIntentId, amount, currency, 
+            userId, bookingId, subscriptionId, paymentType, stripeSessionId, stripePaymentIntentId, amount, currency, 
             status, paymentMethod, stripeCustomerId, failureReason, refundAmount, paidAt
         ) VALUES (
-            #{userId}, #{bookingId}, #{stripeSessionId}, #{stripePaymentIntentId}, #{amount}, #{currency},
+            #{userId}, #{bookingId}, #{subscriptionId}, #{paymentType}, #{stripeSessionId}, #{stripePaymentIntentId}, #{amount}, #{currency},
             #{status}, #{paymentMethod}, #{stripeCustomerId}, #{failureReason}, #{refundAmount}, #{paidAt}
         )
     </insert>

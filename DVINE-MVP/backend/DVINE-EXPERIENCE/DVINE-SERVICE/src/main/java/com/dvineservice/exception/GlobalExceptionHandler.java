@@ -167,6 +167,13 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler
+    public ReturnResult handleActiveSubscriptionException(ActiveSubscriptionException e) {
+        log.error("Active subscription conflict:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public ReturnResult handleNotFoundException(NotFoundException e) {
