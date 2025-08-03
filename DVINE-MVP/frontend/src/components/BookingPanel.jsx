@@ -111,7 +111,7 @@ export default function PartnerBookingsPanel({ userId }) {
                 ))}
 
             <Modal
-                open={!!selectedBooking}
+                open={selectedBooking}
                 onClose={() => setSelectedBooking(null)}
                 aria-labelledby="booking-modal-title"
                 aria-describedby="booking-modal-description"
