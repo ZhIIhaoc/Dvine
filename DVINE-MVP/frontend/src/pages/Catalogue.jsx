@@ -291,11 +291,7 @@ export function Catalogue() {
 
     // Delete tour
     const handleDeleteTour = async (tourId) => {
-        if (
-            !window.confirm(
-                "Are you sure you want to delete this tour?"
-            )
-        ) {
+        if (!window.confirm("Are you sure you want to delete this tour?")) {
             return;
         }
 
@@ -456,7 +452,7 @@ export function Catalogue() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    minHeight: "50vh",
+                    minHeight: "100vh",
                 }}
             >
                 <CircularProgress />
@@ -840,7 +836,9 @@ export function Catalogue() {
                                                 size="small"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDeleteTour(tour.tourId);
+                                                    handleDeleteTour(
+                                                        tour.tourId
+                                                    );
                                                 }}
                                                 color="error"
                                             >
@@ -1162,18 +1160,30 @@ export function Catalogue() {
                 <DialogContent>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
-                            <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                            <Typography
+                                variant="h6"
+                                gutterBottom
+                                sx={{ mt: 2, mb: 1 }}
+                            >
                                 Tour Information
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                Update tour details and click "Update" to save changes.
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mb: 2 }}
+                            >
+                                Update tour details and click "Update" to save
+                                changes.
                             </Typography>
                             <TextField
                                 fullWidth
                                 label="Title"
                                 value={tourForm.title}
                                 onChange={(e) =>
-                                    setTourForm({ ...tourForm, title: e.target.value })
+                                    setTourForm({
+                                        ...tourForm,
+                                        title: e.target.value,
+                                    })
                                 }
                                 margin="normal"
                                 required
@@ -1232,20 +1242,32 @@ export function Catalogue() {
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                            <Typography
+                                variant="h6"
+                                gutterBottom
+                                sx={{ mt: 2, mb: 1 }}
+                            >
                                 Tour Images
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                Image operations (upload, delete, set primary) are applied immediately.
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mb: 2 }}
+                            >
+                                Image operations (upload, delete, set primary)
+                                are applied immediately.
                             </Typography>
                             <TourImageUpload
                                 tourId={editingTour?.tourId}
                                 onImagesUpdate={(images) => {
-                                    const primaryImage = images.find(img => img.isPrimary);
+                                    const primaryImage = images.find(
+                                        (img) => img.isPrimary
+                                    );
                                     setTourForm({
                                         ...tourForm,
-                                        primaryImageUrl: primaryImage?.url || "",
-                                        images: images.map(img => img.url)
+                                        primaryImageUrl:
+                                            primaryImage?.url || "",
+                                        images: images.map((img) => img.url),
                                     });
                                     // Refresh tours data to update the display
                                     fetchToursData();
