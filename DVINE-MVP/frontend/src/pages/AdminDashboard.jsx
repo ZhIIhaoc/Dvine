@@ -20,7 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import CreateTourForm from "../components/CreateTourForm.jsx";
 import ManageTourForm from "../components/AdminTourForm.jsx";
-import BookingPanel  from "../components/BookingPanel.jsx";
+import BookingPanel from "../components/BookingPanel.jsx";
 import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PeopleIcon from "@mui/icons-material/People";
@@ -34,6 +34,7 @@ import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import CreateCatalogueForm from "../components/CreateCatalogueForm.jsx";
 import HomeIcon from "@mui/icons-material/Home";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
+import AdminBookingPanel from "../components/AdminBookingPanel.jsx";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 
 export function AdminDashboard() {
@@ -443,7 +444,7 @@ export function AdminDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Your Bookings
+                                                Booking Payment Details
                                             </Typography>
                                         </Button>
                                     </Box>
@@ -556,7 +557,7 @@ export function AdminDashboard() {
                                             )}
 
                                         {activePanel === "bookings" && (
-                                            <BookingPanel userId={userInfo?.userId} />
+                                            <AdminBookingPanel />
                                         )}
 
                                         {activePanel === null && (
