@@ -42,10 +42,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
     const { token, userInfo } = useContext(AuthContext);
     useEffect(() => {
         if (userInfo) {
-            setIsAdmin(
-                    userInfo.permission == 4 ||
-                    userInfo.permission == 5
-            );
+            setIsAdmin(userInfo.permission == 4 || userInfo.permission == 5);
             setIsPartner(userInfo.permission == 2 || userInfo.permission == 3);
         }
     }, [userInfo]);
@@ -105,6 +102,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                             <Button
                                 sx={{
                                     mt: 1,
+                                    ml: 3,
                                     color: "text.primary",
                                     borderBottom:
                                         currentPath === "/dvine-moments"
@@ -158,7 +156,9 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                         borderColor: "text.tertiary",
                                         borderRadius: 0,
                                     }}
-                                    onClick={() => navigate("/partner-dashboard")}
+                                    onClick={() =>
+                                        navigate("/partner-dashboard")
+                                    }
                                 >
                                     Partner Dashboard
                                 </Button>
@@ -185,12 +185,12 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 sx={{ my: 2, mr: { xs: 2, sm: 4, md: 5 } }}
                                 onClick={handleClick}
                             >
-                                <Avatar 
+                                <Avatar
                                     src={userInfo?.avatar}
                                     sx={{
                                         width: 40,
                                         height: 40,
-                                        border: '2px solid #e0e0e0'
+                                        border: "2px solid #e0e0e0",
                                     }}
                                 />
                             </IconButton>
