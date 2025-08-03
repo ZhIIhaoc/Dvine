@@ -34,6 +34,7 @@ import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import CreateCatalogueForm from "../components/CreateCatalogueForm.jsx";
 import HomeIcon from "@mui/icons-material/Home";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
+import AdminBookingPanel from "../components/AdminBookingPanel.jsx";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 
 export function AdminDashboard() {
@@ -385,6 +386,7 @@ export function AdminDashboard() {
                                                 }}
                                             >
                                                 Manage Tours
+
                                             </Typography>
                                             <Badge
                                                 badgeContent={
@@ -534,6 +536,9 @@ export function AdminDashboard() {
                                         />
                                     )}
 
+                                      {activePanel === "bookings" && (
+                                          <AdminBookingPanel />
+                                      )}
                                     {activePanel === "manage_tours" && (
                                         <ManageTourForm
                                         // onComplete={() => {
