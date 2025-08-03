@@ -203,24 +203,30 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                     >
                         {/* Multi-step registration implementation */}
                         {page === 0 && (
-                            <Box sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                            }}>
-                                <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100%",
+                                }}
+                            >
+                                <Typography
+                                    variant="h5"
+                                    gutterBottom
+                                    align="center"
+                                    sx={{ mb: 8 }}
+                                >
                                     Are you registering as a user or a partner?
                                 </Typography>
                                 <Button
                                     variant="contained"
                                     sx={{
                                         width: "50%",
-                                        height: "100px",
-                                        fontSize: "1.5rem",
-                                        borderRadius: "12px",
-                                        mb: 5,
+                                        height: "56px",
+                                        fontSize: "1rem",
+                                        mb: 4,
                                     }}
                                     onClick={() => {
                                         setRole("user");
@@ -233,11 +239,12 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                                     variant="contained"
                                     sx={{
                                         width: "50%",
-                                        height: "100px",
-                                        fontSize: "1.5rem",
-                                        borderRadius: "12px",
+                                        height: "56px",
+                                        fontSize: "1rem",
                                         backgroundColor: "#6f42c1",
-                                        "&:hover": { backgroundColor: "#5a32a3" },
+                                        "&:hover": {
+                                            backgroundColor: "#5a32a3",
+                                        },
                                     }}
                                     onClick={() => {
                                         setRole("partner");
@@ -246,12 +253,28 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                                 >
                                     Register as Partner
                                 </Button>
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{ mt: 6 }}
+                                >
+                                    Already have an account?{" "}
+                                    <Link
+                                        underline="hover"
+                                        color="secondary"
+                                        sx={{ cursor: "pointer", ml: 2 }}
+                                        onClick={() => navigate("/login")}
+                                    >
+                                        Log in
+                                    </Link>
+                                </Typography>
                             </Box>
                         )}
                         {page === 1 && (
                             <SignUpStepOne
                                 userInfo={userInfo}
                                 changeState={changeState}
+                                pageBack={pageBack}
                                 pageNext={pageNext}
                             />
                         )}
@@ -271,7 +294,6 @@ export const Register = ({ isDarkMode, setIsDarkMode }) => {
                                 resendCode={resendCode} // ← pass this in
                             />
                         )}
-
                     </Box>
                 </Box>
             </Grid>
