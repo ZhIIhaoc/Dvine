@@ -6,22 +6,26 @@ import {
     Grid,
     CircularProgress,
 } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../components/AuthContext.jsx";
 import CreateTourForm from "../components/CreateTourForm.jsx";
 import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
 import BookingPanel from "../components/BookingPanel.jsx";
+import PostedToursPanel from "../components/PostedToursPanel.jsx";
 
 // Icons
 import HomeIcon from "@mui/icons-material/Home";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
+import TourIcon from "@mui/icons-material/Tour";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 
 
 export function PartnerDashboard() {
     const { userInfo } = useContext(AuthContext);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
+    const navigate = useNavigate();
 
     const [activePanel, setActivePanel] = useState("home");
     const [listOfCatalogues, setListOfCatalogues] = useState([]);
@@ -256,6 +260,70 @@ export function PartnerDashboard() {
                                             </Typography>
                                         </Button>
                                     </Box>
+                                    <Box
+                                        sx={{
+                                            textAlign: "start",
+                                            backgroundColor:
+                                                activePanel === "posted_tours"
+                                                    ? "background.secondary"
+                                                    : "transparent",
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() => setActivePanel("posted_tours")}
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": { backgroundColor: "action.hover" },
+                                            }}
+                                        >
+                                            <TourIcon sx={{ mr: 1, color: "text.tertiary" }} />
+                                            <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
+                                                View Posted Tours Live
+                                            </Typography>
+                                        </Button>
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            textAlign: "start",
+                                            // backgroundColor:
+                                            //     activePanel === "createTour"
+                                            //         ? "background.secondary"
+                                            //         : "transparent",
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() => navigate("/faq")}
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor: "action.hover",
+                                                },
+                                            }}
+                                        >
+                                            <LiveHelpIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{
+                                                    color: "text.tertiary",
+                                                }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                FAQ
+                                            </Typography>
+                                        </Button>
+                                    </Box>
                                 </Grid>
 
                                 {/* Main Content Area */}
@@ -286,8 +354,12 @@ export function PartnerDashboard() {
                                             <UploadedTourForm />
                                         )}
                                         {activePanel === "bookings" && (
-                                            <BookingPanel userId={userInfo?.userId}/>
+                                            <BookingPanel userId={userInfo?.userId} />
                                         )}
+                                        {activePanel === "posted_tours" && (
+                                            <PostedToursPanel />
+                                        )}
+
 
                                         {activePanel === null && (
                                             <Box sx={{ mt: 4 }}>

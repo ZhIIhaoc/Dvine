@@ -24,6 +24,7 @@ import BookingPanel from "../components/BookingPanel.jsx";
 import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PeopleIcon from "@mui/icons-material/People";
+import PostedToursPanel from "../components/PostedToursPanel.jsx";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { AuthContext } from "../components/AuthContext.jsx";
@@ -36,6 +37,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
 import AdminBookingPanel from "../components/AdminBookingPanel.jsx";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import TourIcon from "@mui/icons-material/Tour";
 
 export function AdminDashboard() {
     const { token, userInfo } = useContext(AuthContext);
@@ -444,7 +446,69 @@ export function AdminDashboard() {
                                                 fontWeight: "bold",
                                             }}
                                         >
-                                            Your Bookings
+                                            Your Personal Tour Bookings
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        backgroundColor:
+                                            activePanel === "admin_bookings"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => setActivePanel("admin_bookings")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <FormatListNumberedIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{ color: "text.tertiary" }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            View All Bookings Tours
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        backgroundColor:
+                                            activePanel === "posted_tours"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => setActivePanel("posted_tours")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": { backgroundColor: "action.hover" },
+                                        }}
+                                    >
+                                        <TourIcon sx={{ mr: 1, color: "text.tertiary" }} />
+                                        <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
+                                            View Posted Tours Live
                                         </Typography>
                                     </Button>
                                 </Box>
@@ -536,9 +600,9 @@ export function AdminDashboard() {
                                         />
                                     )}
 
-                                      {activePanel === "bookings" && (
-                                          <AdminBookingPanel />
-                                      )}
+                                    {activePanel === "admin_bookings" && (
+                                        <AdminBookingPanel />
+                                    )}
                                     {activePanel === "manage_tours" && (
                                         <ManageTourForm
                                         // onComplete={() => {
@@ -559,6 +623,9 @@ export function AdminDashboard() {
                                         <BookingPanel
                                             userId={userInfo?.userId}
                                         />
+                                    )}
+                                    {activePanel === "posted_tours" && (
+                                        <PostedToursPanel />
                                     )}
 
                                     {activePanel === null && (
