@@ -134,10 +134,13 @@ export default function AdminTourPage() {
 
     const handleDeleteTour = async (tourId) => {
         try {
-            const response = await fetch(`http://localhost:8080/approvals/tours/${tourId}/reject`, {
-                method: "POST",
-                headers: { Authorization: `${token}` },
-            });
+            const response = await fetch(
+                `http://localhost:8080/approvals/tours/${tourId}/reject`,
+                {
+                    method: "POST",
+                    headers: { Authorization: `${token}` },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 showSnackbar("Tour rejected successfully!", "success");
@@ -320,6 +323,9 @@ export default function AdminTourPage() {
                                     <ListItemText
                                         primary={`Tour Name: ${item.title}`}
                                         secondary={`Display Order: ${item.displayOrder}`}
+                                        secondaryTypographyProps={{
+                                            color: "text.primary",
+                                        }}
                                     />
                                 </ListItem>
                             ))}

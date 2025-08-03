@@ -111,7 +111,9 @@ export function UserDashboard() {
                                     }}
                                 >
                                     <Button
-                                        onClick={() => setActivePanel("bookings")}
+                                        onClick={() =>
+                                            setActivePanel("bookings")
+                                        }
                                         fullWidth
                                         sx={{
                                             justifyContent: "flex-start",
@@ -193,7 +195,9 @@ export function UserDashboard() {
                                         </Box>
                                     )}
                                     {activePanel === "bookings" && (
-                                        <BookingPanel userId={userInfo?.userId} />
+                                        <BookingPanel
+                                            userId={userInfo?.userId}
+                                        />
                                     )}
                                 </Box>
                             </Grid>

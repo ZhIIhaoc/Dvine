@@ -26,7 +26,7 @@ const permissionsLabels = {
     5: "Owner (Admin)",
 };
 export default function UserListForm({ onClose }) {
-    const { token, userInfo} = useContext(AuthContext);
+    const { token, userInfo } = useContext(AuthContext);
     const isOwner = userInfo?.permission === 5;
 
     const [users, setUsers] = useState([]);
@@ -224,8 +224,14 @@ export default function UserListForm({ onClose }) {
                                         sx={{ minWidth: 520 }}
                                         variant="outlined"
                                     >
-                                        <InputLabel>Role</InputLabel>
+                                        <InputLabel
+                                            id={`role-label-${user.userId}`}
+                                            sx={{ color: "text.primary" }}
+                                        >
+                                            Role
+                                        </InputLabel>
                                         <Select
+                                            labelId={`role-label-${user.userId}`}
                                             value={user.permission}
                                             label="Role"
                                             onChange={(e) =>
@@ -276,7 +282,11 @@ export default function UserListForm({ onClose }) {
                 >
                     {onClose && (
                         <Box sx={{ textAlign: "right" }}>
-                            <Button variant="outlined" onClick={onClose}>
+                            <Button
+                                variant="outlined"
+                                onClick={onClose}
+                                sx={{ color: "text.tertiary" }}
+                            >
                                 Close
                             </Button>
                         </Box>

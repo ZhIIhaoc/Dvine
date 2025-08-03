@@ -14,7 +14,7 @@ import {
     FormControl,
     Select,
     InputLabel,
-    useMediaQuery
+    useMediaQuery,
 } from "@mui/material";
 import { AuthContext } from "../components/AuthContext.jsx";
 
@@ -37,13 +37,16 @@ export default function AdminBookingsPanel() {
 
     const fetchAllBookings = async () => {
         try {
-            const response = await fetch("http://localhost:8080/bookings/admin/all", {
-                method: "GET",
-                headers: {
-                    Authorization: `${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                "http://localhost:8080/bookings/admin/all",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const responseInfo = await response.json();
             console.log("Admin Bookings Response:", responseInfo);
@@ -51,7 +54,10 @@ export default function AdminBookingsPanel() {
             if (responseInfo.code === 0) {
                 setBookings(responseInfo.data);
             } else {
-                console.error("Failed to fetch admin bookings:", responseInfo.msg);
+                console.error(
+                    "Failed to fetch admin bookings:",
+                    responseInfo.msg
+                );
             }
         } catch (err) {
             console.error("Error fetching admin bookings:", err);
@@ -60,12 +66,15 @@ export default function AdminBookingsPanel() {
         }
     };
 
-    const uniqueStatuses = [...new Set(bookings.map(b => b.status || "NO STATUS"))];
+    const uniqueStatuses = [
+        ...new Set(bookings.map((b) => b.status || "NO STATUS")),
+    ];
 
     const filteredBookings = bookings.filter((b) => {
         const matchesName =
             searchName.trim() === "" ||
-            (b.userName && b.userName.toLowerCase().includes(searchName.toLowerCase()));
+            (b.userName &&
+                b.userName.toLowerCase().includes(searchName.toLowerCase()));
 
         if (statusFilter === "") {
             return matchesName;
@@ -87,21 +96,38 @@ export default function AdminBookingsPanel() {
 
     return (
         <Box sx={{ mt: 2 }}>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+            <Typography variant="h6" sx={{ mb: 5, fontWeight: "bold" }}>
                 All Bookings
             </Typography>
 
-            <Box sx={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 2, mb: 2 }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: 2,
+                    mb: 4,
+                }}
+            >
                 <TextField
                     label="Search by Name"
                     variant="outlined"
                     size="small"
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
-                    sx={{ flex: 1 }}
+                    sx={{
+                        flex: 1,
+                        "& .MuiInputLabel-root": {
+                            color: "text.primary",
+                        },
+                    }}
                 />
-                <FormControl sx={{ width: isMobile ? "100%" : 200 }} size="small">
-                    <InputLabel>Filter by Status</InputLabel>
+                <FormControl
+                    sx={{ width: isMobile ? "100%" : 200 }}
+                    size="small"
+                >
+                    <InputLabel sx={{ color: "text.primary" }}>
+                        Filter by Status
+                    </InputLabel>
                     <Select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -124,31 +150,90 @@ export default function AdminBookingsPanel() {
                     <Table size={isMobile ? "small" : "medium"}>
                         <TableHead>
                             <TableRow>
-                                <TableCell><b>Ref</b></TableCell>
-                                <TableCell><b>User</b></TableCell>
-                                <TableCell><b>Email</b></TableCell>
-                                <TableCell><b>Tour</b></TableCell>
-                                <TableCell><b>Travel Date</b></TableCell>
-                                <TableCell><b>Status</b></TableCell>
-                                <TableCell><b>Payment</b></TableCell>
+                                <TableCell>
+                                    <b>Ref</b>
+                                </TableCell>
+                                <TableCell>
+                                    <b>User</b>
+                                </TableCell>
+                                <TableCell>
+                                    <b>Email</b>
+                                </TableCell>
+                                <TableCell>
+                                    <b>Tour</b>
+                                </TableCell>
+                                <TableCell>
+                                    <b>Travel Date</b>
+                                </TableCell>
+                                <TableCell>
+                                    <b>Status</b>
+                                </TableCell>
+                                <TableCell>
+                                    <b>Payment</b>
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {filteredBookings.map((b) => (
                                 <TableRow key={b.bookingId}>
-                                    <TableCell sx={{ fontSize: isMobile ? "0.75rem" : "1rem" }}>{b.bookingReference}</TableCell>
-                                    <TableCell sx={{ fontSize: isMobile ? "0.75rem" : "1rem" }}>{b.userName || "—"}</TableCell>
-                                    <TableCell sx={{ fontSize: isMobile ? "0.75rem" : "1rem" }}>{b.userEmail || "—"}</TableCell>
-                                    <TableCell sx={{ fontSize: isMobile ? "0.75rem" : "1rem" }}>{b.tourTitle}</TableCell>
-                                    <TableCell sx={{ fontSize: isMobile ? "0.75rem" : "1rem" }}>{b.travelDate}</TableCell>
                                     <TableCell
                                         sx={{
-                                            fontSize: isMobile ? "0.75rem" : "1rem",
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
+                                        }}
+                                    >
+                                        {b.bookingReference}
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
+                                        }}
+                                    >
+                                        {b.userName || "—"}
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
+                                        }}
+                                    >
+                                        {b.userEmail || "—"}
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
+                                        }}
+                                    >
+                                        {b.tourTitle}
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
+                                        }}
+                                    >
+                                        {b.travelDate}
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
                                             fontWeight: "bold",
                                             color:
-                                                (b.status === "CONFIRMED" && "green") ||
-                                                (b.status === "PENDING" && "orange") ||
-                                                (b.status === "CANCELLED" && "red") ||
+                                                (b.status === "CONFIRMED" &&
+                                                    "green") ||
+                                                (b.status === "PENDING" &&
+                                                    "orange") ||
+                                                (b.status === "CANCELLED" &&
+                                                    "red") ||
                                                 "gray",
                                         }}
                                     >
@@ -156,16 +241,20 @@ export default function AdminBookingsPanel() {
                                     </TableCell>
                                     <TableCell
                                         sx={{
-                                            fontSize: isMobile ? "0.75rem" : "1rem",
+                                            fontSize: isMobile
+                                                ? "0.75rem"
+                                                : "1rem",
                                             fontWeight: "bold",
                                             color:
                                                 b.paymentStatus === "SUCCEEDED"
                                                     ? "green"
-                                                    : b.paymentStatus === "PENDING"
-                                                        ? "orange"
-                                                        : b.paymentStatus === "CANCELLED"
-                                                            ? "red"
-                                                            : "gray",
+                                                    : b.paymentStatus ===
+                                                      "PENDING"
+                                                    ? "orange"
+                                                    : b.paymentStatus ===
+                                                      "CANCELLED"
+                                                    ? "red"
+                                                    : "gray",
                                         }}
                                     >
                                         {b.paymentStatus || "N/A"}
