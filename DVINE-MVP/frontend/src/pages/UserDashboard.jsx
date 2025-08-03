@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../components/AuthContext.jsx";
 // import propTypes from "prop-types";
 // import axios from "axios";
@@ -6,133 +6,120 @@ import { Header } from "../components/Header";
 import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
 
 export function UserDashboard() {
     const { userInfo } = useContext(AuthContext);
     const navigate = useNavigate();
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
+    const isUser = userInfo?.permission === 0;
+    const [activePanel, setActivePanel] = useState("home");
 
-    return (
-        <>
+    return isUser ? (
+        <Box sx={{ minHeight: "120vh", width: "100%" }}>
             {userInfo ? (
-                <>
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
                     <Typography
                         sx={{
                             textAlign: "center",
-                            mt: 10,
-                            mb: 2,
+                            mt: 3,
+                            mb: 6,
                             fontSize: "2rem",
                             fontWeight: "bold",
-                            color: "purple",
+                            color: "text.tertiary",
                         }}
                     >
                         {" "}
                         Welcome Back {userName}{" "}
                     </Typography>
-                    <DashboardHeaderCard />
-                    <Box sx={{ width: "70%", mx: "auto", mt: -4 }}>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: "100%",
+                            flex: 1,
+                            ml: "20%",
+                        }}
+                    >
                         <Grid container spacing={3}>
-                            <Grid size={6}>
+                            {/* Left Column: navigation part */}
+                            <Grid
+                                item
+                                xs={12}
+                                md={3}
+                                sx={{
+                                    borderRight: "1px solid gray",
+                                    height: "100vh",
+                                }}
+                            >
                                 <Box
                                     sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
+                                        textAlign: "start",
+                                        mt: 2,
+                                        backgroundColor:
+                                            activePanel === "home"
+                                                ? "background.secondary"
+                                                : "transparent",
                                     }}
                                 >
                                     <Button
+                                        onClick={() => setActivePanel("home")}
                                         fullWidth
-                                        onClick={() => navigate("/members")}
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            pr: 3,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
                                     >
-                                        Upgrade Members
-                                    </Button>
-                                </Box>
-
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Typography>
-                                        Add Future Feature Here
-                                    </Typography>
-                                </Box>
-
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Typography fontWeight="bold">
-                                        Profile
-                                    </Typography>
-                                    <Button fullWidth>
-                                        <Typography color="text.secondary">
-                                            + Introduce yourself
-                                        </Typography>
-                                    </Button>
-                                    <Button fullWidth>
-                                        <Typography color="text.secondary">
-                                            + Add a trip
-                                        </Typography>
-                                    </Button>
-                                    <Button fullWidth>
-                                        <Typography color="text.secondary">
-                                            + Make a review
+                                        <HomeIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Dashboard Home
                                         </Typography>
                                     </Button>
                                 </Box>
                             </Grid>
-
-                            {/* Right Column - Next Tour Box */}
-                            <Grid size={6}>
+                            {/* Right Column: contents part */}
+                            <Grid item xs={12} md={9}>
                                 <Box
                                     sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 4,
+                                        mx: "10%",
+                                        width: "100%",
+                                        mb: 20,
                                     }}
                                 >
-                                    <Typography
-                                        variant="h6"
-                                        fontWeight="bold"
-                                        mb={2}
-                                    >
-                                        Your Next Tour
-                                    </Typography>
-                                    {/* Placeholder image or details */}
-                                    <Typography color="text.secondary">
-                                        Date:{" "}
-                                    </Typography>
-                                    <Typography color="text.secondary">
-                                        Beach:{" "}
-                                    </Typography>
-                                    <img
-                                        src="../src/assets/background.png"
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                        }}
-                                    />
+                                    {activePanel === "home" && (
+                                        <Box sx={{ mt: 4 }}>
+                                            This is an admin dashboard. Please
+                                            select options on the left. (Temp
+                                            Message)
+                                        </Box>
+                                    )}
                                 </Box>
                             </Grid>
                         </Grid>
                     </Box>
-                </>
+                </Box>
             ) : (
                 <Box sx={{ textAlign: "center", mt: 5 }}>
                     <Typography variant="h4">
@@ -141,6 +128,23 @@ export function UserDashboard() {
                     <CircularProgress />
                 </Box>
             )}
-        </>
+        </Box>
+    ) : (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                justifyContent: "center",
+                height: "90vh",
+            }}
+        >
+            <Typography variant="h4" color="error">
+                Access Denied
+            </Typography>
+            <Typography variant="body1">
+                You do not have permission to access this page.
+            </Typography>
+        </Box>
     );
 }
