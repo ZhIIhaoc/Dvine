@@ -196,3 +196,58 @@ CREATE INDEX idx_bookings_tour_status ON bookings (tourId, status);
 CREATE INDEX idx_payments_user_date ON payments (userId, createTime DESC);
 CREATE INDEX idx_payments_status ON payments (status, createTime);
 CREATE INDEX idx_payments_stripe_session ON payments (stripeSessionId);
+
+-- Devine moments table - user posts with content and images
+CREATE TABLE IF NOT EXISTS devine_moments (
+    momentId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    userId BIGINT NOT NULL COMMENT "User who created this moment",
+    title VARCHAR(255) NOT NULL COMMENT "Title of the moment",
+    content TEXT NOT NULL COMMENT "Main content/description of the moment",
+    location VARCHAR(255) COMMENT "Location where the moment was captured",
+    likeCount INT DEFAULT 0 COMMENT "Total number of likes for this moment",
+    commentCount INT DEFAULT 0 COMMENT "Total number of comments for this moment",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE,
+    INDEX idx_moment_user (userId, createTime DESC),
+    INDEX idx_moment_time (createTime DESC),
+    INDEX idx_moment_likes (likeCount DESC)
+);
+
+-- Devine moment images table - images associated with moments
+CREATE TABLE IF NOT EXISTS devine_moment_images (
+    imageId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    momentId BIGINT NOT NULL,
+    imageUrl VARCHAR(255) NOT NULL,
+    isPrimary BOOLEAN DEFAULT FALSE COMMENT "Primary image for the moment",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (momentId) REFERENCES devine_moments(momentId) ON DELETE CASCADE,
+    INDEX idx_moment_images (momentId)
+);
+
+-- Devine moment comments table - user comments on moments
+CREATE TABLE IF NOT EXISTS devine_moment_comments (
+    commentId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    momentId BIGINT NOT NULL,
+    userId BIGINT NOT NULL COMMENT "User who made the comment",
+    content TEXT NOT NULL COMMENT "Comment content",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (momentId) REFERENCES devine_moments(momentId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE,
+    INDEX idx_comment_moment (momentId, createTime DESC),
+    INDEX idx_comment_user (userId, createTime DESC)
+);
+
+-- Devine moment likes table - user likes on moments
+CREATE TABLE IF NOT EXISTS devine_moment_likes (
+    likeId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    momentId BIGINT NOT NULL,
+    userId BIGINT NOT NULL COMMENT "User who liked the moment",
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (momentId) REFERENCES devine_moments(momentId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_moment_like (momentId, userId),
+    INDEX idx_like_moment (momentId),
+    INDEX idx_like_user (userId, createTime DESC)
+);

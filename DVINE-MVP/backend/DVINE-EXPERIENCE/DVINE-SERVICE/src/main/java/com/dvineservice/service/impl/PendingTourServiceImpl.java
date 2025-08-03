@@ -1,20 +1,24 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.domain.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dvinedao.domain.ApprovalStatus;
+import com.dvinedao.domain.PendingTour;
+import com.dvinedao.domain.PendingTourImage;
+import com.dvinedao.domain.Tour;
 import com.dvinedao.mapper.PendingTourImageMapper;
 import com.dvinedao.mapper.PendingTourMapper;
 import com.dvineservice.exception.NotFoundException;
 import com.dvineservice.service.PendingTourService;
 import com.dvineservice.service.TourOperationService;
 import com.dvineservice.util.TourConversionUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -31,12 +35,13 @@ public class PendingTourServiceImpl implements PendingTourService {
 
     @Override
     @Transactional
-    public void submitTourCreation(Tour tour, Long submittedBy) {
+    public Long submitTourCreation(Tour tour, Long submittedBy) {
         log.info("submitTourCreation: {} by user {}", tour.getTourId(), submittedBy);
         PendingTour pendingTour = TourConversionUtil.convertTourToPendingTour(tour, submittedBy);
         pendingTour.setOperationType(PendingTour.OperationType.CREATE);
         
         createPendingTourWithImages(pendingTour, tour.getImages());
+        return pendingTour.getPendingTourId();
     }
 
     @Override

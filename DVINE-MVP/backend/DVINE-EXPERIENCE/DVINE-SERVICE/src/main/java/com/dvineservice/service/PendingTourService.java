@@ -1,16 +1,17 @@
 package com.dvineservice.service;
 
+import java.util.List;
+
 import com.dvinedao.domain.PendingTour;
 import com.dvinedao.domain.Tour;
-
-import java.util.List;
 
 public interface PendingTourService {
     
     /**
      * Submit a tour creation request for approval
+     * @return the ID of the created pending tour
      */
-    void submitTourCreation(Tour tour, Long submittedBy);
+    Long submitTourCreation(Tour tour, Long submittedBy);
     
     /**
      * Submit a tour update request for approval
