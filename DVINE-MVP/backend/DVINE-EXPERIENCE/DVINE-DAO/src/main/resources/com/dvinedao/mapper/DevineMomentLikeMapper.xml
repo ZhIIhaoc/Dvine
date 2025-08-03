@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.DevineMomentLikeMapper">
+
+    <!-- Result Map for DevineMomentLike -->
+    <resultMap id="DevineMomentLikeResultMap" type="com.dvinedao.domain.DevineMomentLike">
+        <id property="likeId" column="likeId"/>
+        <result property="momentId" column="momentId"/>
+        <result property="userId" column="userId"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+
+    <!-- Result Map for User information who liked a moment -->
+    <resultMap id="UserLikeInfoResultMap" type="java.util.HashMap">
+        <result property="userId" column="userId"/>
+        <result property="nickName" column="nickName"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+
+    <!-- Insert a new like -->
+    <insert id="insertLike" parameterType="com.dvinedao.domain.DevineMomentLike" 
+            useGeneratedKeys="true" keyProperty="likeId">
+        INSERT INTO devine_moment_likes (momentId, userId)
+        VALUES (#{momentId}, #{userId})
+    </insert>
+
+    <!-- Delete a like -->
+    <delete id="deleteLike">
+        DELETE FROM devine_moment_likes
+        WHERE momentId = #{momentId} AND userId = #{userId}
+    </delete>
+
+    <!-- Check if a user has liked a moment -->
+    <select id="hasUserLikedMoment" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM devine_moment_likes
+        WHERE momentId = #{momentId} AND userId = #{userId}
+    </select>
+
+    <!-- Get all likes for a specific moment -->
+    <select id="findLikesByMomentId" resultMap="DevineMomentLikeResultMap">
+        SELECT likeId, momentId, userId, createTime
+        FROM devine_moment_likes
+        WHERE momentId = #{momentId}
+        ORDER BY createTime DESC
+    </select>
+
+    <!-- Get likes by user ID -->
+    <select id="findLikesByUserId" resultMap="DevineMomentLikeResultMap">
+        SELECT likeId, momentId, userId, createTime
+        FROM devine_moment_likes
+        WHERE userId = #{userId}
+        ORDER BY createTime DESC
+    </select>
+
+    <!-- Delete all likes for a moment -->
+    <delete id="deleteLikesByMomentId">
+        DELETE FROM devine_moment_likes
+        WHERE momentId = #{momentId}
+    </delete>
+
+    <!-- Get like count for a moment -->
+    <select id="getLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM devine_moment_likes
+        WHERE momentId = #{momentId}
+    </select>
+
+    <!-- Get users who liked a moment with their information -->
+    <select id="findUsersWhoLikedMoment" resultMap="UserLikeInfoResultMap">
+        SELECT u.userId, u.nickName, u.avatar, dml.createTime
+        FROM devine_moment_likes dml
+        LEFT JOIN users u ON dml.userId = u.userId
+        WHERE dml.momentId = #{momentId}
+        ORDER BY dml.createTime DESC
+    </select>
+
+</mapper>
