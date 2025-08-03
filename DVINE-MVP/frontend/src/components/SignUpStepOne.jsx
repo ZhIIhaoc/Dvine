@@ -77,28 +77,42 @@ const SignUpStepOne = (props) => {
                     sx: { color: "text.primary", fontSize: "1.2rem" },
                 }}
             />
-            <Button
-                variant="contained"
+            <Box
                 sx={{
-                    bgcolor: "primary",
-                    mb: 4,
+                    display: "flex",
                     width: "70%",
-                    height: "56px",
+                    justifyContent: "center",
+                    gap: 4,
                 }}
-                onClick={props.pageNext}
             >
-                Next
-            </Button>
-            <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                <Link
-                    underline="hover"
-                    color="secondary"
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => navigate("/password-reset")}
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: "background.default",
+                        mb: 4,
+                        width: "30%",
+                        height: "56px",
+                        color: "text.tertiary",
+                        border: 3,
+                        borderColor: "primary.main",
+                    }}
+                    onClick={props.pageBack}
                 >
-                    Forgot Password?
-                </Link>
-            </Typography>
+                    Back
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: "primary",
+                        mb: 4,
+                        width: "70%",
+                        height: "56px",
+                    }}
+                    onClick={props.pageNext}
+                >
+                    Next
+                </Button>
+            </Box>
             <Typography variant="body2" align="center">
                 Already have an account?{" "}
                 <Link

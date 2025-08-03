@@ -101,7 +101,7 @@ const SignUpStepTwo = (props) => {
                         mb: 4,
                         width: "30%",
                         height: "56px",
-                        color: "primary.main",
+                        color: "text.tertiary",
                         border: 3,
                         borderColor: "primary.main",
                     }}
@@ -122,16 +122,6 @@ const SignUpStepTwo = (props) => {
                     Sign Up
                 </Button>
             </Box>
-            <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                <Link
-                    underline="hover"
-                    color="secondary"
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => navigate("/password-reset")}
-                >
-                    Forgot Password?
-                </Link>
-            </Typography>
 
             <Typography variant="body2" align="center">
                 Already have an account?{" "}
