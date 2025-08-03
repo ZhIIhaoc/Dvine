@@ -523,6 +523,8 @@ paths:
                   value:
                     code: 0
                     msg: success
+                    data:
+                      pendingTourId: 123
         "201":
           description: Tour created successfully (Manager users)
           content:
@@ -2571,6 +2573,723 @@ paths:
                     submitterName: partnerPro
                     reviewerName: managerMan
 
+      security:
+        - bearerAuth: []
+  /devine-moments:
+    post:
+      tags:
+        - Devine Moments
+      summary: Create a new Devine Moment
+      description: Create a new Devine Moment post (Regular permission required)
+      operationId: createMoment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the moment
+                  example: "Amazing sunset at Sydney Harbor"
+                content:
+                  type: string
+                  description: Content/description of the moment
+                  example: "Had the most incredible sunset view today!"
+                location:
+                  type: string
+                  description: Location where the moment happened
+                  example: "Sydney Harbor, Australia"
+              required:
+                - title
+                - content
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Title and content are required
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "201":
+          description: Devine moment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  momentId: 1
+                  message: "Devine moment created successfully"
+      security:
+        - bearerAuth: []
+    get:
+      tags:
+        - Devine Moments
+      summary: Get all Devine Moments
+      description: Get all Devine Moments with user info and like status (Regular permission required)
+      operationId: getAllMoments
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "200":
+          description: Devine moments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - momentId: 1
+                    userId: 2
+                    title: "Amazing sunset at Sydney Harbor"
+                    content: "Had the most incredible sunset view today!"
+                    location: "Sydney Harbor, Australia"
+                    likeCount: 15
+                    commentCount: 3
+                    createTime: "2025-01-15T18:30:00"
+                    updateTime: "2025-01-15T18:30:00"
+                    images:
+                      - "https://s3.amazonaws.com/bucket/moments/1/image1.jpg"
+                      - "https://s3.amazonaws.com/bucket/moments/1/image2.jpg"
+                    userNickName: "TravelLover"
+                    userAvatar: "https://s3.amazonaws.com/bucket/avatars/user2.jpg"
+                    isLikedByCurrentUser: true
+      security:
+        - bearerAuth: []
+  /devine-moments/{momentId}:
+    get:
+      tags:
+        - Devine Moments
+      summary: Get a specific Devine Moment
+      description: Get a Devine Moment by ID with user info and like status (Regular permission required)
+      operationId: getMomentById
+      parameters:
+        - name: momentId
+          in: path
+          description: Devine Moment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "404":
+          description: Devine moment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Devine moment not found
+        "200":
+          description: Devine moment retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  momentId: 1
+                  userId: 2
+                  title: "Amazing sunset at Sydney Harbor"
+                  content: "Had the most incredible sunset view today!"
+                  location: "Sydney Harbor, Australia"
+                  likeCount: 15
+                  commentCount: 3
+                  createTime: "2025-01-15T18:30:00"
+                  updateTime: "2025-01-15T18:30:00"
+                  images:
+                    - "https://s3.amazonaws.com/bucket/moments/1/image1.jpg"
+                    - "https://s3.amazonaws.com/bucket/moments/1/image2.jpg"
+                  userNickName: "TravelLover"
+                  userAvatar: "https://s3.amazonaws.com/bucket/avatars/user2.jpg"
+                  isLikedByCurrentUser: true
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Devine Moments
+      summary: Delete a Devine Moment
+      description: Delete a Devine Moment (Regular permission required, moment owner only)
+      operationId: deleteMoment
+      parameters:
+        - name: momentId
+          in: path
+          description: Devine Moment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not moment owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Regular"
+                Not Moment Owner:
+                  description: Not moment owner
+                  value:
+                    code: 1
+                    msg: You can only delete your own moments
+        "404":
+          description: Devine moment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Devine moment not found
+        "200":
+          description: Devine moment deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: "Devine moment deleted successfully"
+      security:
+        - bearerAuth: []
+  /devine-moments/user/{userId}:
+    get:
+      tags:
+        - Devine Moments
+      summary: Get Devine Moments by user
+      description: Get all Devine Moments created by a specific user (Regular permission required)
+      operationId: getMomentsByUserId
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 2
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "200":
+          description: User's Devine moments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - momentId: 1
+                    userId: 2
+                    title: "Amazing sunset at Sydney Harbor"
+                    content: "Had the most incredible sunset view today!"
+                    location: "Sydney Harbor, Australia"
+                    likeCount: 15
+                    commentCount: 3
+                    createTime: "2025-01-15T18:30:00"
+                    updateTime: "2025-01-15T18:30:00"
+                    images:
+                      - "https://s3.amazonaws.com/bucket/moments/1/image1.jpg"
+                      - "https://s3.amazonaws.com/bucket/moments/1/image2.jpg"
+                    userNickName: "TravelLover"
+                    userAvatar: "https://s3.amazonaws.com/bucket/avatars/user2.jpg"
+                    isLikedByCurrentUser: true
+      security:
+        - bearerAuth: []
+  /devine-moments/{momentId}/images:
+    post:
+      tags:
+        - Devine Moments
+      summary: Upload images for a Devine Moment
+      description: Upload multiple images for a specific Devine Moment (Regular permission required, moment owner only)
+      operationId: uploadMomentImages
+      parameters:
+        - name: momentId
+          in: path
+          description: Devine Moment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Image files to upload (JPEG, PNG, GIF, WebP supported, max 10MB each, max 10 images per moment)
+              required:
+                - files
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                No Files:
+                  description: No files provided
+                  value:
+                    code: 1
+                    msg: At least one image file is required
+                File Too Large:
+                  description: File size exceeded
+                  value:
+                    code: 1
+                    msg: Image file size cannot exceed 10MB
+                Unsupported Format:
+                  description: Unsupported file format
+                  value:
+                    code: 1
+                    msg: "Unsupported image file type, only supports: image/jpeg, image/jpg, image/png, image/gif, image/webp"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not moment owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Regular"
+                Not Moment Owner:
+                  description: Not moment owner
+                  value:
+                    code: 1
+                    msg: You can only upload images for your own moments
+        "404":
+          description: Devine moment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Devine moment not found
+        "200":
+          description: Images uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  momentId: 1
+                  imageUrls:
+                    - "https://s3.amazonaws.com/bucket/moments/1/image1.jpg"
+                    - "https://s3.amazonaws.com/bucket/moments/1/image2.jpg"
+                  message: "Images uploaded successfully"
+      security:
+        - bearerAuth: []
+  /devine-moments/{momentId}/like:
+    post:
+      tags:
+        - Devine Moments
+      summary: Toggle like/unlike for a Devine Moment
+      description: Like or unlike a Devine Moment (Regular permission required)
+      operationId: toggleLike
+      parameters:
+        - name: momentId
+          in: path
+          description: Devine Moment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "404":
+          description: Devine moment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Devine moment not found
+        "200":
+          description: Like status toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Liked:
+                  description: Moment liked
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      momentId: 1
+                      liked: true
+                      message: "Moment liked successfully"
+                Unliked:
+                  description: Moment unliked
+                  value:
+                    code: 0
+                    msg: success
+                    data:
+                      momentId: 1
+                      liked: false
+                      message: "Moment unliked successfully"
+      security:
+        - bearerAuth: []
+  /devine-moments/{momentId}/comments:
+    post:
+      tags:
+        - Devine Moments
+      summary: Add a comment to a Devine Moment
+      description: Add a comment to a Devine Moment (Regular permission required)
+      operationId: addComment
+      parameters:
+        - name: momentId
+          in: path
+          description: Devine Moment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Comment content
+                  example: "What a beautiful view!"
+              required:
+                - content
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Comment content cannot be empty
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "404":
+          description: Devine moment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Devine moment not found
+        "201":
+          description: Comment added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  commentId: 1
+                  momentId: 1
+                  userId: 3
+                  content: "What a beautiful view!"
+                  createTime: "2025-01-15T19:00:00"
+                  updateTime: "2025-01-15T19:00:00"
+                  userNickName: "PhotoFan"
+                  userAvatar: "https://s3.amazonaws.com/bucket/avatars/user3.jpg"
+      security:
+        - bearerAuth: []
+    get:
+      tags:
+        - Devine Moments
+      summary: Get comments for a Devine Moment
+      description: Get all comments for a specific Devine Moment (Regular permission required)
+      operationId: getComments
+      parameters:
+        - name: momentId
+          in: path
+          description: Devine Moment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: "You don't have permission to access this resource. Required level: Regular"
+        "404":
+          description: Devine moment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Devine moment not found
+        "200":
+          description: Comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data:
+                  - commentId: 1
+                    momentId: 1
+                    userId: 3
+                    content: "What a beautiful view!"
+                    createTime: "2025-01-15T19:00:00"
+                    updateTime: "2025-01-15T19:00:00"
+                    userNickName: "PhotoFan"
+                    userAvatar: "https://s3.amazonaws.com/bucket/avatars/user3.jpg"
+                  - commentId: 2
+                    momentId: 1
+                    userId: 4
+                    content: "I love this place!"
+                    createTime: "2025-01-15T19:15:00"
+                    updateTime: "2025-01-15T19:15:00"
+                    userNickName: "Wanderer"
+                    userAvatar: "https://s3.amazonaws.com/bucket/avatars/user4.jpg"
+      security:
+        - bearerAuth: []
+  /devine-moments/comments/{commentId}:
+    delete:
+      tags:
+        - Devine Moments
+      summary: Delete a comment
+      description: Delete a comment from a Devine Moment (Regular permission required, comment owner only)
+      operationId: deleteComment
+      parameters:
+        - name: commentId
+          in: path
+          description: Comment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: User not logged in
+        "403":
+          description: Insufficient permissions or not comment owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              examples:
+                Insufficient Permissions:
+                  description: Insufficient permissions
+                  value:
+                    code: 1
+                    msg: "You don't have permission to access this resource. Required level: Regular"
+                Not Comment Owner:
+                  description: Not comment owner
+                  value:
+                    code: 1
+                    msg: You can only delete your own comments
+        "404":
+          description: Comment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 1
+                msg: Comment not found
+        "200":
+          description: Comment deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnResult"
+              example:
+                code: 0
+                msg: success
+                data: "Comment deleted successfully"
       security:
         - bearerAuth: []
   /pending-tours/{pendingTourId}/images:
