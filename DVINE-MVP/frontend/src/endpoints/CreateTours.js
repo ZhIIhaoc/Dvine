@@ -36,8 +36,8 @@ const CreateToursWithImages = async (tourData, imageFiles) => {
             regularPrice: parseFloat(tourData.regularPrice),
             premiumPrice: parseFloat(tourData.premiumPrice) || parseFloat(tourData.regularPrice),
             description: tourData.description,
-            primaryImageUrl: tourData.primaryImageUrl || "",
-            images: tourData.images || []
+            primaryImageUrl: "", // Don't send blob URLs
+            images: [] // Don't send blob URLs
         })
     });
 
@@ -46,7 +46,7 @@ const CreateToursWithImages = async (tourData, imageFiles) => {
     // Check if this is a TourSubmittedException (202 status)
     if (tourResponse.status === 202) {
         // Tour was submitted for approval - this is expected for partners
-        const pendingTourId = tourResult.data;
+        const pendingTourId = tourResult.data?.pendingTourId;
         return {
             ...tourResult,
             pendingTourId: pendingTourId,

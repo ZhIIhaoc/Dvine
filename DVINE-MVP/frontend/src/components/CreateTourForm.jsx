@@ -105,9 +105,9 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 const pendingTourId = responseInfo.pendingTourId;
                 console.log("Received pendingTourId:", pendingTourId);
                 console.log("Response info:", responseInfo);
-                setSuccess(responseInfo.message || "Tour submitted for approval. You can now upload images for this pending tour.");
+                setSuccess("Tour submitted for approval. Uploading images...");
                 
-                // If we have a pendingTourId, we can upload images immediately
+                // Upload images for the pending tour
                 if (pendingTourId && tourImages.length > 0) {
                     try {
                         const imageFiles = getImageFiles();
@@ -134,11 +134,15 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                             } else {
                                 setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
                             }
+                        } else {
+                            setSuccess("Tour submitted for approval successfully!");
                         }
                     } catch (error) {
                         console.error("Error uploading images for pending tour:", error);
                         setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
                     }
+                } else {
+                    setSuccess("Tour submitted for approval successfully!");
                 }
                 
                 // Reset form after submission

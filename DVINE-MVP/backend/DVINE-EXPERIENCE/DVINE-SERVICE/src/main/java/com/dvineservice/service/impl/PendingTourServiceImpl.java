@@ -14,6 +14,7 @@ import com.dvinedao.domain.Tour;
 import com.dvinedao.mapper.PendingTourImageMapper;
 import com.dvinedao.mapper.PendingTourMapper;
 import com.dvineservice.exception.NotFoundException;
+import com.dvineservice.service.ImageService;
 import com.dvineservice.service.PendingTourService;
 import com.dvineservice.service.TourOperationService;
 import com.dvineservice.util.TourConversionUtil;
@@ -32,6 +33,9 @@ public class PendingTourServiceImpl implements PendingTourService {
     
     @Autowired
     private TourOperationService tourOperationService;
+    
+    @Autowired
+    private ImageService imageService;
 
     @Override
     @Transactional
@@ -194,11 +198,28 @@ public class PendingTourServiceImpl implements PendingTourService {
         List<PendingTourImage> images = pendingTourImageMapper.findByPendingTourId(pendingTour.getPendingTourId());
         List<String> imageUrls = TourConversionUtil.extractImageUrls(images);
         pendingTour.setImages(imageUrls);
+        
+        // Set primary image URL
+        String primaryImageUrl = images.stream()
+                .filter(img -> Boolean.TRUE.equals(img.getIsPrimary()))
+                .map(PendingTourImage::getImageUrl)
+                .findFirst()
+                .orElse(null);
+        pendingTour.setPrimaryImageUrl(primaryImageUrl);
     }
     
     private void executeApprovedCreation(PendingTour pendingTour) {
+        log.info("Executing approved creation for pending tour: {}", pendingTour.getPendingTourId());
+        log.info("Pending tour catalogueId: {}", pendingTour.getCatalogueId());
+        
         Tour tour = TourConversionUtil.convertPendingTourToTour(pendingTour);
+        log.info("Converted tour catalogueId: {}", tour.getCatalogueId());
+        log.info("Converted tour title: {}", tour.getTitle());
+        
+        // The tourOperationService.createTour() method will handle image creation automatically
+        // through TourUtil.getImages(tour) and imageService.createImages(images)
         tourOperationService.createTour(tour);
+        log.info("Tour created with tourId: {}", tour.getTourId());
     }
     
     private void executeApprovedUpdate(PendingTour pendingTour) {
