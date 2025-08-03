@@ -16,7 +16,11 @@ window.fetch = async (input, init = {}) => {
     if (token) {
         headers['Authorization'] = token;
     }
-    headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+    
+    // Only set Content-Type if not already set and not a FormData request
+    if (!headers['Content-Type'] && !(init.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
     const fetchInit = { ...init, headers };
     let response = await originalFetch(input, fetchInit);
     // Only try refresh if token exists and got 401
@@ -35,8 +39,10 @@ window.fetch = async (input, init = {}) => {
                 localStorage.setItem('refreshToken', refreshData.data.refreshToken);
                 token = refreshData.data.accessToken;
                 // Retry original request with new token
-                headers['Authorization'] = token;
-                const retryInit = { ...init, headers };
+                // Preserve original headers for retry, especially for FormData
+                const retryHeaders = { ...(init.headers || {}) };
+                retryHeaders['Authorization'] = token;
+                const retryInit = { ...init, headers: retryHeaders };
                 response = await originalFetch(input, retryInit);
                 return response;
             } else {

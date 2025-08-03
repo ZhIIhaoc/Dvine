@@ -18,6 +18,12 @@ public class TourUtil {
     public static List<Image> getImages(Tour tour) {
         // Ensure primary image is in the images list
         List<String> imageUrls = tour.getImages();
+        
+        // Handle null images list
+        if (imageUrls == null) {
+            imageUrls = new ArrayList<>();
+        }
+        
         if (tour.getPrimaryImageUrl() != null && !imageUrls.contains(tour.getPrimaryImageUrl())) {
             imageUrls = new ArrayList<>(imageUrls);
             imageUrls.add(tour.getPrimaryImageUrl());
@@ -28,7 +34,7 @@ public class TourUtil {
             Image image = new Image();
             image.setTourId(tour.getTourId());
             image.setImageUrl(imgStr);
-            image.setIsPrimary(tour.getPrimaryImageUrl().equals(imgStr));
+            image.setIsPrimary(tour.getPrimaryImageUrl() != null && tour.getPrimaryImageUrl().equals(imgStr));
             return image;
         }).toList();
         return images;

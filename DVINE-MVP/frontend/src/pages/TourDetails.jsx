@@ -65,6 +65,7 @@ import "swiper/css/pagination";
 import PriceDisplay from "../components/PriceDisplay";
 import { useAuth } from "../components/AuthContext";
 import BookNowButton from "../components/BookNowButton";
+import TourImageUpload from "../components/TourImageUpload";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -177,6 +178,7 @@ export default function TourDetails() {
         title: "",
         description: "",
         destination: "",
+        catalogueId: 1, // Add catalogueId with default value
         regularPrice: "",
         premiumPrice: "",
         primaryImageUrl: "",
@@ -239,6 +241,7 @@ export default function TourDetails() {
             title: tour?.title || "",
             description: tour?.description || "",
             destination: tour?.destination || "",
+            catalogueId: tour?.catalogueId || 1, // Add catalogueId with default value
             regularPrice: tour?.regularPrice ?? tour?.price ?? "",
             premiumPrice: tour?.premiumPrice ?? tour?.price ?? "",
             primaryImageUrl: tour?.primaryImageUrl || "",
@@ -251,7 +254,7 @@ export default function TourDetails() {
             const result = await updateTour({
                 ...editForm,
                 tourId: tour.tourId,
-            }, token);
+            });
             if (result.code === 0) {
                 setEditOpen(false);
                 fetchTourDetails();
@@ -647,61 +650,85 @@ export default function TourDetails() {
                     <Button onClick={handleBooking} variant="contained">Confirm Booking</Button>
                 </DialogActions>
             </Dialog>
-            {/* 编辑对话框 */}
-            <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
+            {/* Edit Tour Dialog */}
+            <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="md" fullWidth>
                 <DialogTitle>Edit Tour</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        fullWidth
-                        label="Title"
-                        value={editForm.title}
-                        onChange={e => setEditForm({ ...editForm, title: e.target.value })}
-                        margin="normal"
-                        required
-                    />
-                    <TextField
-                        fullWidth
-                        label="Description"
-                        value={editForm.description}
-                        onChange={e => setEditForm({ ...editForm, description: e.target.value })}
-                        margin="normal"
-                        multiline
-                        rows={3}
-                    />
-                    <TextField
-                        fullWidth
-                        label="Destination"
-                        value={editForm.destination}
-                        onChange={e => setEditForm({ ...editForm, destination: e.target.value })}
-                        margin="normal"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Regular Price"
-                        value={editForm.regularPrice}
-                        onChange={e => setEditForm({ ...editForm, regularPrice: e.target.value })}
-                        margin="normal"
-                        type="number"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Premium Price"
-                        value={editForm.premiumPrice}
-                        onChange={e => setEditForm({ ...editForm, premiumPrice: e.target.value })}
-                        margin="normal"
-                        type="number"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Primary Image URL"
-                        value={editForm.primaryImageUrl}
-                        onChange={e => setEditForm({ ...editForm, primaryImageUrl: e.target.value })}
-                        margin="normal"
-                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                                Tour Information
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                Update tour details and click "Update" to save changes.
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label="Title"
+                                value={editForm.title}
+                                onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                                margin="normal"
+                                required
+                            />
+                            <TextField
+                                fullWidth
+                                label="Description"
+                                value={editForm.description}
+                                onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                                margin="normal"
+                                multiline
+                                rows={3}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Destination"
+                                value={editForm.destination}
+                                onChange={e => setEditForm({ ...editForm, destination: e.target.value })}
+                                margin="normal"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Regular Price"
+                                value={editForm.regularPrice}
+                                onChange={e => setEditForm({ ...editForm, regularPrice: e.target.value })}
+                                margin="normal"
+                                type="number"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Premium Price"
+                                value={editForm.premiumPrice}
+                                onChange={e => setEditForm({ ...editForm, premiumPrice: e.target.value })}
+                                margin="normal"
+                                type="number"
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                                Tour Images
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                Image operations (upload, delete, set primary) are applied immediately.
+                            </Typography>
+                            <TourImageUpload
+                                tourId={tour?.tourId}
+                                onImagesUpdate={(images) => {
+                                    const primaryImage = images.find(img => img.isPrimary);
+                                    setEditForm({
+                                        ...editForm,
+                                        primaryImageUrl: primaryImage?.url || "",
+                                        images: images.map(img => img.url)
+                                    });
+                                    // Refresh tour details to update the main image display
+                                    fetchTourDetails();
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-                    <Button onClick={handleEditSubmit} variant="contained">Update</Button>
+                    <Button onClick={handleEditSubmit} variant="contained">Update Tour Information</Button>
                 </DialogActions>
             </Dialog>
         </Box>

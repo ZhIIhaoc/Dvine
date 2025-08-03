@@ -49,10 +49,12 @@ import {
     updateCatalogue,
     deleteCatalogue,
     deleteTour,
+    updateTour,
 } from "../endpoints/CatalogueEndpoints";
 import CatalogueSearch from "../components/CatalogueSearch";
 import FeaturedCarousel from "../components/FeaturedCarousel";
 import PriceDisplay from "../components/PriceDisplay";
+import TourImageUpload from "../components/TourImageUpload";
 
 // Mock data for fallback
 const mockTours = [
@@ -141,6 +143,7 @@ export function Catalogue() {
         title: "",
         description: "",
         destination: "",
+        catalogueId: 1, // Add catalogueId with default value
         regularPrice: "",
         premiumPrice: "",
         primaryImageUrl: "",
@@ -273,7 +276,7 @@ export function Catalogue() {
         }
 
         try {
-            const result = await deleteCatalogue(catalogueId, token);
+            const result = await deleteCatalogue(catalogueId);
             if (result.code === 0) {
                 fetchCataloguesData();
                 fetchToursData();
@@ -297,7 +300,7 @@ export function Catalogue() {
         }
 
         try {
-            const result = await deleteTour(tourId, token);
+            const result = await deleteTour(tourId);
             if (result.code === 0) {
                 fetchToursData();
             } else {
@@ -408,6 +411,7 @@ export function Catalogue() {
             title: tour.title,
             description: tour.description,
             destination: tour.destination,
+            catalogueId: tour.catalogueId || 1, // Add catalogueId with default value
             regularPrice: tour.regularPrice ?? tour.price ?? "",
             premiumPrice: tour.premiumPrice ?? tour.price ?? "",
             primaryImageUrl: tour.primaryImageUrl || "",
@@ -418,13 +422,10 @@ export function Catalogue() {
     // Update tour
     const handleUpdateTour = async () => {
         try {
-            const result = await updateCatalogue(
-                {
-                    ...tourForm,
-                    tourId: editingTour.tourId,
-                },
-                token
-            );
+            const result = await updateTour({
+                ...tourForm,
+                tourId: editingTour.tourId,
+            });
             if (result.code === 0) {
                 setEditTourOpen(false);
                 setEditingTour(null);
@@ -432,6 +433,7 @@ export function Catalogue() {
                     title: "",
                     description: "",
                     destination: "",
+                    catalogueId: 1, // Add catalogueId with default value
                     regularPrice: "",
                     premiumPrice: "",
                     primaryImageUrl: "",
@@ -1153,92 +1155,111 @@ export function Catalogue() {
             <Dialog
                 open={editTourOpen}
                 onClose={() => setEditTourOpen(false)}
-                maxWidth="sm"
+                maxWidth="md"
                 fullWidth
             >
                 <DialogTitle>Edit Tour</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        fullWidth
-                        label="Title"
-                        value={tourForm.title}
-                        onChange={(e) =>
-                            setTourForm({ ...tourForm, title: e.target.value })
-                        }
-                        margin="normal"
-                        required
-                    />
-                    <TextField
-                        fullWidth
-                        label="Description"
-                        value={tourForm.description}
-                        onChange={(e) =>
-                            setTourForm({
-                                ...tourForm,
-                                description: e.target.value,
-                            })
-                        }
-                        margin="normal"
-                        multiline
-                        rows={3}
-                    />
-                    <TextField
-                        fullWidth
-                        label="Destination"
-                        value={tourForm.destination}
-                        onChange={(e) =>
-                            setTourForm({
-                                ...tourForm,
-                                destination: e.target.value,
-                            })
-                        }
-                        margin="normal"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Regular Price"
-                        value={tourForm.regularPrice}
-                        onChange={(e) =>
-                            setTourForm({
-                                ...tourForm,
-                                regularPrice: e.target.value,
-                            })
-                        }
-                        margin="normal"
-                        type="number"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Premium Price"
-                        value={tourForm.premiumPrice}
-                        onChange={(e) =>
-                            setTourForm({
-                                ...tourForm,
-                                premiumPrice: e.target.value,
-                            })
-                        }
-                        margin="normal"
-                        type="number"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Primary Image URL"
-                        value={tourForm.primaryImageUrl}
-                        onChange={(e) =>
-                            setTourForm({
-                                ...tourForm,
-                                primaryImageUrl: e.target.value,
-                            })
-                        }
-                        margin="normal"
-                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                                Tour Information
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                Update tour details and click "Update" to save changes.
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label="Title"
+                                value={tourForm.title}
+                                onChange={(e) =>
+                                    setTourForm({ ...tourForm, title: e.target.value })
+                                }
+                                margin="normal"
+                                required
+                            />
+                            <TextField
+                                fullWidth
+                                label="Description"
+                                value={tourForm.description}
+                                onChange={(e) =>
+                                    setTourForm({
+                                        ...tourForm,
+                                        description: e.target.value,
+                                    })
+                                }
+                                margin="normal"
+                                multiline
+                                rows={3}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Destination"
+                                value={tourForm.destination}
+                                onChange={(e) =>
+                                    setTourForm({
+                                        ...tourForm,
+                                        destination: e.target.value,
+                                    })
+                                }
+                                margin="normal"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Regular Price"
+                                value={tourForm.regularPrice}
+                                onChange={(e) =>
+                                    setTourForm({
+                                        ...tourForm,
+                                        regularPrice: e.target.value,
+                                    })
+                                }
+                                margin="normal"
+                                type="number"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Premium Price"
+                                value={tourForm.premiumPrice}
+                                onChange={(e) =>
+                                    setTourForm({
+                                        ...tourForm,
+                                        premiumPrice: e.target.value,
+                                    })
+                                }
+                                margin="normal"
+                                type="number"
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
+                                Tour Images
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                Image operations (upload, delete, set primary) are applied immediately.
+                            </Typography>
+                            <TourImageUpload
+                                tourId={editingTour?.tourId}
+                                onImagesUpdate={(images) => {
+                                    const primaryImage = images.find(img => img.isPrimary);
+                                    setTourForm({
+                                        ...tourForm,
+                                        primaryImageUrl: primaryImage?.url || "",
+                                        images: images.map(img => img.url)
+                                    });
+                                    // Refresh tours data to update the display
+                                    fetchToursData();
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEditTourOpen(false)}>
                         Cancel
                     </Button>
                     <Button onClick={handleUpdateTour} variant="contained">
-                        Update
+                        Update Tour Information
                     </Button>
                 </DialogActions>
             </Dialog>

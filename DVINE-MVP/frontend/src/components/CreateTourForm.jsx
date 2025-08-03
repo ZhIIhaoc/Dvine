@@ -6,60 +6,185 @@ import {
     Modal,
     TextField,
     Autocomplete,
+    Divider,
+    Alert,
 } from "@mui/material";
 // import CreateCatalogue from "../endpoints/CreateCatalogue"; change back to this in sprint 2
-import CreateTours from "../endpoints/CreateTours";
+import { CreateToursWithImages } from "../endpoints/CreateTours";
+import TourImageUpload from "./TourImageUpload";
+import { useAuth } from "../components/AuthContext";
 
 export default function CreateTourForm({ onClose, catalogueList }) {
+    const { userInfo } = useAuth();
     const [tourTitle, setTourTitle] = React.useState("");
     const [tourDescription, setTourDescription] = React.useState("");
-    const [tourImage, setTourImage] = React.useState(""); // Assuming you want to handle images later
     const [tourPrice, setTourPrice] = React.useState("");
     const [tourDestination, setTourDestination] = React.useState("");
-    // const [tourPrimaryImageURL, setTourPrimaryImageURL] = React.useState("");
-    // const [imageList, setImageList] = React.useState([]);  = [] // Assuming you
-    const [imagePreview, setImagePreview] = React.useState("");
     const [selectedCatalogue, setSelectedCatalogue] = React.useState(null);
+    const [tourImages, setTourImages] = React.useState([]);
+    const [createdTourId, setCreatedTourId] = React.useState(null);
+    const [error, setError] = React.useState("");
+    const [success, setSuccess] = React.useState("");
+    const [isCreating, setIsCreating] = React.useState(false);
     const accessToken = localStorage.getItem("accessToken");
 
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setTourImage(reader.result);
-            setImagePreview(reader.result);
-        };
-        reader.readAsDataURL(file);
+    const handleImagesUpdate = (images) => {
+        setTourImages(images);
     };
+
+    const getPrimaryImageUrl = () => {
+        const primaryImage = tourImages.find(img => img.isPrimary);
+        return primaryImage ? primaryImage.url : null;
+    };
+
+    const getImageUrls = () => {
+        return tourImages.map(img => img.url);
+    };
+
+    const getImageFiles = () => {
+        return tourImages
+            .filter(img => img.file) // Only get images that have actual files
+            .map(img => img.file);
+    };
+
     const createTours = async () => {
+        setError("");
+        setSuccess("");
+        setIsCreating(true);
+
+        // Validate required fields
+        if (!tourTitle.trim()) {
+            setError("Tour title is required");
+            setIsCreating(false);
+            return;
+        }
+        if (!tourDescription.trim()) {
+            setError("Tour description is required");
+            setIsCreating(false);
+            return;
+        }
+        if (!tourPrice || parseFloat(tourPrice) <= 0) {
+            setError("Valid tour price is required");
+            setIsCreating(false);
+            return;
+        }
+        if (!tourDestination.trim()) {
+            setError("Tour destination is required");
+            setIsCreating(false);
+            return;
+        }
+        if (!selectedCatalogue) {
+            setError("Please select a catalogue");
+            setIsCreating(false);
+            return;
+        }
+
         try {
-            const response = await CreateTours(
-                tourTitle,
-                tourDescription,
-                tourDestination,
-                tourPrice,
-                "placeholder_primary_image_url", // Placeholder for primary image URL
-                [], // Placeholder for image list, can be updated later
-                accessToken,
-                selectedCatalogue?.catalogueId || null // Use selected catalogue ID or null if not selected
-            );
+            // Prepare tour data
+            const tourData = {
+                title: tourTitle,
+                description: tourDescription,
+                destination: tourDestination,
+                regularPrice: tourPrice,
+                premiumPrice: tourPrice, // Use same price for premium for now
+                primaryImageUrl: getPrimaryImageUrl() || "",
+                images: getImageUrls(),
+                catalogueId: selectedCatalogue?.catalogueId || null
+            };
 
-            const responseInfo = await response.json();
-            console.log(responseInfo);
+            // Get image files for upload
+            const imageFiles = getImageFiles();
 
-            if (responseInfo.code === 0) {
+            // Create tour with images
+            const responseInfo = await CreateToursWithImages(tourData, imageFiles);
+
+            console.log("Tour creation response:", responseInfo);
+
+            if (responseInfo.requiresApproval) {
+                // Tour was submitted for approval (Partner workflow)
+                const pendingTourId = responseInfo.pendingTourId;
+                console.log("Received pendingTourId:", pendingTourId);
+                console.log("Response info:", responseInfo);
+                setSuccess("Tour submitted for approval. Uploading images...");
+                
+                // Upload images for the pending tour
+                if (pendingTourId && tourImages.length > 0) {
+                    try {
+                        const imageFiles = getImageFiles();
+                        if (imageFiles.length > 0) {
+                            const formData = new FormData();
+                            imageFiles.forEach((file, index) => {
+                                formData.append('files', file);
+                            });
+                            
+                            console.log("Uploading images for pending tour:", pendingTourId);
+                            console.log("Image files count:", imageFiles.length);
+                            
+                            const imageResponse = await fetch(`http://localhost:8080/pending-tours/${pendingTourId}/images?isPrimary=true`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            console.log("Image upload response status:", imageResponse.status);
+                            const imageResponseData = await imageResponse.json();
+                            console.log("Image upload response data:", imageResponseData);
+                            
+                            if (imageResponse.ok) {
+                                setSuccess("Tour submitted for approval and images uploaded successfully!");
+                            } else {
+                                setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
+                            }
+                        } else {
+                            setSuccess("Tour submitted for approval successfully!");
+                        }
+                    } catch (error) {
+                        console.error("Error uploading images for pending tour:", error);
+                        setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
+                    }
+                } else {
+                    setSuccess("Tour submitted for approval successfully!");
+                }
+                
+                // Reset form after submission
+                setTimeout(() => {
+                    setTourTitle("");
+                    setTourDescription("");
+                    setTourPrice("");
+                    setTourDestination("");
+                    setSelectedCatalogue(null);
+                    setTourImages([]);
+                    setCreatedTourId(null);
+                    setSuccess("");
+                    if (onClose) onClose();
+                }, 3000);
+            } else if (responseInfo.code === 0) {
                 console.log("Tour created successfully:", responseInfo.message);
-                // Success case
-                onClose?.(); // Close the modal
+                setCreatedTourId(responseInfo.data?.tourId);
+                setSuccess("Tour created successfully with images!");
+                
+                // Reset form after successful creation
+                setTimeout(() => {
+                    setTourTitle("");
+                    setTourDescription("");
+                    setTourPrice("");
+                    setTourDestination("");
+                    setSelectedCatalogue(null);
+                    setTourImages([]);
+                    setCreatedTourId(null);
+                    setSuccess("");
+                    if (onClose) onClose();
+                }, 2000);
             } else {
-                console.log("Error creating tour:", responseInfo.message);
+                setError(responseInfo.msg || "Error creating tour");
             }
-        } catch {
-            // Error case
+        } catch (error) {
+            console.error("Error creating tour:", error);
+            setError(error.message || "Network error. Please try again.");
+        } finally {
+            setIsCreating(false);
         }
     };
+
     return (
         <Box
             sx={{
@@ -72,7 +197,12 @@ export default function CreateTourForm({ onClose, catalogueList }) {
             }}
         >
             <Typography variant="h6">Create New Tour</Typography>
+            
+            {/* Tour Information Section */}
             <Box sx={{ mt: 2 }}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                    Tour Information
+                </Typography>
                 <TextField
                     label="Tour Title"
                     placeholder="Tour Title"
@@ -146,40 +276,37 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     )}
                 />
             </Box>
-            <Button
-                variant="outlined"
-                component="label"
-                sx={{
-                    mb: 3,
-                    color: "text.tertiary",
-                    borderColor: "text.tertiary",
-                }}
-            >
-                Upload Tour Image
-                <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={handleImageUpload}
-                />
-            </Button>
-            {imagePreview && (
-                <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                        Preview:
+
+            {/* Tour Images Section */}
+            <Box sx={{ mt: 3 }}>
+                <Divider sx={{ mb: 2 }}>
+                    <Typography variant="h6" color="text.secondary">
+                        Tour Images
                     </Typography>
-                    <img
-                        src={imagePreview}
-                        alt="Preview"
-                        style={{
-                            width: "100%",
-                            maxHeight: 200,
-                            objectFit: "cover",
-                            borderRadius: 8,
-                        }}
-                    />
-                </Box>
+                </Divider>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Select images for your tour. The first image will be set as the primary image. 
+                    {userInfo?.permission < 4 && " Note: Images will be uploaded after tour approval."}
+                </Typography>
+                <TourImageUpload
+                    tourId={null} // Pass null to indicate this is for a new tour
+                    onImagesUpdate={handleImagesUpdate}
+                    isNewTour={true} // Add this prop to indicate it's a new tour
+                />
+            </Box>
+
+            {/* Error and Success Messages */}
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                </Alert>
             )}
+            {success && (
+                <Alert severity="success" sx={{ mb: 2 }}>
+                    {success}
+                </Alert>
+            )}
+
             <Box
                 sx={{
                     display: "flex",
@@ -191,6 +318,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     <Button
                         variant="outlined"
                         onClick={onClose}
+                        disabled={isCreating}
                         sx={{
                             background: "background.secondary",
                             color: "red",
@@ -200,8 +328,12 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         Cancel
                     </Button>
                 )}
-                <Button variant="contained" onClick={createTours}>
-                    Create Tour
+                <Button 
+                    variant="contained" 
+                    onClick={createTours}
+                    disabled={!tourTitle || !tourDescription || !tourPrice || !tourDestination || !selectedCatalogue || isCreating}
+                >
+                    {isCreating ? "Creating Tour..." : "Create Tour"}
                 </Button>
             </Box>
         </Box>

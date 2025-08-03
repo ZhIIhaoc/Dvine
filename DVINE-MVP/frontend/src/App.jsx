@@ -24,6 +24,8 @@ import { lightTheme, darkTheme } from "./theme";
 import React, { useState, useEffect } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import Checkout from "./pages/Checkout";
+import TourImageTest from "./pages/TourImageTest";
+import TestEndpoints from "./pages/TestEndpoints";
 
 function App() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -97,6 +99,14 @@ function App() {
                         <Route
                             path="/checkout/:tourId"
                             element={<Checkout />}
+                        />
+                        <Route
+                            path="/tour-image-test"
+                            element={<TourImageTest />}
+                        />
+                        <Route
+                            path="/test-endpoints"
+                            element={<TestEndpoints />}
                         />
                     </Route>
                     <Route

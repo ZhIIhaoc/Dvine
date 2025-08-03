@@ -185,7 +185,14 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 sx={{ my: 2, mr: { xs: 2, sm: 4, md: 5 } }}
                                 onClick={handleClick}
                             >
-                                <Avatar />
+                                <Avatar 
+                                    src={userInfo?.avatar}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        border: '2px solid #e0e0e0'
+                                    }}
+                                />
                             </IconButton>
                             <Menu
                                 anchorEl={anchorEl}
