@@ -7,6 +7,9 @@ import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
+import BookOnLineIcon from "@mui/icons-material/BookOnline";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import BookingPanel from "../components/BookingPanel.jsx";``
 
 export function UserDashboard() {
     const { userInfo } = useContext(AuthContext);
@@ -98,9 +101,83 @@ export function UserDashboard() {
                                         </Typography>
                                     </Button>
                                 </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        backgroundColor:
+                                            activePanel === "bookings"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => setActivePanel("bookings")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <BookOnLineIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{ color: "text.tertiary" }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Your Bookings
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        // backgroundColor:
+                                        //     activePanel === "createTour"
+                                        //         ? "background.secondary"
+                                        //         : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => navigate("/faq")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <LiveHelpIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            FAQ
+                                        </Typography>
+                                    </Button>
+                                </Box>
                             </Grid>
                             {/* Right Column: contents part */}
-                            <Grid item xs={12} md={9}>
+                            <Grid item xs={12} md={9} sx={{ width: "50%" }}>
                                 <Box
                                     sx={{
                                         mx: "10%",
@@ -114,6 +191,9 @@ export function UserDashboard() {
                                             select options on the left. (Temp
                                             Message)
                                         </Box>
+                                    )}
+                                    {activePanel === "bookings" && (
+                                        <BookingPanel userId={userInfo?.userId} />
                                     )}
                                 </Box>
                             </Grid>
