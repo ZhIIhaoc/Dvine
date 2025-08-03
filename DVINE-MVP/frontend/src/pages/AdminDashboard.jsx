@@ -20,7 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import CreateTourForm from "../components/CreateTourForm.jsx";
 import ManageTourForm from "../components/AdminTourForm.jsx";
-import BookingPanel  from "../components/BookingPanel.jsx";
+import BookingPanel from "../components/BookingPanel.jsx";
 import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PeopleIcon from "@mui/icons-material/People";
@@ -127,337 +127,143 @@ export function AdminDashboard() {
         }
     };
 
-    return (
-        isAdmin ? (
-            <Box sx={{ minHeight: "120vh", width: "100%" }}>
-                {userInfo ? (
+    return isAdmin ? (
+        <Box sx={{ minHeight: "120vh", width: "100%" }}>
+            {userInfo ? (
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Typography
+                        sx={{
+                            textAlign: "center",
+                            mt: 3,
+                            mb: 6,
+                            fontSize: "2rem",
+                            fontWeight: "bold",
+                            color: "text.tertiary",
+                        }}
+                    >
+                        {" "}
+                        Welcome Back {userName}{" "}
+                    </Typography>
                     <Box
                         sx={{
                             width: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
+                            height: "100%",
+                            flex: 1,
+                            ml: "20%",
                         }}
                     >
-                        <Typography
-                            sx={{
-                                textAlign: "center",
-                                mt: 3,
-                                mb: 6,
-                                fontSize: "2rem",
-                                fontWeight: "bold",
-                                color: "text.tertiary",
-                            }}
-                        >
-                            {" "}
-                            Welcome Back {userName}{" "}
-                        </Typography>
-                        <Box
-                            sx={{
-                                width: "100%",
-                                height: "100%",
-                                flex: 1,
-                                ml: "20%",
-                            }}
-                        >
-                            <Grid container spacing={3}>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={3}
+                        <Grid container spacing={3}>
+                            <Grid
+                                item
+                                xs={12}
+                                md={3}
+                                sx={{
+                                    borderRight: "1px solid gray",
+                                    height: "100vh",
+                                }}
+                            >
+                                <Box
                                     sx={{
-                                        borderRight: "1px solid gray",
-                                        height: "100vh",
+                                        textAlign: "start",
+                                        mt: 2,
+                                        backgroundColor:
+                                            activePanel === "home"
+                                                ? "background.secondary"
+                                                : "transparent",
                                     }}
                                 >
-                                    <Box
+                                    <Button
+                                        onClick={() => setActivePanel("home")}
+                                        fullWidth
                                         sx={{
-                                            textAlign: "start",
-                                            mt: 2,
-                                            backgroundColor:
-                                                activePanel === "home"
-                                                    ? "background.secondary"
-                                                    : "transparent",
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
                                         }}
                                     >
-                                        <Button
-                                            onClick={() => setActivePanel("home")}
-                                            fullWidth
+                                        <HomeIcon
+                                            style={{ marginRight: 8 }}
                                             sx={{
-                                                justifyContent: "flex-start",
-                                                textTransform: "none",
-                                                py: 3,
-                                                pl: 2,
-                                                "&:hover": {
-                                                    backgroundColor: "action.hover",
-                                                },
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
                                             }}
                                         >
-                                            <HomeIcon
-                                                style={{ marginRight: 8 }}
-                                                sx={{
-                                                    color: "text.tertiary",
-                                                }}
-                                            />
-                                            <Typography
-                                                sx={{
-                                                    color: "text.primary",
-                                                    fontWeight: "bold",
-                                                }}
-                                            >
-                                                Dashboard Home
-                                            </Typography>
-                                        </Button>
-                                    </Box>
+                                            Dashboard Home
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        backgroundColor:
+                                            activePanel === "createTour"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() =>
+                                            setActivePanel("createTour")
+                                        }
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <AddCircleIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Create Tour
+                                        </Typography>
+                                    </Button>
+                                </Box>
+
+                                {/* Button to open Users List  (only for Manager/Owner) */}
+                                <>
                                     <Box
                                         sx={{
                                             textAlign: "start",
                                             backgroundColor:
-                                                activePanel === "createTour"
+                                                activePanel === "users"
                                                     ? "background.secondary"
                                                     : "transparent",
                                         }}
                                     >
                                         <Button
                                             onClick={() =>
-                                                setActivePanel("createTour")
+                                                setActivePanel("users")
                                             }
-                                            fullWidth
-                                            sx={{
-                                                justifyContent: "flex-start",
-                                                textTransform: "none",
-                                                py: 3,
-                                                pl: 2,
-                                                "&:hover": {
-                                                    backgroundColor: "action.hover",
-                                                },
-                                            }}
-                                        >
-                                            <AddCircleIcon
-                                                style={{ marginRight: 8 }}
-                                                sx={{
-                                                    color: "text.tertiary",
-                                                }}
-                                            />
-                                            <Typography
-                                                sx={{
-                                                    color: "text.primary",
-                                                    fontWeight: "bold",
-                                                }}
-                                            >
-                                                Create Tour
-                                            </Typography>
-                                        </Button>
-                                    </Box>
-
-                                    {/* Button to open Users List  (only for Manager/Owner) */}
-                                    <>
-                                        <Box
-                                            sx={{
-                                                textAlign: "start",
-                                                backgroundColor:
-                                                    activePanel === "users"
-                                                        ? "background.secondary"
-                                                        : "transparent",
-                                            }}
-                                        >
-                                            <Button
-                                                onClick={() =>
-                                                    setActivePanel("users")
-                                                }
-                                                fullWidth
-                                                sx={{
-                                                    justifyContent:
-                                                        "flex-start",
-                                                    textTransform: "none",
-                                                    py: 3,
-                                                    pl: 2,
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "action.hover",
-                                                    },
-                                                }}
-                                            >
-                                                <PeopleIcon
-                                                    style={{ marginRight: 8 }}
-                                                    sx={{
-                                                        color: "text.tertiary",
-                                                    }}
-                                                />
-                                                <Typography
-                                                    sx={{
-                                                        color: "text.primary",
-                                                        fontWeight: "bold",
-                                                    }}
-                                                >
-                                                    View Registered Users
-                                                </Typography>
-                                            </Button>
-                                        </Box>
-                                        <UserListModal
-                                            open={userListModalOpen}
-                                            onClose={() =>
-                                                setUserListModalOpen(false)
-                                            }
-                                        />
-                                    </>
-                                    <Box>
-                                        <Box
-                                            sx={{
-                                                textAlign: "start",
-                                                backgroundColor:
-                                                    activePanel === "catalogue"
-                                                        ? "background.secondary"
-                                                        : "transparent",
-                                            }}
-                                        >
-                                            <Button
-                                                onClick={() =>
-                                                    setActivePanel("catalogue")
-                                                }
-                                                fullWidth
-                                                sx={{
-                                                    justifyContent:
-                                                        "flex-start",
-                                                    textTransform: "none",
-                                                    py: 3,
-                                                    pl: 2,
-                                                    pr: 3,
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "action.hover",
-                                                    },
-                                                }}
-                                            >
-                                                <MenuBookIcon
-                                                    style={{
-                                                        marginRight: 8,
-                                                    }}
-                                                    sx={{
-                                                        color: "text.tertiary",
-                                                    }}
-                                                />
-                                                <Typography
-                                                    sx={{
-                                                        color: "text.primary",
-                                                        fontWeight: "bold",
-                                                    }}
-                                                >
-                                                    Create/Delete Catalogues
-                                                </Typography>
-                                            </Button>
-                                        </Box>
-                                    </Box>
-
-                                    {!adminApprovalsLoading && (
-                                        <Box
-                                            sx={{
-                                                textAlign: "start",
-                                                backgroundColor:
-                                                    activePanel === "manage_tours"
-                                                        ? "background.secondary"
-                                                        : "transparent",
-                                            }}
-                                        >
-                                            <Button
-                                                onClick={() =>
-                                                    setActivePanel("manage_tours")
-                                                }
-                                                fullWidth
-                                                sx={{
-                                                    justifyContent: "flex-start",
-                                                    textTransform: "none",
-                                                    py: 3,
-                                                    pl: 2,
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "action.hover",
-                                                    },
-                                                }}
-                                            >
-                                                <ApprovalIcon
-                                                    style={{ marginRight: 8 }}
-                                                    sx={{
-                                                        color: "text.tertiary",
-                                                    }}
-                                                />
-                                                <Typography
-                                                    sx={{
-                                                        color: "text.primary",
-                                                        fontWeight: "bold",
-                                                    }}
-                                                >
-                                                    Manage Tours
-                                                </Typography>
-                                                <Badge
-                                                    badgeContent={
-                                                        adminApprovalsList.length
-                                                    }
-                                                    color="error"
-                                                    invisible={
-                                                        adminApprovalsList.length ===
-                                                        0
-                                                    }
-                                                    overlap="rectangular"
-                                                    sx={{
-                                                        ml: 4,
-                                                        "& .MuiBadge-badge": {
-                                                            fontSize: "1rem",
-                                                            minWidth: 24,
-                                                            minHeight: 24,
-                                                        },
-                                                    }}
-                                                ></Badge>
-                                            </Button>
-                                        </Box>
-                                    )}
-                                    <Box
-                                        sx={{
-                                            textAlign: "start",
-                                            backgroundColor:
-                                                activePanel === "bookings"
-                                                    ? "background.secondary"
-                                                    : "transparent",
-                                        }}
-                                    >
-                                        <Button
-                                            onClick={() => setActivePanel("bookings")}
-                                            fullWidth
-                                            sx={{
-                                                justifyContent: "flex-start",
-                                                textTransform: "none",
-                                                py: 3,
-                                                pl: 2,
-                                                "&:hover": {
-                                                    backgroundColor: "action.hover",
-                                                },
-                                            }}
-                                        >
-                                            <BookOnLineIcon
-                                                style={{ marginRight: 8 }}
-                                                sx={{ color: "text.tertiary" }}
-                                            />
-                                            <Typography
-                                                sx={{
-                                                    color: "text.primary",
-                                                    fontWeight: "bold",
-                                                }}
-                                            >
-                                                Your Bookings
-                                            </Typography>
-                                        </Button>
-                                    </Box>
-                                    <Box
-                                        sx={{
-                                            textAlign: "start",
-                                            // backgroundColor:
-                                            //     activePanel === "createTour"
-                                            //         ? "background.secondary"
-                                            //         : "transparent",
-                                        }}
-                                    >
-                                        <Button
-                                            onClick={() => navigate("/faq")}
                                             fullWidth
                                             sx={{
                                                 justifyContent: "flex-start",
@@ -470,7 +276,7 @@ export function AdminDashboard() {
                                                 },
                                             }}
                                         >
-                                            <LiveHelpIcon
+                                            <PeopleIcon
                                                 style={{ marginRight: 8 }}
                                                 sx={{
                                                     color: "text.tertiary",
@@ -482,111 +288,311 @@ export function AdminDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Manage FAQ
+                                                View Registered Users
                                             </Typography>
                                         </Button>
                                     </Box>
-                                </Grid>
-
-                                {/* Right Column: contents part */}
-                                <Grid item xs={12} md={9} sx={{ width: "50%" }}>
+                                    <UserListModal
+                                        open={userListModalOpen}
+                                        onClose={() =>
+                                            setUserListModalOpen(false)
+                                        }
+                                    />
+                                </>
+                                <Box>
                                     <Box
                                         sx={{
-                                            mx: "10%",
-                                            width: "100%",
-                                            mb: 20,
+                                            textAlign: "start",
+                                            backgroundColor:
+                                                activePanel === "catalogue"
+                                                    ? "background.secondary"
+                                                    : "transparent",
                                         }}
                                     >
-                                        {activePanel === "home" && (
-                                            <Box sx={{ mt: 4 }}>
-                                                This is an admin dashboard.
-                                                Please select options on the
-                                                left. (Temp Message)
-                                            </Box>
-                                        )}
-                                        {activePanel === "createTour" && (
-                                            <CreateTourForm
-                                                catalogueList={listOfCatalogues}
-                                                onClose={() =>
-                                                    setActivePanel("home")
-                                                }
-                                            />
-                                        )}
-                                        {activePanel === "users" && (
-                                            <UserListForm
-                                                onClose={() =>
-                                                    setActivePanel("home")
-                                                }
-                                            />
-                                        )}
-
-                                        {activePanel === "catalogue" && (
-                                            <CreateCatalogueForm
-                                                onComplete={() => {
-                                                    refreshCatalogues();
-                                                    setActivePanel("home");
+                                        <Button
+                                            onClick={() =>
+                                                setActivePanel("catalogue")
+                                            }
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                pr: 3,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "action.hover",
+                                                },
+                                            }}
+                                        >
+                                            <MenuBookIcon
+                                                style={{
+                                                    marginRight: 8,
                                                 }}
-                                                catalogueList={
-                                                    listOfCatalogues
-                                                }
-                                                // onCatalogueCreated={
-                                                //     refreshCatalogues
-                                                // }
-                                                onClose={() =>
-                                                    setActivePanel("home")
-                                                }
+                                                sx={{
+                                                    color: "text.tertiary",
+                                                }}
                                             />
-                                        )}
-
-                                        {activePanel === "manage_tours" && (
-                                            <ManageTourForm
-                                            // onComplete={() => {
-                                            //     refreshCatalogues();
-                                            //     setActivePanel("home");
-                                            // }}
-
-                                            // onClose={() =>
-                                            //     setActivePanel("home")
-                                            // }
-                                            />
-                                        )}
-                                        {activePanel ===
-                                            "uploaded_tours" && (
-                                                <UploadedTourForm />
-                                            )}
-
-                                        {activePanel === "bookings" && (
-                                            <BookingPanel userId={userInfo?.userId} />
-                                        )}
-
-                                        {activePanel === null && (
-                                            <Box sx={{ mt: 4 }}>
-                                                This is an admin dashboard.
-                                                Please select options on the
-                                                left. (Temp Message)
-                                            </Box>
-                                        )}
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Create/Delete Catalogues
+                                            </Typography>
+                                        </Button>
                                     </Box>
-                                </Grid>
+                                </Box>
+
+                                {!adminApprovalsLoading && (
+                                    <Box
+                                        sx={{
+                                            textAlign: "start",
+                                            backgroundColor:
+                                                activePanel === "manage_tours"
+                                                    ? "background.secondary"
+                                                    : "transparent",
+                                        }}
+                                    >
+                                        <Button
+                                            onClick={() =>
+                                                setActivePanel("manage_tours")
+                                            }
+                                            fullWidth
+                                            sx={{
+                                                justifyContent: "flex-start",
+                                                textTransform: "none",
+                                                py: 3,
+                                                pl: 2,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "action.hover",
+                                                },
+                                            }}
+                                        >
+                                            <ApprovalIcon
+                                                style={{ marginRight: 8 }}
+                                                sx={{
+                                                    color: "text.tertiary",
+                                                }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                Manage Tours
+                                            </Typography>
+                                            <Badge
+                                                badgeContent={
+                                                    adminApprovalsList.length
+                                                }
+                                                color="error"
+                                                invisible={
+                                                    adminApprovalsList.length ===
+                                                    0
+                                                }
+                                                overlap="rectangular"
+                                                sx={{
+                                                    ml: 4,
+                                                    "& .MuiBadge-badge": {
+                                                        fontSize: "1rem",
+                                                        minWidth: 24,
+                                                        minHeight: 24,
+                                                    },
+                                                }}
+                                            ></Badge>
+                                        </Button>
+                                    </Box>
+                                )}
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        backgroundColor:
+                                            activePanel === "bookings"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() =>
+                                            setActivePanel("bookings")
+                                        }
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <BookOnLineIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{ color: "text.tertiary" }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Your Bookings
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
+                                        // backgroundColor:
+                                        //     activePanel === "createTour"
+                                        //         ? "background.secondary"
+                                        //         : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => navigate("/faq")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <LiveHelpIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Manage FAQ
+                                        </Typography>
+                                    </Button>
+                                </Box>
                             </Grid>
-                        </Box>
+
+                            {/* Right Column: contents part */}
+                            <Grid item xs={12} md={9} sx={{ width: "50%" }}>
+                                <Box
+                                    sx={{
+                                        mx: "10%",
+                                        width: "100%",
+                                        mb: 20,
+                                    }}
+                                >
+                                    {activePanel === "home" && (
+                                        <Box sx={{ mt: 4 }}>
+                                            This is an admin dashboard. Please
+                                            select options on the left. (Temp
+                                            Message)
+                                        </Box>
+                                    )}
+                                    {activePanel === "createTour" && (
+                                        <CreateTourForm
+                                            catalogueList={listOfCatalogues}
+                                            onClose={() =>
+                                                setActivePanel("home")
+                                            }
+                                        />
+                                    )}
+                                    {activePanel === "users" && (
+                                        <UserListForm
+                                            onClose={() =>
+                                                setActivePanel("home")
+                                            }
+                                        />
+                                    )}
+
+                                    {activePanel === "catalogue" && (
+                                        <CreateCatalogueForm
+                                            onComplete={() => {
+                                                refreshCatalogues();
+                                                setActivePanel("home");
+                                            }}
+                                            catalogueList={listOfCatalogues}
+                                            // onCatalogueCreated={
+                                            //     refreshCatalogues
+                                            // }
+                                            onClose={() =>
+                                                setActivePanel("home")
+                                            }
+                                        />
+                                    )}
+
+                                    {activePanel === "manage_tours" && (
+                                        <ManageTourForm
+                                        // onComplete={() => {
+                                        //     refreshCatalogues();
+                                        //     setActivePanel("home");
+                                        // }}
+
+                                        // onClose={() =>
+                                        //     setActivePanel("home")
+                                        // }
+                                        />
+                                    )}
+                                    {activePanel === "uploaded_tours" && (
+                                        <UploadedTourForm />
+                                    )}
+
+                                    {activePanel === "bookings" && (
+                                        <BookingPanel
+                                            userId={userInfo?.userId}
+                                        />
+                                    )}
+
+                                    {activePanel === null && (
+                                        <Box sx={{ mt: 4 }}>
+                                            This is an admin dashboard. Please
+                                            select options on the left. (Temp
+                                            Message)
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Box>
-                ) : (
-                    <Box sx={{ textAlign: "center", mt: 5 }}>
-                        <Typography variant="h4">
-                            Loading User Information...
-                        </Typography>
-                        <CircularProgress />
-                    </Box>
-                )}
-            </Box>
-        ) : (
-            <Box sx={{ textAlign: "center", mt: 5 }}>
-                <Typography variant="h4">Access Denied</Typography>
-                <Typography variant="body1">
-                    You do not have permission to access this page.
-                </Typography>
-            </Box>
-        )
+                </Box>
+            ) : (
+                <Box sx={{ textAlign: "center", mt: 5 }}>
+                    <Typography variant="h4">
+                        Loading User Information...
+                    </Typography>
+                    <CircularProgress />
+                </Box>
+            )}
+        </Box>
+    ) : (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                justifyContent: "center",
+                height: "90vh",
+            }}
+        >
+            <Typography variant="h4" color="error">
+                Access Denied
+            </Typography>
+            <Typography variant="body1">
+                You do not have permission to access this page.
+            </Typography>
+        </Box>
     );
 }
