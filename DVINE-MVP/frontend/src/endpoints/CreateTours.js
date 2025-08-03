@@ -46,9 +46,11 @@ const CreateToursWithImages = async (tourData, imageFiles) => {
     // Check if this is a TourSubmittedException (202 status)
     if (tourResponse.status === 202) {
         // Tour was submitted for approval - this is expected for partners
+        const pendingTourId = tourResult.data;
         return {
             ...tourResult,
-            message: "Tour submitted for approval. You can upload images after the tour is approved by an administrator.",
+            pendingTourId: pendingTourId,
+            message: "Tour submitted for approval. You can now upload images for this pending tour.",
             requiresApproval: true
         };
     }

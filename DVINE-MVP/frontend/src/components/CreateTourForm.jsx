@@ -102,7 +102,44 @@ export default function CreateTourForm({ onClose, catalogueList }) {
 
             if (responseInfo.requiresApproval) {
                 // Tour was submitted for approval (Partner workflow)
-                setSuccess(responseInfo.message || "Tour submitted for approval. You can upload images after the tour is approved by an administrator.");
+                const pendingTourId = responseInfo.pendingTourId;
+                console.log("Received pendingTourId:", pendingTourId);
+                console.log("Response info:", responseInfo);
+                setSuccess(responseInfo.message || "Tour submitted for approval. You can now upload images for this pending tour.");
+                
+                // If we have a pendingTourId, we can upload images immediately
+                if (pendingTourId && tourImages.length > 0) {
+                    try {
+                        const imageFiles = getImageFiles();
+                        if (imageFiles.length > 0) {
+                            const formData = new FormData();
+                            imageFiles.forEach((file, index) => {
+                                formData.append('files', file);
+                            });
+                            
+                            console.log("Uploading images for pending tour:", pendingTourId);
+                            console.log("Image files count:", imageFiles.length);
+                            
+                            const imageResponse = await fetch(`http://localhost:8080/pending-tours/${pendingTourId}/images?isPrimary=true`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            console.log("Image upload response status:", imageResponse.status);
+                            const imageResponseData = await imageResponse.json();
+                            console.log("Image upload response data:", imageResponseData);
+                            
+                            if (imageResponse.ok) {
+                                setSuccess("Tour submitted for approval and images uploaded successfully!");
+                            } else {
+                                setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error uploading images for pending tour:", error);
+                        setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
+                    }
+                }
                 
                 // Reset form after submission
                 setTimeout(() => {

@@ -27,7 +27,7 @@ const TourImageUpload = ({
     tourId, 
     onImagesUpdate, 
     maxFiles = 20,
-    maxFileSize = 10 * 1024 * 1024, // 10MB
+    maxFileSize = 20 * 1024 * 1024, // 20MB
     acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
     isNewTour = false // Add this prop to indicate if this is for a new tour
 }) => {
