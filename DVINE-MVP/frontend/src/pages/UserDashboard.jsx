@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
-import BookingPanel from "../components/BookingPanel.jsx";``
+import BookingPanel from "../components/BookingPanel.jsx";
 
 export function UserDashboard() {
     const { userInfo } = useContext(AuthContext);
