@@ -61,6 +61,11 @@ public class TourConversionUtil {
      * @return list of PendingTourImage entities
      */
     public static List<PendingTourImage> createPendingTourImages(Long pendingTourId, List<String> imageUrls) {
+        // Handle null imageUrls list
+        if (imageUrls == null) {
+            return List.of();
+        }
+        
         return imageUrls.stream()
                 .map(url -> {
                     PendingTourImage image = new PendingTourImage();
@@ -79,6 +84,11 @@ public class TourConversionUtil {
      * @return list of image URLs
      */
     public static List<String> extractImageUrls(List<PendingTourImage> pendingTourImages) {
+        // Handle null pendingTourImages list
+        if (pendingTourImages == null) {
+            return List.of();
+        }
+        
         return pendingTourImages.stream()
                 .map(PendingTourImage::getImageUrl)
                 .collect(Collectors.toList());

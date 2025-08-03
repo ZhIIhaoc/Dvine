@@ -12,6 +12,11 @@ spring:
       port: 6379
   jackson:
     default-property-inclusion: NON_NULL # ignore null value in response
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
 
 mybatis:
   configuration:

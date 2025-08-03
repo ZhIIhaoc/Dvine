@@ -14,12 +14,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.multipart.MultipartFile;
+import com.dvineservice.util.UserUtil;
+import com.dvineservice.service.PendingTourService;
+import com.dvineservice.service.TourImageService;
 
 @RestController
 @RequestMapping("/tours")
 public class TourController {
     @Autowired
     private TourService tourService;
+    @Autowired
+    private TourImageService tourImageService;
+    @Autowired
+    private PendingTourService pendingTourService;
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ReturnResult search(TourQueryParam tourQueryParam) {
@@ -50,7 +60,48 @@ public class TourController {
             // Return 202 Accepted to indicate the tour creation is pending approval
             throw new TourSubmittedException();
         }
-        return ReturnResult.success();
+        return ReturnResult.success(tour);
+    }
+
+    /**
+     * Create tour with images - handles approval workflow for partners
+     */
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/with-images")
+    @PermissionCheck(PermissionLevel.PARTNER)
+    public ReturnResult createTourWithImages(
+            @RequestParam("tourData") String tourDataJson,
+            @RequestParam("files") MultipartFile[] files) {
+        
+        // Parse tour data from JSON string
+        ObjectMapper objectMapper = new ObjectMapper();
+        Tour tour;
+        try {
+            tour = objectMapper.readValue(tourDataJson, Tour.class);
+        } catch (Exception e) {
+            return ReturnResult.error("Invalid tour data format");
+        }
+        
+        boolean isDirectOperation = tourService.createTourWithPermissionCheck(tour);
+        
+        if (isDirectOperation) {
+            // Manager/Owner creating tour - can upload images immediately
+            if (files != null && files.length > 0) {
+                Long tourId = tour.getTourId();
+                tourImageService.uploadTourImages(tourId, files, true, UserUtil.getCurrentUserId());
+            }
+            return ReturnResult.success(tour);
+        } else {
+            // Partner submitting for approval - store images temporarily
+            if (files != null && files.length > 0) {
+                // Store images in a temporary location or pending tour images table
+                // This would need to be implemented in PendingTourService
+                pendingTourService.submitTourCreationWithImages(tour, files, UserUtil.getCurrentUserId());
+            } else {
+                pendingTourService.submitTourCreation(tour, UserUtil.getCurrentUserId());
+            }
+            throw new TourSubmittedException();
+        }
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -70,7 +121,7 @@ public class TourController {
     @DeleteMapping
     @PermissionCheck(PermissionLevel.PARTNER)
     @TourOwnerCheck
-    public ReturnResult deleteTour(Long tourId) {
+    public ReturnResult deleteTour(@RequestParam Long tourId) {
         boolean isDirectOperation = tourService.deleteTourWithPermissionCheck(tourId);
         if (!isDirectOperation) {
             // Return 202 Accepted to indicate the tour deletion is pending approval

@@ -16,6 +16,7 @@ window.fetch = async (input, init = {}) => {
     if (token) {
         headers['Authorization'] = token;
     }
+    
     // Only set Content-Type if not already set and not a FormData request
     if (!headers['Content-Type'] && !(init.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
@@ -38,7 +39,6 @@ window.fetch = async (input, init = {}) => {
                 localStorage.setItem('refreshToken', refreshData.data.refreshToken);
                 token = refreshData.data.accessToken;
                 // Retry original request with new token
-                headers['Authorization'] = token;
                 // Preserve original headers for retry, especially for FormData
                 const retryHeaders = { ...(init.headers || {}) };
                 retryHeaders['Authorization'] = token;
