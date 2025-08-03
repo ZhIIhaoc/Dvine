@@ -36,7 +36,13 @@ const getPermissionLabel = (permission) => {
 };
 
 const getDashboardPath = (permission) => {
-    return permission >= 2 ? "/admin-dashboard" : "/user-dashboard";
+    if (permission === 4 || permission === 5) {
+        return "/admin-dashboard";
+    } else if (permission === 2 || permission === 3) {
+        return "/partner-dashboard";
+    } else {
+        return "/user-dashboard";
+    }
 };
 
 const UserSettings = () => {
