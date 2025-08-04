@@ -1,20 +1,25 @@
 package com.dvineservice.service.impl;
 
-import com.dvinedao.domain.*;
-import com.dvinedao.domain.ApprovalStatus;
-import com.dvinedao.mapper.PendingTourImageMapper;
-import com.dvinedao.mapper.PendingTourMapper;
-import com.dvineservice.exception.NotFoundException;
-import com.dvineservice.service.PendingTourService;
-import com.dvineservice.service.TourOperationService;
-import com.dvineservice.util.TourConversionUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.dvinedao.domain.ApprovalStatus;
+import com.dvinedao.domain.PendingTour;
+import com.dvinedao.domain.PendingTourImage;
+import com.dvinedao.domain.Tour;
+import com.dvinedao.mapper.PendingTourImageMapper;
+import com.dvinedao.mapper.PendingTourMapper;
+import com.dvineservice.exception.NotFoundException;
+import com.dvineservice.service.ImageService;
+import com.dvineservice.service.PendingTourService;
+import com.dvineservice.service.TourOperationService;
+import com.dvineservice.util.TourConversionUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -28,15 +33,19 @@ public class PendingTourServiceImpl implements PendingTourService {
     
     @Autowired
     private TourOperationService tourOperationService;
+    
+    @Autowired
+    private ImageService imageService;
 
     @Override
     @Transactional
-    public void submitTourCreation(Tour tour, Long submittedBy) {
+    public Long submitTourCreation(Tour tour, Long submittedBy) {
         log.info("submitTourCreation: {} by user {}", tour.getTourId(), submittedBy);
         PendingTour pendingTour = TourConversionUtil.convertTourToPendingTour(tour, submittedBy);
         pendingTour.setOperationType(PendingTour.OperationType.CREATE);
         
         createPendingTourWithImages(pendingTour, tour.getImages());
+        return pendingTour.getPendingTourId();
     }
 
     @Override
@@ -189,11 +198,28 @@ public class PendingTourServiceImpl implements PendingTourService {
         List<PendingTourImage> images = pendingTourImageMapper.findByPendingTourId(pendingTour.getPendingTourId());
         List<String> imageUrls = TourConversionUtil.extractImageUrls(images);
         pendingTour.setImages(imageUrls);
+        
+        // Set primary image URL
+        String primaryImageUrl = images.stream()
+                .filter(img -> Boolean.TRUE.equals(img.getIsPrimary()))
+                .map(PendingTourImage::getImageUrl)
+                .findFirst()
+                .orElse(null);
+        pendingTour.setPrimaryImageUrl(primaryImageUrl);
     }
     
     private void executeApprovedCreation(PendingTour pendingTour) {
+        log.info("Executing approved creation for pending tour: {}", pendingTour.getPendingTourId());
+        log.info("Pending tour catalogueId: {}", pendingTour.getCatalogueId());
+        
         Tour tour = TourConversionUtil.convertPendingTourToTour(pendingTour);
+        log.info("Converted tour catalogueId: {}", tour.getCatalogueId());
+        log.info("Converted tour title: {}", tour.getTitle());
+        
+        // The tourOperationService.createTour() method will handle image creation automatically
+        // through TourUtil.getImages(tour) and imageService.createImages(images)
         tourOperationService.createTour(tour);
+        log.info("Tour created with tourId: {}", tour.getTourId());
     }
     
     private void executeApprovedUpdate(PendingTour pendingTour) {

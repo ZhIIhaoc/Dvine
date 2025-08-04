@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.DevineMomentCommentMapper">
+
+    <!-- Result Map for DevineMomentComment -->
+    <resultMap id="DevineMomentCommentResultMap" type="com.dvinedao.domain.DevineMomentComment">
+        <id property="commentId" column="commentId"/>
+        <result property="momentId" column="momentId"/>
+        <result property="userId" column="userId"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="userNickName" column="userNickName"/>
+        <result property="userAvatar" column="userAvatar"/>
+    </resultMap>
+
+    <!-- Insert a new comment -->
+    <insert id="insertComment" parameterType="com.dvinedao.domain.DevineMomentComment" 
+            useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO devine_moment_comments (momentId, userId, content)
+        VALUES (#{momentId}, #{userId}, #{content})
+    </insert>
+
+    <!-- Get all comments for a specific moment with user information -->
+    <select id="findCommentsByMomentId" resultMap="DevineMomentCommentResultMap">
+        SELECT dmc.commentId, dmc.momentId, dmc.userId, dmc.content,
+               dmc.createTime, dmc.updateTime,
+               u.nickName as userNickName, u.avatar as userAvatar
+        FROM devine_moment_comments dmc
+        LEFT JOIN users u ON dmc.userId = u.userId
+        WHERE dmc.momentId = #{momentId}
+        ORDER BY dmc.createTime ASC
+    </select>
+
+    <!-- Get comments by user ID -->
+    <select id="findCommentsByUserId" resultMap="DevineMomentCommentResultMap">
+        SELECT dmc.commentId, dmc.momentId, dmc.userId, dmc.content,
+               dmc.createTime, dmc.updateTime,
+               u.nickName as userNickName, u.avatar as userAvatar
+        FROM devine_moment_comments dmc
+        LEFT JOIN users u ON dmc.userId = u.userId
+        WHERE dmc.userId = #{userId}
+        ORDER BY dmc.createTime DESC
+    </select>
+
+    <!-- Update a comment -->
+    <update id="updateComment" parameterType="com.dvinedao.domain.DevineMomentComment">
+        UPDATE devine_moment_comments
+        SET content = #{content}
+        WHERE commentId = #{commentId}
+    </update>
+
+    <!-- Delete a comment -->
+    <delete id="deleteComment">
+        DELETE FROM devine_moment_comments
+        WHERE commentId = #{commentId}
+    </delete>
+
+    <!-- Delete all comments for a moment -->
+    <delete id="deleteCommentsByMomentId">
+        DELETE FROM devine_moment_comments
+        WHERE momentId = #{momentId}
+    </delete>
+
+    <!-- Check if a comment exists -->
+    <select id="existsById" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM devine_moment_comments
+        WHERE commentId = #{commentId}
+    </select>
+
+    <!-- Check if a user owns a comment -->
+    <select id="isOwner" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM devine_moment_comments
+        WHERE commentId = #{commentId} AND userId = #{userId}
+    </select>
+
+    <!-- Get comment count for a moment -->
+    <select id="getCommentCount" resultType="int">
+        SELECT COUNT(*)
+        FROM devine_moment_comments
+        WHERE momentId = #{momentId}
+    </select>
+
+</mapper>

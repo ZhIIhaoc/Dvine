@@ -1,7 +1,10 @@
 package com.dvineservice.exception;
 
-import com.dvinedao.domain.ReturnResult;
-import com.stripe.exception.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,8 +15,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.dvinedao.domain.ReturnResult;
+import com.stripe.exception.ApiConnectionException;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.InvalidRequestException;
+import com.stripe.exception.RateLimitException;
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
 
 /**
  * This class provides centralized exception handling across all controller methods
@@ -191,7 +200,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ExceptionHandler
     public ReturnResult handleTourSubmittedException(TourSubmittedException e) {
-        log.info("Tour submitted for approval:", e);
+        log.info("Tour submitted for approval with pendingTourId: {}", e.getPendingTourId());
+        // Return the pendingTourId in the response data so frontend can use it for image uploads
+        if (e.getPendingTourId() != null) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("pendingTourId", e.getPendingTourId());
+            return ReturnResult.success(data);
+        }
         return ReturnResult.success();
     }
 

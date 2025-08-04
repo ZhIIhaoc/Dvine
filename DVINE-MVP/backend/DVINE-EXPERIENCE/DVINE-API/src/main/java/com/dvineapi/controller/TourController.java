@@ -1,25 +1,36 @@
 package com.dvineapi.controller;
 
-import com.dvinedao.domain.PageResult;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.dvinedao.annotation.PermissionCheck;
 import com.dvinedao.annotation.TourOwnerCheck;
+import com.dvinedao.domain.PageResult;
 import com.dvinedao.domain.PermissionLevel;
 import com.dvinedao.domain.ReturnResult;
 import com.dvinedao.domain.Tour;
 import com.dvinedao.domain.TourQueryParam;
-import com.dvineservice.service.TourService;
 import com.dvineservice.exception.TourSubmittedException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import com.dvineservice.service.TourService;
 
 @RestController
 @RequestMapping("/tours")
 public class TourController {
     @Autowired
     private TourService tourService;
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ReturnResult search(TourQueryParam tourQueryParam) {
@@ -45,12 +56,12 @@ public class TourController {
     @PostMapping
     @PermissionCheck(PermissionLevel.PARTNER)
     public ReturnResult createTour(@RequestBody Tour tour) {
-        boolean isDirectOperation = tourService.createTourWithPermissionCheck(tour);
-        if (!isDirectOperation) {
+        Long pendingTourId = tourService.createTourWithPermissionCheck(tour);
+        if (pendingTourId != null) {
             // Return 202 Accepted to indicate the tour creation is pending approval
-            throw new TourSubmittedException();
+            throw new TourSubmittedException(pendingTourId);
         }
-        return ReturnResult.success();
+        return ReturnResult.success(tour);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -70,7 +81,7 @@ public class TourController {
     @DeleteMapping
     @PermissionCheck(PermissionLevel.PARTNER)
     @TourOwnerCheck
-    public ReturnResult deleteTour(Long tourId) {
+    public ReturnResult deleteTour(@RequestParam Long tourId) {
         boolean isDirectOperation = tourService.deleteTourWithPermissionCheck(tourId);
         if (!isDirectOperation) {
             // Return 202 Accepted to indicate the tour deletion is pending approval

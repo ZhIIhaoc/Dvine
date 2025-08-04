@@ -1,467 +1,796 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Box,
     Card,
     CardContent,
     CardMedia,
     CardActions,
-    CardHeader,
     Avatar,
     Typography,
     IconButton,
     Button,
     Grid,
     Paper,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Divider,
     TextField,
     InputAdornment,
-    TextareaAutosize,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Alert,
+    CircularProgress,
+    Snackbar,
+    Container,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    Divider,
+    Menu,
+    MenuItem,
 } from "@mui/material";
 import {
     Favorite,
     FavoriteBorder,
     Share,
     MoreVert,
-    Person,
-    Group,
-    BookmarkBorder,
     Add,
-    Search,
     Send,
-    Label,
-    InsertPhoto,
+    Close,
+    Delete,
 } from "@mui/icons-material";
-
-// temporary data
-const mockPosts = [
-    {
-        id: 1,
-        user: {
-            name: "User A",
-            avatar: "",
-            timeAgo: "3 days ago",
-        },
-        hashtag: "#Divine",
-        image: "../src/assets/party.jpg",
-        likes: 24,
-        isLiked: false,
-        comments: [
-            { id: 1, user: "Friend 1", text: "I wish I was there!!!!!" },
-            { id: 2, user: "Friend 2", text: "Love this place!" },
-        ],
-    },
-    {
-        id: 2,
-        user: {
-            name: "User B",
-            avatar: "",
-            timeAgo: "5 days ago",
-        },
-        hashtag: "#Divine",
-        image: "../src/assets/sunset.jpg",
-        likes: 18,
-        isLiked: true,
-        comments: [{ id: 1, user: "Friend 3", text: "Beautiful sunset!" }],
-    },
-];
+import { useAuth } from "../components/AuthContext";
+import dvineMomentsAPI from "../endpoints/DvineMomentsEndpoints";
+import MomentImageUpload from "../components/MomentImageUpload";
+import MomentSearchFilter from "../components/MomentSearchFilter";
 
 export const DvineMoments = () => {
-    const [posts, setPosts] = useState(mockPosts);
-    const [newComment, setNewComment] = useState("");
+    const { userInfo } = useAuth();
+    const [moments, setMoments] = useState([]);
+    const [filteredMoments, setFilteredMoments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [selectedImages, setSelectedImages] = useState([]);
+    
+    // create moment related states
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const [newMoment, setNewMoment] = useState({
+        title: "",
+        content: "",
+        location: "",
+    });
+    const [creating, setCreating] = useState(false);
+    
+    // comments state
+    const [comments, setComments] = useState({}); // momentId -> comments array
+    const [loadingComments, setLoadingComments] = useState({});
+    // 为每个moment创建独立的评论输入状态
+    const [commentInputs, setCommentInputs] = useState({}); // momentId -> comment text
+    
+    // 删除菜单状态
+    const [deleteMenuAnchor, setDeleteMenuAnchor] = useState(null);
+    const [selectedMomentId, setSelectedMomentId] = useState(null);
+    
+    // message alert
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success",
+    });
 
-    const handleLike = (postId) => {
-        setPosts(
-            posts.map((post) => {
-                if (post.id === postId) {
-                    return {
-                        ...post,
-                        isLiked: !post.isLiked,
-                        likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-                    };
+    // load moment data
+    useEffect(() => {
+        fetchMoments();
+    }, []);
+
+    const fetchMoments = async () => {
+        try {
+            setLoading(true);
+            const response = await dvineMomentsAPI.getAllMoments();
+            if (response.code === 0) {
+                setMoments(response.data);
+                setFilteredMoments(response.data);
+                
+                // Load comments for each moment
+                for (const moment of response.data) {
+                    await loadCommentsForMoment(moment.momentId);
                 }
-                return post;
-            })
-        );
-    };
-
-    const handleAddComment = (postId) => {
-        if (newComment.trim()) {
-            setPosts(
-                posts.map((post) => {
-                    if (post.id === postId) {
-                        return {
-                            ...post,
-                            comments: [
-                                ...post.comments,
-                                {
-                                    id: Date.now(),
-                                    user: "You",
-                                    text: newComment,
-                                },
-                            ],
-                        };
-                    }
-                    return post;
-                })
-            );
-            setNewComment("");
+            } else {
+                setError("Failed to load moments");
+            }
+        } catch (error) {
+            console.error("Error fetching moments:", error);
+            setError("Network error, please try again later");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const [postComment, setPostComment] = useState("");
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setPostComment("");
+    const loadCommentsForMoment = async (momentId) => {
+        try {
+            setLoadingComments(prev => ({ ...prev, [momentId]: true }));
+            const response = await dvineMomentsAPI.getComments(momentId);
+            if (response.code === 0) {
+                setComments(prev => ({ ...prev, [momentId]: response.data }));
+            }
+        } catch (error) {
+            console.error("Error loading comments for moment:", momentId, error);
+        } finally {
+            setLoadingComments(prev => ({ ...prev, [momentId]: false }));
+        }
     };
 
-    const handlePhotoClick = () => {};
+    const handleLike = async (momentId) => {
+        try {
+            const response = await dvineMomentsAPI.toggleLike(momentId);
+            if (response.code === 0) {
+                // Update the moment in the list
+                setFilteredMoments(prev => 
+                    prev.map(moment => 
+                        moment.momentId === momentId 
+                            ? { 
+                                ...moment, 
+                                isLikedByCurrentUser: !moment.isLikedByCurrentUser,
+                                likeCount: moment.isLikedByCurrentUser 
+                                    ? (moment.likeCount || 1) - 1 
+                                    : (moment.likeCount || 0) + 1
+                            }
+                            : moment
+                    )
+                );
+                showSnackbar("Like updated successfully");
+            } else {
+                showSnackbar("Failed to update like", "error");
+            }
+        } catch (error) {
+            console.error("Error toggling like:", error);
+            showSnackbar("Network error", "error");
+        }
+    };
+
+    const handleAddComment = async (momentId) => {
+        const commentText = commentInputs[momentId] || "";
+        if (!commentText.trim()) return;
+        
+        try {
+            const response = await dvineMomentsAPI.addComment(momentId, commentText);
+            if (response.code === 0) {
+                // clear comment input for this moment
+                setCommentInputs(prev => ({ ...prev, [momentId]: "" }));
+                showSnackbar("Comment added successfully");
+                // Reload comments for this moment
+                await loadCommentsForMoment(momentId);
+                // Update comment count
+                setFilteredMoments(prev => 
+                    prev.map(moment => 
+                        moment.momentId === momentId 
+                            ? { ...moment, commentCount: (moment.commentCount || 0) + 1 }
+                            : moment
+                    )
+                );
+            } else {
+                showSnackbar("Failed to add comment", "error");
+            }
+        } catch (error) {
+            console.error("Error adding comment:", error);
+            showSnackbar("Network error", "error");
+        }
+    };
+
+    const handleCreateMoment = async () => {
+        if (!newMoment.title.trim() || !newMoment.content.trim()) {
+            showSnackbar("Please fill in title and content", "warning");
+            return;
+        }
+
+        try {
+            setCreating(true);
+            console.log("Creating moment with data:", newMoment);
+            const response = await dvineMomentsAPI.createMoment(newMoment);
+            console.log("Create moment response:", response);
+            
+            if (response.code === 0) {
+                const momentId = response.data.momentId;
+                console.log("Created moment with ID:", momentId);
+                console.log("Selected images:", selectedImages);
+                
+                // Upload images if any were selected
+                if (selectedImages.length > 0) {
+                    try {
+                        console.log("Starting image upload for moment:", momentId);
+                        const uploadResponse = await dvineMomentsAPI.uploadImages(momentId, selectedImages);
+                        console.log("Image upload response:", uploadResponse);
+                        showSnackbar("Moment created with images successfully");
+                    } catch (imageError) {
+                        console.error("Error uploading images:", imageError);
+                        console.error("Image error details:", {
+                            message: imageError.message,
+                            response: imageError.response?.data,
+                            status: imageError.response?.status
+                        });
+                        showSnackbar("Moment created but images failed to upload", "warning");
+                    }
+                } else {
+                    showSnackbar("Moment created successfully");
+                }
+                
+                setCreateDialogOpen(false);
+                setNewMoment({ title: "", content: "", location: "" });
+                setSelectedImages([]);
+                fetchMoments(); // Refresh the list
+            } else {
+                showSnackbar("Failed to create moment", "error");
+            }
+        } catch (error) {
+            console.error("Error creating moment:", error);
+            console.error("Create moment error details:", {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+            showSnackbar("Network error", "error");
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    const handleSearch = (filters) => {
+        let filtered = [...moments];
+        
+        if (filters.searchTerm) {
+            const searchLower = filters.searchTerm.toLowerCase();
+            filtered = filtered.filter(moment => 
+                moment.title.toLowerCase().includes(searchLower) ||
+                moment.content.toLowerCase().includes(searchLower) ||
+                (moment.location && moment.location.toLowerCase().includes(searchLower))
+            );
+        }
+        
+        if (filters.sortBy) {
+            switch (filters.sortBy) {
+                case 'latest':
+                    filtered.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
+                    break;
+                case 'popular':
+                    filtered.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
+                    break;
+                case 'most_liked':
+                    filtered.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        setFilteredMoments(filtered);
+    };
+
+    const handleClearSearch = () => {
+        setFilteredMoments(moments);
+    };
+
+    const showSnackbar = (message, severity = "success") => {
+        setSnackbar({
+            open: true,
+            message,
+            severity,
+        });
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
+
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        if (minutes < 1) return "just now";
+        if (minutes < 60) return `${minutes}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        if (days < 7) return `${days}d ago`;
+        return date.toLocaleDateString();
+    };
+
+    const handleDeleteMoment = async (momentId) => {
+        if (!window.confirm("Are you sure you want to delete this moment?")) {
+            return;
+        }
+        
+        try {
+            const response = await dvineMomentsAPI.deleteMoment(momentId);
+            if (response.code === 0) {
+                showSnackbar("Moment deleted successfully");
+                // Remove the moment from the list
+                setFilteredMoments(prev => prev.filter(moment => moment.momentId !== momentId));
+                setMoments(prev => prev.filter(moment => moment.momentId !== momentId));
+            } else {
+                showSnackbar("Failed to delete moment", "error");
+            }
+        } catch (error) {
+            console.error("Error deleting moment:", error);
+            showSnackbar("Network error", "error");
+        }
+    };
+
+    const handleDeleteMenuOpen = (event, momentId) => {
+        setDeleteMenuAnchor(event.currentTarget);
+        setSelectedMomentId(momentId);
+    };
+
+    const handleDeleteMenuClose = () => {
+        setDeleteMenuAnchor(null);
+        setSelectedMomentId(null);
+    };
+
+    const handleDeleteClick = () => {
+        if (selectedMomentId) {
+            handleDeleteMoment(selectedMomentId);
+        }
+        handleDeleteMenuClose();
+    };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
-        <Box sx={{ minHeight: "100vh", py: 4 }}>
-            <Grid
-                container
-                spacing={3}
-                sx={{ maxWidth: 1400, mx: "auto", flexWrap: "wrap" }}
-            >
-                {/* Left Sidebar */}
-                <Grid
-                    item
-                    xs={12}
-                    md={2}
-                    sx={{
-                        width: { xs: "98vw", md: "auto" },
-                        maxWidth: { xs: "98vw", md: "none" },
-                        mx: { xs: "auto", md: 0 },
-                        position: "fixed",
-                    }}
-                >
-                    <Box sx={{ pr: 5 }}>
-                        <List component="nav">
-                            <ListItem
-                                button
-                                sx={{ borderRadius: "8px", mb: 1 }}
-                            >
-                                <ListItemIcon sx={{ minWidth: "40px" }}>
-                                    <Person />
-                                </ListItemIcon>
-                                <ListItemText primary="User" />
-                            </ListItem>
-                            <ListItem
-                                button
-                                sx={{ borderRadius: "8px", mb: 1 }}
-                            >
-                                <ListItemIcon sx={{ minWidth: "40px" }}>
-                                    <Group />
-                                </ListItemIcon>
-                                <ListItemText primary="Friends" />
-                            </ListItem>
-                            <ListItem button sx={{ borderRadius: "8px" }}>
-                                <ListItemIcon sx={{ minWidth: "40px" }}>
-                                    <BookmarkBorder />
-                                </ListItemIcon>
-                                <ListItemText primary="Favorites" />
-                            </ListItem>
-                        </List>
+        <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+            <Container maxWidth="md" sx={{ py: 3 }}>
+                {/* Header */}
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+                    <Typography variant="h4" fontWeight="bold" color="primary">
+                        DVINE Moments
+                    </Typography>
+                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<Add />}
+                            onClick={() => setCreateDialogOpen(true)}
+                        >
+                            Share Moment
+                        </Button>
                     </Box>
-                </Grid>
+                </Box>
 
-                {/* right content */}
+                {/* Error Alert */}
+                {error && (
+                    <Alert severity="error" sx={{ mb: 3 }}>
+                        {error}
+                    </Alert>
+                )}
 
-                <Box sx={{ ml: "200px" }}>
-                    {/* create post section */}
-                    <Box
-                        sx={{
-                            p: 2,
-                            border: "1px solid #ddd",
-                            borderRadius: "8px",
-                            width: "100%",
-                            mb: 5,
-                            backgroundColor: "background.secondary",
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: "regular" }}>
-                            Share Your Experiences
-                        </Typography>
+                {/* Search and Filter */}
+                <MomentSearchFilter
+                    onSearch={handleSearch}
+                    onClear={handleClearSearch}
+                />
+
+                {/* Moments Feed */}
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 3 }}>
+                    {filteredMoments.length === 0 ? (
+                        <Paper sx={{ p: 6, textAlign: "center", borderRadius: "12px", bgcolor: "background.paper" }}>
+                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                No Moments Yet
+                            </Typography>
+                            <Typography color="text.secondary" sx={{ mb: 3 }}>
+                                Be the first to share your amazing travel moments!
+                            </Typography>
+                            <Button
+                                variant="outlined"
+                                startIcon={<Add />}
+                                onClick={() => setCreateDialogOpen(true)}
+                            >
+                                Share Your First Moment
+                            </Button>
+                        </Paper>
+                    ) : (
+                        filteredMoments.map((moment) => (
+                            <Card
+                                key={moment.momentId}
+                                sx={{
+                                    borderRadius: "12px",
+                                    overflow: "hidden",
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                    bgcolor: "background.paper",
+                                }}
+                            >
+                                {/* Header */}
+                                <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 2 }}>
+                                    <Avatar 
+                                        sx={{ 
+                                            bgcolor: "#ab47bc",
+                                            width: 40,
+                                            height: 40
+                                        }}
+                                    >
+                                        {moment.userNickName?.charAt(0) || "U"}
+                                    </Avatar>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Typography variant="subtitle1" fontWeight="600">
+                                            {moment.userNickName || "Anonymous User"}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            {formatTime(moment.createTime)}
+                                        </Typography>
+                                    </Box>
+                                    <IconButton 
+                                        size="small"
+                                        onClick={(e) => handleDeleteMenuOpen(e, moment.momentId)}
+                                    >
+                                        <MoreVert />
+                                    </IconButton>
+                                </Box>
+
+                                {/* Content */}
+                                <CardContent sx={{ pt: 0, pb: 1 }}>
+                                    <Typography variant="h6" gutterBottom fontWeight="600">
+                                        {moment.title}
+                                    </Typography>
+                                    <Typography variant="body1" paragraph>
+                                        {moment.content}
+                                    </Typography>
+                                    {moment.location && (
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                            {moment.location}
+                                        </Typography>
+                                    )}
+                                </CardContent>
+
+                                {/* Images */}
+                                {moment.images && moment.images.length > 0 && (
+                                    <Box sx={{ pb: 2 }}>
+                                        {moment.images.length === 1 ? (
+                                            // 单张图片：全宽显示
+                                            <Box sx={{ px: 2 }}>
+                                                <CardMedia
+                                                    component="img"
+                                                    image={moment.images[0]}
+                                                    alt="Moment Image"
+                                                    sx={{
+                                                        width: "100%",
+                                                        height: 400,
+                                                        objectFit: "cover",
+                                                        borderRadius: "8px",
+                                                    }}
+                                                />
+                                            </Box>
+                                        ) : moment.images.length === 2 ? (
+                                            // 两张图片：并排显示
+                                            <Box sx={{ px: 2 }}>
+                                                <Grid container spacing={1}>
+                                                    {moment.images.map((image, index) => (
+                                                        <Grid item xs={6} key={index}>
+                                                            <CardMedia
+                                                                component="img"
+                                                                image={image}
+                                                                alt={`Moment Image ${index + 1}`}
+                                                                sx={{
+                                                                    width: "100%",
+                                                                    height: 300,
+                                                                    objectFit: "cover",
+                                                                    borderRadius: "8px",
+                                                                }}
+                                                            />
+                                                        </Grid>
+                                                    ))}
+                                                </Grid>
+                                            </Box>
+                                        ) : (
+                                            // 多张图片：网格显示
+                                            <Box sx={{ px: 2 }}>
+                                                <Grid container spacing={1}>
+                                                    {moment.images.slice(0, 4).map((image, index) => (
+                                                        <Grid item xs={6} key={index}>
+                                                            <CardMedia
+                                                                component="img"
+                                                                image={image}
+                                                                alt={`Moment Image ${index + 1}`}
+                                                                sx={{
+                                                                    width: "100%",
+                                                                    height: index < 2 ? 200 : 150,
+                                                                    objectFit: "cover",
+                                                                    borderRadius: "8px",
+                                                                }}
+                                                            />
+                                                        </Grid>
+                                                    ))}
+                                                    {moment.images.length > 4 && (
+                                                        <Grid item xs={6}>
+                                                            <Box
+                                                                sx={{
+                                                                    width: "100%",
+                                                                    height: 150,
+                                                                    borderRadius: "8px",
+                                                                    bgcolor: "grey.300",
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+                                                                    position: "relative",
+                                                                }}
+                                                            >
+                                                                <Typography 
+                                                                    variant="h6" 
+                                                                    color="text.secondary"
+                                                                    sx={{
+                                                                        position: "absolute",
+                                                                        top: "50%",
+                                                                        left: "50%",
+                                                                        transform: "translate(-50%, -50%)",
+                                                                        fontWeight: "bold",
+                                                                    }}
+                                                                >
+                                                                    +{moment.images.length - 4}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Grid>
+                                                    )}
+                                                </Grid>
+                                            </Box>
+                                        )}
+                                    </Box>
+                                )}
+
+                                {/* Actions */}
+                                <CardActions sx={{ px: 2, py: 1 }}>
+                                    <IconButton
+                                        onClick={() => handleLike(moment.momentId)}
+                                        color={moment.isLikedByCurrentUser ? "error" : "default"}
+                                        size="small"
+                                    >
+                                        {moment.isLikedByCurrentUser ? <Favorite /> : <FavoriteBorder />}
+                                    </IconButton>
+                                    <Typography variant="body2" sx={{ mr: 2 }}>
+                                        {moment.likeCount || 0}
+                                    </Typography>
+                                    <IconButton size="small">
+                                        <Share />
+                                    </IconButton>
+                                    <Typography variant="body2">
+                                        {moment.commentCount || 0} comments
+                                    </Typography>
+                                </CardActions>
+
+                                {/* Comments Section */}
+                                {comments[moment.momentId] && comments[moment.momentId].length > 0 && (
+                                    <Box sx={{ px: 2, pb: 1 }}>
+                                        <Divider sx={{ mb: 1 }} />
+                                        <List dense>
+                                            {comments[moment.momentId].map((comment) => (
+                                                <ListItem key={comment.commentId} sx={{ px: 0 }}>
+                                                    <ListItemAvatar sx={{ minWidth: 32 }}>
+                                                        <Avatar 
+                                                            sx={{ 
+                                                                width: 24, 
+                                                                height: 24, 
+                                                                bgcolor: "#ab47bc",
+                                                                fontSize: "12px"
+                                                            }}
+                                                        >
+                                                            {comment.userNickName?.charAt(0) || "U"}
+                                                        </Avatar>
+                                                    </ListItemAvatar>
+                                                    <ListItemText
+                                                        primary={
+                                                            <Typography variant="body2" fontWeight="500">
+                                                                {comment.userNickName || "Anonymous"}
+                                                            </Typography>
+                                                        }
+                                                        secondary={
+                                                            <Typography variant="body2" color="text.primary">
+                                                                {comment.content}
+                                                            </Typography>
+                                                        }
+                                                    />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Box>
+                                )}
+
+                                {/* Comment Input */}
+                                <Box sx={{ px: 2, pb: 2 }}>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        placeholder="Add a comment..."
+                                        size="small"
+                                        value={commentInputs[moment.momentId] || ""}
+                                        onChange={(e) => setCommentInputs(prev => ({ ...prev, [moment.momentId]: e.target.value }))}
+                                        onKeyPress={(e) =>
+                                            e.key === "Enter" && handleAddComment(moment.momentId)
+                                        }
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment>
+                                                    <IconButton
+                                                        onClick={() => handleAddComment(moment.momentId)}
+                                                        disabled={!(commentInputs[moment.momentId] || "").trim()}
+                                                        size="small"
+                                                    >
+                                                        <Send />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        sx={{
+                                            "& .MuiOutlinedInput-root": {
+                                                borderRadius: "20px",
+                                                fontSize: "14px",
+                                            },
+                                        }}
+                                    />
+                                </Box>
+                            </Card>
+                        ))
+                    )}
+                </Box>
+            </Container>
+
+            {/* Create Moment Dialog */}
+            <Dialog
+                open={createDialogOpen}
+                onClose={() => setCreateDialogOpen(false)}
+                maxWidth="sm"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        bgcolor: "background.paper",
+                    }
+                }}
+            >
+                <DialogTitle>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Typography variant="h6" fontWeight="600" color="text.primary">Share New Moment</Typography>
+                        <IconButton onClick={() => setCreateDialogOpen(false)}>
+                            <Close />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
                         <TextField
-                            name="Solid"
-                            placeholder="Enter a comment here"
                             fullWidth
-                            multiline
-                            rows={4}
-                            value={postComment}
-                            onChange={(e) => setPostComment(e.target.value)}
+                            label="Title"
+                            placeholder="Give your moment a title..."
+                            value={newMoment.title}
+                            onChange={(e) => setNewMoment(prev => ({ ...prev, title: e.target.value }))}
                             sx={{
-                                backgroundColor: "white",
-                                borderRadius: "8px",
-                                "& .MuiOutlinedInput-root": {
-                                    borderRadius: "8px",
+                                "& .MuiInputLabel-root": {
+                                    color: "text.secondary",
                                 },
-                                mt: 0.5,
-                            }}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment>
-                                        <IconButton
-                                            onClick={handlePhotoClick}
-                                            sx={{
-                                                position: "absolute",
-                                                bottom: 3,
-                                                left: 3,
-                                                color: "rgba(0,0,0,0.4)",
-                                            }}
-                                        >
-                                            <InsertPhoto />
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                                sx: {
-                                    borderRadius: 2,
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "divider",
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: "primary.main",
+                                    },
+                                    "& input": {
+                                        color: "text.primary",
+                                    },
                                 },
                             }}
                         />
-                        <Box
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={!postComment.trim()}
-                                sx={{ mt: 1 }}
-                            >
-                                Post
-                            </Button>
-                        </Box>
-                    </Box>
-                    {/* Main Content */}
-                    <Grid item xs={12} md={10} lg={12}>
-                        <Box
+                        <TextField
+                            fullWidth
+                            label="Location"
+                            placeholder="Where was this taken?"
+                            value={newMoment.location}
+                            onChange={(e) => setNewMoment(prev => ({ ...prev, location: e.target.value }))}
                             sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 3,
-                                alignItems: "center",
-                                width: "100%",
+                                "& .MuiInputLabel-root": {
+                                    color: "text.secondary",
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "divider",
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: "primary.main",
+                                    },
+                                    "& input": {
+                                        color: "text.primary",
+                                    },
+                                },
                             }}
-                        >
-                            {posts.map((post) => (
-                                <Card
-                                    key={post.id}
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: {
-                                            xs: "column",
-                                            sm: "row",
-                                        },
-                                        mb: 3,
-                                        borderRadius: "16px",
-                                        overflow: "hidden",
-                                        boxShadow: 2,
-                                        width: {
-                                            xs: "98vw",
-                                            sm: "90vw",
-                                            md: "80vw",
-                                            lg: "70vw",
-                                        },
-                                        maxWidth: 1200,
-                                        mx: "auto",
-                                    }}
-                                >
-                                    {/* Post Content */}
-                                    <Box
-                                        sx={{
-                                            flex: 2,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            minWidth: 0,
-                                            maxWidth: { sm: "60%", md: "65%" },
-                                        }}
-                                    >
-                                        <CardHeader
-                                            avatar={
-                                                <Avatar
-                                                    sx={{ bgcolor: "#ab47bc" }}
-                                                >
-                                                    {post.user.name.charAt(0)}
-                                                </Avatar>
-                                            }
-                                            title={post.user.name}
-                                            subheader={post.user.timeAgo}
-                                        />
-                                        <Typography
-                                            variant="body2"
-                                            color="primary"
-                                            sx={{
-                                                px: 2,
-                                                pb: 1,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            {post.hashtag}
-                                        </Typography>
-                                        <CardMedia
-                                            component="img"
-                                            image={post.image}
-                                            alt="Dvine moment"
-                                            sx={{
-                                                height: {
-                                                    xs: 200,
-                                                    sm: 300,
-                                                    md: 350,
-                                                },
-                                                width: "80%",
-                                                objectFit: "cover",
-                                                maxHeight: 400,
-                                                borderRadius: 5,
-                                                mb: 3,
-                                                mx: "auto",
-                                            }}
-                                        />
-                                        <CardActions
-                                            disableSpacing
-                                            sx={{ mt: "auto" }}
-                                        >
-                                            <IconButton
-                                                onClick={() =>
-                                                    handleLike(post.id)
-                                                }
-                                                color={
-                                                    post.isLiked
-                                                        ? "error"
-                                                        : "default"
-                                                }
-                                            >
-                                                {post.isLiked ? (
-                                                    <Favorite />
-                                                ) : (
-                                                    <FavoriteBorder />
-                                                )}
-                                            </IconButton>
-                                            <IconButton>
-                                                <Share />
-                                            </IconButton>
-                                        </CardActions>
-                                    </Box>
+                        />
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            label="Content"
+                            placeholder="Share your amazing moments..."
+                            value={newMoment.content}
+                            onChange={(e) => setNewMoment(prev => ({ ...prev, content: e.target.value }))}
+                            sx={{
+                                "& .MuiInputLabel-root": {
+                                    color: "text.secondary",
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "divider",
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: "primary.main",
+                                    },
+                                    "& textarea": {
+                                        color: "text.primary",
+                                    },
+                                },
+                            }}
+                        />
+                        <MomentImageUpload
+                            onImagesSelected={setSelectedImages}
+                            maxImages={5}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 3 }}>
+                    <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+                    <Button
+                        onClick={handleCreateMoment}
+                        variant="contained"
+                        disabled={creating || !newMoment.title.trim() || !newMoment.content.trim()}
+                    >
+                        {creating ? <CircularProgress size={20} /> : "Share Moment"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
-                                    {/* Comment Section */}
-                                    <Box
-                                        sx={{
-                                            flex: 1,
-                                            borderLeft: {
-                                                xs: "none",
-                                                sm: "1px solid #dee2e6",
-                                            },
-                                            borderTop: {
-                                                xs: "1px solid #dee2e6",
-                                                sm: "none",
-                                            },
-                                            p: 2,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            height: {
-                                                xs: "auto",
-                                                sm: 400,
-                                                md: 500,
-                                            },
-                                            minWidth: 0,
-                                            maxWidth: { sm: "40%", md: "35%" },
-                                        }}
-                                    >
-                                        <Typography variant="h6" sx={{ mb: 2 }}>
-                                            Comment Section
-                                        </Typography>
-                                        <Box
-                                            sx={{
-                                                flexGrow: 1,
-                                                overflowY: "auto",
-                                                mb: 2,
-                                                maxHeight: {
-                                                    xs: 180,
-                                                    sm: 250,
-                                                    md: 380,
-                                                },
-                                                "&::-webkit-scrollbar": {
-                                                    width: "6px",
-                                                },
-                                                "&::-webkit-scrollbar-track": {
-                                                    background: "#f1f1f1",
-                                                    borderRadius: "10px",
-                                                },
-                                                "&::-webkit-scrollbar-thumb": {
-                                                    background: "#c1c1c1",
-                                                    borderRadius: "10px",
-                                                },
-                                                "&::-webkit-scrollbar-thumb:hover":
-                                                    {
-                                                        background: "#a8a8a8",
-                                                    },
-                                            }}
-                                        >
-                                            {post.comments.map((comment) => (
-                                                <Box
-                                                    key={comment.id}
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        mb: 1.5,
-                                                    }}
-                                                >
-                                                    <Avatar
-                                                        sx={{
-                                                            width: 32,
-                                                            height: 32,
-                                                            mr: 1.5,
-                                                            bgcolor: "grey.500",
-                                                        }}
-                                                    >
-                                                        {comment.user.charAt(0)}
-                                                    </Avatar>
-                                                    <Paper
-                                                        sx={{
-                                                            p: 1.5,
-                                                            borderRadius:
-                                                                "12px",
-                                                            bgcolor: "#f1f3f5",
-                                                            flexGrow: 1,
-                                                        }}
-                                                    >
-                                                        <Typography variant="body2">
-                                                            {comment.text}
-                                                        </Typography>
-                                                    </Paper>
-                                                </Box>
-                                            ))}
-                                        </Box>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            placeholder="Add a comment..."
-                                            size="small"
-                                            value={newComment}
-                                            onChange={(e) =>
-                                                setNewComment(e.target.value)
-                                            }
-                                            onKeyPress={(e) =>
-                                                e.key === "Enter" &&
-                                                handleAddComment(post.id)
-                                            }
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    borderRadius: "20px",
-                                                },
-                                            }}
-                                        />
-                                    </Box>
-                                </Card>
-                            ))}
-                        </Box>
-                    </Grid>
-                </Box>
-            </Grid>
+            {/* Snackbar for messages */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.severity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+
+            {/* Delete Menu */}
+            <Menu
+                anchorEl={deleteMenuAnchor}
+                open={Boolean(deleteMenuAnchor)}
+                onClose={handleDeleteMenuClose}
+                PaperProps={{
+                    sx: {
+                        bgcolor: "background.paper",
+                        border: "1px solid",
+                        borderColor: "divider",
+                    }
+                }}
+            >
+                <MenuItem 
+                    onClick={handleDeleteClick}
+                    sx={{ 
+                        color: "error.main",
+                        "&:hover": {
+                            backgroundColor: "error.light",
+                            color: "error.contrastText",
+                        }
+                    }}
+                >
+                    <Delete sx={{ mr: 1, fontSize: 20 }} />
+                    Delete Moment
+                </MenuItem>
+            </Menu>
         </Box>
     );
 };

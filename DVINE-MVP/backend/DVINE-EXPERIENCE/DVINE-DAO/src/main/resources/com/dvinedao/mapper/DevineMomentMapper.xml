@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.DevineMomentMapper">
+
+    <resultMap id="DevineMomentResultMap" type="com.dvinedao.domain.DevineMoment">
+        <id property="momentId" column="momentId"/>
+        <result property="userId" column="userId"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="location" column="location"/>
+        <result property="likeCount" column="likeCount"/>
+        <result property="commentCount" column="commentCount"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <!-- Additional fields for joined queries -->
+        <result property="userNickName" column="userNickName"/>
+        <result property="userAvatar" column="userAvatar"/>
+        <result property="isLikedByCurrentUser" column="isLikedByCurrentUser"/>
+    </resultMap>
+
+    <insert id="insertMoment" parameterType="com.dvinedao.domain.DevineMoment" 
+            useGeneratedKeys="true" keyProperty="momentId">
+        INSERT INTO devine_moments (userId, title, content, location)
+        VALUES (#{userId}, #{title}, #{content}, #{location})
+    </insert>
+
+    <select id="findAllMomentsWithUserInfo" resultMap="DevineMomentResultMap">
+        SELECT dm.momentId, dm.userId, dm.title, dm.content, dm.location,
+               dm.likeCount, dm.commentCount, dm.createTime, dm.updateTime,
+               u.nickName as userNickName, u.avatar as userAvatar,
+               CASE WHEN dml.userId IS NOT NULL THEN true ELSE false END as isLikedByCurrentUser
+        FROM devine_moments dm
+        LEFT JOIN users u ON dm.userId = u.userId
+        LEFT JOIN devine_moment_likes dml ON dm.momentId = dml.momentId AND dml.userId = #{currentUserId}
+        ORDER BY dm.createTime DESC
+    </select>
+
+    <select id="findMomentByIdWithUserInfo" resultMap="DevineMomentResultMap">
+        SELECT dm.momentId, dm.userId, dm.title, dm.content, dm.location,
+               dm.likeCount, dm.commentCount, dm.createTime, dm.updateTime,
+               u.nickName as userNickName, u.avatar as userAvatar,
+               CASE WHEN dml.userId IS NOT NULL THEN true ELSE false END as isLikedByCurrentUser
+        FROM devine_moments dm
+        LEFT JOIN users u ON dm.userId = u.userId
+        LEFT JOIN devine_moment_likes dml ON dm.momentId = dml.momentId AND dml.userId = #{currentUserId}
+        WHERE dm.momentId = #{momentId}
+    </select>
+
+    <select id="findMomentsByUserId" resultMap="DevineMomentResultMap">
+        SELECT dm.momentId, dm.userId, dm.title, dm.content, dm.location,
+               dm.likeCount, dm.commentCount, dm.createTime, dm.updateTime,
+               u.nickName as userNickName, u.avatar as userAvatar,
+               CASE WHEN dml.userId IS NOT NULL THEN true ELSE false END as isLikedByCurrentUser
+        FROM devine_moments dm
+        LEFT JOIN users u ON dm.userId = u.userId
+        LEFT JOIN devine_moment_likes dml ON dm.momentId = dml.momentId AND dml.userId = #{currentUserId}
+        WHERE dm.userId = #{userId}
+        ORDER BY dm.createTime DESC
+    </select>
+
+    <update id="updateLikeCount">
+        UPDATE devine_moments 
+        SET likeCount = likeCount + #{increment} 
+        WHERE momentId = #{momentId}
+    </update>
+
+    <update id="updateCommentCount">
+        UPDATE devine_moments 
+        SET commentCount = commentCount + #{increment} 
+        WHERE momentId = #{momentId}
+    </update>
+
+    <delete id="deleteMoment">
+        DELETE FROM devine_moments 
+        WHERE momentId = #{momentId}
+    </delete>
+
+    <select id="existsById" resultType="boolean">
+        SELECT COUNT(*) > 0 
+        FROM devine_moments 
+        WHERE momentId = #{momentId}
+    </select>
+
+    <select id="isOwner" resultType="boolean">
+        SELECT COUNT(*) > 0 
+        FROM devine_moments 
+        WHERE momentId = #{momentId} AND userId = #{userId}
+    </select>
+
+</mapper>

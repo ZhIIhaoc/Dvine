@@ -46,13 +46,12 @@ const fetchFAQs = async () => {
     }
 };
 
-const createFAQ = async (faqData, token) => {
+const createFAQ = async (faqData) => {
     try {
         const response = await fetch(`${BASE_URL}/faqs`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: token,
             },
             body: JSON.stringify(faqData),
         });
@@ -63,13 +62,12 @@ const createFAQ = async (faqData, token) => {
     }
 };
 
-const updateFAQ = async (faqData, token) => {
+const updateFAQ = async (faqData) => {
     try {
         const response = await fetch(`${BASE_URL}/faqs`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: token,
             },
             body: JSON.stringify(faqData),
         });
@@ -80,13 +78,10 @@ const updateFAQ = async (faqData, token) => {
     }
 };
 
-const deleteFAQ = async (faqId, token) => {
+const deleteFAQ = async (faqId) => {
     try {
         const response = await fetch(`${BASE_URL}/faqs/${faqId}`, {
             method: "DELETE",
-            headers: {
-                Authorization: token,
-            },
         });
         return await response.json();
     } catch (error) {
@@ -153,7 +148,7 @@ export function FAQ() {
     // Create new FAQ
     const handleCreateFAQ = async () => {
         try {
-            const result = await createFAQ(faqForm, token);
+            const result = await createFAQ(faqForm);
             if (result.code === 0) {
                 setCreateDialogOpen(false);
                 setFaqForm({ question: "", answer: "" });
@@ -170,13 +165,10 @@ export function FAQ() {
     // Update FAQ
     const handleUpdateFAQ = async () => {
         try {
-            const result = await updateFAQ(
-                {
-                    ...faqForm,
-                    faqId: editingFaq.faqId,
-                },
-                token
-            );
+            const result = await updateFAQ({
+                ...faqForm,
+                faqId: editingFaq.faqId,
+            });
             if (result.code === 0) {
                 setEditDialogOpen(false);
                 setEditingFaq(null);
@@ -198,7 +190,7 @@ export function FAQ() {
         }
 
         try {
-            const result = await deleteFAQ(faqId, token);
+            const result = await deleteFAQ(faqId);
             if (result.code === 0) {
                 fetchFAQsData();
             } else {

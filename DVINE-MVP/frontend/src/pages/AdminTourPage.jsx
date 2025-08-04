@@ -240,9 +240,12 @@ export const AdminTourPage = () => {
                                     <CardMedia
                                         component="img"
                                         height="180"
-                                        image={tour.primaryImageUrl}
+                                        image={tour.primaryImageUrl || "/placeholder-tour.svg"}
                                         alt={tour.title}
                                         sx={{ objectFit: "cover" }}
+                                        onError={(e) => {
+                                            e.target.src = "/placeholder-tour.svg";
+                                        }}
                                     />
                                     <CardContent>
                                         <Chip
