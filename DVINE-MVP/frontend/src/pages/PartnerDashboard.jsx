@@ -269,7 +269,7 @@ export function PartnerDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Create Tour
+                                                Create Experiences
                                             </Typography>
                                         </Button>
                                     </Box>
@@ -314,7 +314,7 @@ export function PartnerDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Your Uploaded Tours
+                                                Your Uploaded Experiences
                                             </Typography>
                                         </Button>
                                     </Box>
@@ -395,7 +395,7 @@ export function PartnerDashboard() {
                                                 fontWeight: "bold",
                                             }}
                                         >
-                                            View Posted Tours Live
+                                            View Posted Experiences Live
                                         </Typography>
                                     </Button>
                                 </Box>
