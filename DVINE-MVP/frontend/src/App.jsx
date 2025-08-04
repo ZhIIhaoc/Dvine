@@ -14,6 +14,7 @@ import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import { PartnerDashboard } from "./pages/PartnerDashboard.jsx";
 import { CurrentUploadedTours } from "./pages/CurrentUploadedTours.jsx";
+import SubscriptionSuccess from "./pages/SubscriptionSuccess.jsx";
 import ForgottenPassword from "./pages/ForgottenPassword.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
@@ -101,12 +102,16 @@ function App() {
                             element={<Checkout />}
                         />
                         <Route
+                            path="/subscription/success"
+                            element={<SubscriptionSuccess />}
+
                             path="/tour-image-test"
                             element={<TourImageTest />}
                         />
                         <Route
                             path="/test-endpoints"
                             element={<TestEndpoints />}
+
                         />
                     </Route>
                     <Route
