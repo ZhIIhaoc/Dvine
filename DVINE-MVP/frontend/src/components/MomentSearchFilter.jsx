@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
     Box,
     TextField,
@@ -13,7 +13,7 @@ import {
     IconButton,
     Collapse,
     Grid,
-} from '@mui/material';
+} from "@mui/material";
 import {
     Search as SearchIcon,
     FilterList as FilterIcon,
@@ -21,18 +21,18 @@ import {
     TrendingUp as TrendingUpIcon,
     AccessTime as AccessTimeIcon,
     Favorite as FavoriteIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('latest');
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("latest");
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilters, setActiveFilters] = useState([]);
 
     const sortOptions = [
-        { value: 'latest', label: 'Latest', icon: <AccessTimeIcon /> },
-        { value: 'popular', label: 'Most Popular', icon: <TrendingUpIcon /> },
-        { value: 'mostLiked', label: 'Most Liked', icon: <FavoriteIcon /> },
+        { value: "latest", label: "Latest", icon: <AccessTimeIcon /> },
+        { value: "popular", label: "Most Popular", icon: <TrendingUpIcon /> },
+        { value: "mostLiked", label: "Most Liked", icon: <FavoriteIcon /> },
     ];
 
     const handleSearch = () => {
@@ -40,12 +40,14 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
             searchTerm,
             sortBy,
         };
-        
+
         // Update active filters
         const newActiveFilters = [];
         if (searchTerm) newActiveFilters.push(`Search: "${searchTerm}"`);
-        if (sortBy !== 'latest') {
-            const sortLabel = sortOptions.find(opt => opt.value === sortBy)?.label;
+        if (sortBy !== "latest") {
+            const sortLabel = sortOptions.find(
+                (opt) => opt.value === sortBy
+            )?.label;
             newActiveFilters.push(`Sort: ${sortLabel}`);
         }
         setActiveFilters(newActiveFilters);
@@ -54,41 +56,43 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
     };
 
     const handleClear = () => {
-        setSearchTerm('');
-        setSortBy('latest');
+        setSearchTerm("");
+        setSortBy("latest");
         setActiveFilters([]);
         onClear();
     };
 
     const removeFilter = (filterIndex) => {
         const filter = activeFilters[filterIndex];
-        if (filter.startsWith('Search:')) {
-            setSearchTerm('');
-        } else if (filter.startsWith('Sort:')) {
-            setSortBy('latest');
+        if (filter.startsWith("Search:")) {
+            setSearchTerm("");
+        } else if (filter.startsWith("Sort:")) {
+            setSortBy("latest");
         }
-        
-        const newActiveFilters = activeFilters.filter((_, index) => index !== filterIndex);
+
+        const newActiveFilters = activeFilters.filter(
+            (_, index) => index !== filterIndex
+        );
         setActiveFilters(newActiveFilters);
-        
+
         // Re-apply filters
         const filters = {
-            searchTerm: filter.startsWith('Search:') ? '' : searchTerm,
-            sortBy: filter.startsWith('Sort:') ? 'latest' : sortBy,
+            searchTerm: filter.startsWith("Search:") ? "" : searchTerm,
+            sortBy: filter.startsWith("Sort:") ? "latest" : sortBy,
         };
         onSearch(filters);
     };
 
     const handleKeyPress = (event) => {
-        if (event.key === 'Enter') {
+        if (event.key === "Enter") {
             handleSearch();
         }
     };
 
     return (
-        <Paper sx={{ p: 2, mb: 3, bgcolor: 'background.paper' }}>
+        <Paper sx={{ p: 2, mb: 3, bgcolor: "background.paper" }}>
             {/* Search Bar */}
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
                 <TextField
                     fullWidth
                     placeholder="Search moment content, title, or location..."
@@ -96,7 +100,11 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyPress={handleKeyPress}
                     InputProps={{
-                        startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                        startAdornment: (
+                            <SearchIcon
+                                sx={{ mr: 1, color: "text.secondary" }}
+                            />
+                        ),
                     }}
                     sx={{
                         "& .MuiOutlinedInput-root": {
@@ -109,12 +117,18 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                         },
                     }}
                 />
-                
+
                 <FormControl sx={{ minWidth: 150 }}>
-                    <InputLabel>Sort By</InputLabel>
+                    <InputLabel
+                        id="sort-by-label"
+                        sx={{ color: "text.primary" }}
+                    >
+                        Sort By
+                    </InputLabel>
                     <Select
                         value={sortBy}
                         label="Sort By"
+                        labelId="sort-by-label"
                         onChange={(e) => setSortBy(e.target.value)}
                         sx={{
                             "& .MuiOutlinedInput-root": {
@@ -129,7 +143,13 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                     >
                         {sortOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                    }}
+                                >
                                     {option.icon}
                                     {option.label}
                                 </Box>
@@ -150,7 +170,7 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                     variant="outlined"
                     startIcon={<ClearIcon />}
                     onClick={handleClear}
-                    disabled={!searchTerm && sortBy === 'latest'}
+                    disabled={!searchTerm && sortBy === "latest"}
                 >
                     Clear
                 </Button>
@@ -159,10 +179,14 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
             {/* Active Filters */}
             {activeFilters.length > 0 && (
                 <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                    >
                         Current Filters:
                     </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {activeFilters.map((filter, index) => (
                             <Chip
                                 key={index}
@@ -179,7 +203,13 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
 
             {/* Advanced Filters */}
             <Collapse in={showFilters}>
-                <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                <Box
+                    sx={{
+                        pt: 2,
+                        borderTop: "1px solid",
+                        borderColor: "divider",
+                    }}
+                >
                     <Typography variant="h6" gutterBottom>
                         Advanced Filters
                     </Typography>
@@ -199,7 +229,9 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                                     <MenuItem value="">All Time</MenuItem>
                                     <MenuItem value="today">Today</MenuItem>
                                     <MenuItem value="week">This Week</MenuItem>
-                                    <MenuItem value="month">This Month</MenuItem>
+                                    <MenuItem value="month">
+                                        This Month
+                                    </MenuItem>
                                     <MenuItem value="year">This Year</MenuItem>
                                 </Select>
                             </FormControl>
@@ -221,8 +253,12 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                                 <Select label="Comments Count" defaultValue="">
                                     <MenuItem value="">Any</MenuItem>
                                     <MenuItem value="5+">5+ Comments</MenuItem>
-                                    <MenuItem value="10+">10+ Comments</MenuItem>
-                                    <MenuItem value="20+">20+ Comments</MenuItem>
+                                    <MenuItem value="10+">
+                                        10+ Comments
+                                    </MenuItem>
+                                    <MenuItem value="20+">
+                                        20+ Comments
+                                    </MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -233,4 +269,4 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
     );
 };
 
-export default MomentSearchFilter; 
+export default MomentSearchFilter;
