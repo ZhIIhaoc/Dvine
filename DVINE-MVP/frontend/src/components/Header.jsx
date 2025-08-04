@@ -124,6 +124,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 alignItems: "center",
                                 justifyContent: "flex-end",
                                 height: "100%",
+                                display: { xs: "none", md: "flex" },
                             }}
                         >
                             {isAdmin ? (
