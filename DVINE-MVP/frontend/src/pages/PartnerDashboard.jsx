@@ -117,7 +117,7 @@ export function PartnerDashboard() {
             if (responseInfo.code === 0) {
                 fetchSubscriptionStatus();
             } else {
-                alert(responseInfo.msg || "❌ Failed to unsubscribe.");
+                alert(responseInfo.msg || " Failed to unsubscribe.");
             }
         } catch (err) {
             console.error("Unsubscribe error:", err);
