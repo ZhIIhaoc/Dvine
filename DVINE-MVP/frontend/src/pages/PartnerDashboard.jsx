@@ -20,10 +20,11 @@ import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
 import TourIcon from "@mui/icons-material/Tour";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 
 export function PartnerDashboard() {
-    const { userInfo } = useContext(AuthContext);
+    const { userInfo, token } = useContext(AuthContext);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
     const navigate = useNavigate();
 
@@ -32,6 +33,32 @@ export function PartnerDashboard() {
 
     const isPartner = userInfo?.permission === 3 || userInfo?.permission === 2;
     const premiumPartner = userInfo?.permission === 3;
+    const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+
+    useEffect(() => {
+        fetchSubscriptionStatus();
+    }, []);
+
+    const fetchSubscriptionStatus = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/subscription/status", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            });
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                setSubscriptionStatus(responseInfo.data);
+            } else {
+                console.error("Failed to fetch subscription status:", responseInfo.msg);
+            }
+        } catch (err) {
+            console.error("Error fetching subscription status:", err);
+        }
+    };
 
     // Fetch catalogues (still relevant for partner when creating tours)
     useEffect(() => {
@@ -39,6 +66,55 @@ export function PartnerDashboard() {
     }, []);
 
 
+    const handleSubscriptionUpgrade = async () => {
+        try {
+            // determine type
+            const type = userInfo?.permission === 0 ? "PREMIUM" : "PARTNER";
+
+            const response = await fetch(`http://localhost:8080/subscription/checkout/${type}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            });
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                window.location.href = responseInfo.data.checkoutUrl;
+            } else {
+                alert(responseInfo.msg || "Subscription failed");
+            }
+        } catch (err) {
+            console.error("Subscription error:", err);
+            alert("An error occurred while creating the subscription session.");
+        }
+    };
+    const handleUnsubscribe = async () => {
+        if (!window.confirm("Are you sure you want to unsubscribe? Your benefits will last until the end of the billing period.")) return;
+
+        try {
+            const response = await fetch("http://localhost:8080/subscription/unsubscribe", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            });
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                fetchSubscriptionStatus();
+            } else {
+                alert(responseInfo.msg || "❌ Failed to unsubscribe.");
+            }
+        } catch (err) {
+            console.error("Unsubscribe error:", err);
+            alert(" An error occurred while trying to unsubscribe.");
+        }
+    };
 
     const getCatalogueInfo = async () => {
         try {
@@ -85,7 +161,27 @@ export function PartnerDashboard() {
                         >
                             Welcome Back {userName}
                         </Typography>
-
+                        {userInfo.permission === 2 && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ mb: 3 }}
+                                startIcon={<CreditCardIcon />}
+                                onClick={handleSubscriptionUpgrade}
+                            >
+                                Upgrade to Paid Partner ($99.99/week)
+                            </Button>
+                        )}
+                        {subscriptionStatus?.hasActiveSubscription && (
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                sx={{ mb: 3 }}
+                                onClick={handleUnsubscribe}
+                            >
+                                Unsubscribe from Subscription
+                            </Button>
+                        )}
                         {/* Dashboard Layout */}
                         <Box
                             sx={{

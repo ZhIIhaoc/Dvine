@@ -14,6 +14,7 @@ import TourDetails from "./pages/TourDetails.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import { PartnerDashboard } from "./pages/PartnerDashboard.jsx";
 import { CurrentUploadedTours } from "./pages/CurrentUploadedTours.jsx";
+import SubscriptionSuccess from "./pages/SubscriptionSuccess.jsx";
 import ForgottenPassword from "./pages/ForgottenPassword.jsx";
 import TestUserProfile from "./pages/TestUserProfile.jsx";
 import Layout from "./components/Layout";
@@ -97,6 +98,10 @@ function App() {
                         <Route
                             path="/checkout/:tourId"
                             element={<Checkout />}
+                        />
+                        <Route
+                            path="/subscription/success"
+                            element={<SubscriptionSuccess />}
                         />
                     </Route>
                     <Route
