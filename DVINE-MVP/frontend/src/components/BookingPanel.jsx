@@ -24,7 +24,9 @@ export default function PartnerBookingsPanel({ userId }) {
     const fetchBookings = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/bookings/user/${userId}`);
+            const response = await fetch(
+                `http://localhost:8080/bookings/user/${userId}`
+            );
             const responseInfo = await response.json();
 
             if (responseInfo.code === 0) {
@@ -40,16 +42,20 @@ export default function PartnerBookingsPanel({ userId }) {
     };
 
     const cancelBooking = async (bookingId) => {
-        if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+        if (!window.confirm("Are you sure you want to cancel this booking?"))
+            return;
 
         setCancelling(true);
         try {
-            const response = await fetch(`http://localhost:8080/bookings/${bookingId}/cancel`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                `http://localhost:8080/bookings/${bookingId}/cancel`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const responseInfo = await response.json();
 
@@ -71,8 +77,8 @@ export default function PartnerBookingsPanel({ userId }) {
     );
 
     return (
-        <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+        <Box sx={{ mt: 2 }}>
+            <Typography variant="h6" sx={{ mb: 5, fontWeight: "bold" }}>
                 Your Bookings
             </Typography>
 
@@ -80,7 +86,12 @@ export default function PartnerBookingsPanel({ userId }) {
                 label="Search bookings..."
                 variant="outlined"
                 fullWidth
-                sx={{ mb: 3 }}
+                sx={{
+                    mb: 3,
+                    "& .MuiInputLabel-root": {
+                        color: "text.primary",
+                    },
+                }}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -106,7 +117,9 @@ export default function PartnerBookingsPanel({ userId }) {
                             "&:hover": { bgcolor: "action.hover" },
                         }}
                     >
-                        <Typography variant="h6">{booking.tourDestination}</Typography>
+                        <Typography variant="h6">
+                            {booking.tourDestination}
+                        </Typography>
                     </Box>
                 ))}
 
@@ -131,15 +144,38 @@ export default function PartnerBookingsPanel({ userId }) {
                 >
                     {selectedBooking && (
                         <>
-                            <Typography id="booking-modal-title" variant="h6" sx={{ mb: 2 }}>
+                            <Typography
+                                id="booking-modal-title"
+                                variant="h6"
+                                sx={{ mb: 2 }}
+                            >
                                 Booking Details
                             </Typography>
-                            <Typography><strong>Destination:</strong> {selectedBooking.tourDestination}</Typography>
-                            <Typography><strong>Tour:</strong> {selectedBooking.tourTitle}</Typography>
-                            <Typography><strong>Reference:</strong> {selectedBooking.bookingReference}</Typography>
-                            <Typography><strong>Status:</strong> {selectedBooking.status}</Typography>
-                            <Typography><strong>Date:</strong> {selectedBooking.travelDate}</Typography>
-                            <Typography><strong>Total Paid:</strong> ${selectedBooking.totalAmount} {selectedBooking.currency}</Typography>
+                            <Typography>
+                                <strong>Destination:</strong>{" "}
+                                {selectedBooking.tourDestination}
+                            </Typography>
+                            <Typography>
+                                <strong>Tour:</strong>{" "}
+                                {selectedBooking.tourTitle}
+                            </Typography>
+                            <Typography>
+                                <strong>Reference:</strong>{" "}
+                                {selectedBooking.bookingReference}
+                            </Typography>
+                            <Typography>
+                                <strong>Status:</strong>{" "}
+                                {selectedBooking.status}
+                            </Typography>
+                            <Typography>
+                                <strong>Date:</strong>{" "}
+                                {selectedBooking.travelDate}
+                            </Typography>
+                            <Typography>
+                                <strong>Total Paid:</strong> $
+                                {selectedBooking.totalAmount}{" "}
+                                {selectedBooking.currency}
+                            </Typography>
 
                             {selectedBooking.status !== "CANCELLED" && (
                                 <Button
@@ -148,9 +184,13 @@ export default function PartnerBookingsPanel({ userId }) {
                                     fullWidth
                                     sx={{ mt: 3 }}
                                     disabled={cancelling}
-                                    onClick={() => cancelBooking(selectedBooking.bookingId)}
+                                    onClick={() =>
+                                        cancelBooking(selectedBooking.bookingId)
+                                    }
                                 >
-                                    {cancelling ? "Cancelling..." : "Cancel Booking"}
+                                    {cancelling
+                                        ? "Cancelling..."
+                                        : "Cancel Booking"}
                                 </Button>
                             )}
 

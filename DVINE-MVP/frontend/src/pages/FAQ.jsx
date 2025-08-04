@@ -228,13 +228,44 @@ export function FAQ() {
     }
 
     return (
-        <Box sx={{ minHeight: "100vh", py: 4, px: { xs: 2, sm: 4, md: 8 } }}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+                py: 4,
+                px: { xs: 2, sm: 4, md: 8 },
+                maxWidth: { sm: "90%", md: "80%" },
+                mx: "auto",
+            }}
+        >
             {/* Header */}
             <Box sx={{ mb: 4, textAlign: "center" }}>
-                <Typography variant="h3" color="text.tertiary" gutterBottom>
+                <Typography
+                    variant="h3"
+                    color="text.tertiary"
+                    gutterBottom
+                    sx={{
+                        fontSize: {
+                            xs: "1.8rem",
+                            sm: "2.5rem",
+                            md: "3rem",
+                        },
+                    }}
+                >
                     Frequently Asked Questions
                 </Typography>
-                <Typography variant="h6" color="text.secondary">
+                <Typography
+                    variant="h6"
+                    color="text.primary"
+                    fontWeight="regular"
+                    sx={{
+                        fontSize: {
+                            xs: "1rem",
+                            sm: "1.5rem",
+                        },
+                    }}
+                >
                     Find answers to common questions about our tours and
                     services
                 </Typography>
@@ -339,17 +370,27 @@ export function FAQ() {
                                         {faq.answer}
                                     </Typography>
                                     {isAdmin && (
-                                        <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                gap: 1,
+                                                ml: 2,
+                                            }}
+                                        >
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleEditFAQ(faq)}
+                                                onClick={() =>
+                                                    handleEditFAQ(faq)
+                                                }
                                                 color="primary"
                                             >
                                                 <EditIcon />
                                             </IconButton>
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleDeleteFAQ(faq.faqId)}
+                                                onClick={() =>
+                                                    handleDeleteFAQ(faq.faqId)
+                                                }
                                                 color="error"
                                             >
                                                 <DeleteIcon />
