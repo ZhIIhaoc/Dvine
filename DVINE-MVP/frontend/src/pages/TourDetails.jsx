@@ -69,6 +69,8 @@ import TourImageUpload from "../components/TourImageUpload";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Mock data for fallback
 const mockTour = {
@@ -354,16 +356,26 @@ export default function TourDetails() {
                     ))}
                 </Swiper>
             </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    px: 2,
-                }}
-            >
-                <Grid container spacing={4}>
+            <Box sx={{ display: "flex", justifyContent: "center", px: 2 }}>
+                <Grid
+                    container
+                    spacing={4}
+                    sx={{
+                        width: "100%",
+                        flexWrap: { xs: "wrap", md: "nowrap" },
+                    }}
+                >
                     {/* Main Content */}
-                    <Grid item xs={12} md={8}>
+                    <Grid
+                        item
+                        xs={12}
+                        md
+                        sx={{
+                            flexBasis: 0,
+                            flexGrow: 1,
+                            flexShrink: 1,
+                        }}
+                    >
                         {/* Tour Header */}
                         <Box sx={{ mb: 3 }}>
                             <Box
@@ -501,7 +513,14 @@ export default function TourDetails() {
                         </Box>
 
                         {/* Description */}
-                        <Paper sx={{ p: 3, mb: 3 }}>
+                        <Paper
+                            sx={{
+                                p: 3,
+                                mb: 3,
+                                width: "100%",
+                                wordBreak: "break-word",
+                            }}
+                        >
                             <Typography
                                 variant="h5"
                                 fontWeight="bold"
@@ -509,9 +528,23 @@ export default function TourDetails() {
                             >
                                 About This Tour
                             </Typography>
-                            <Typography variant="body1" paragraph>
-                                {tour.description}
-                            </Typography>
+                            <Box
+                                sx={{
+                                    "& img": { maxWidth: "100%" },
+                                    "& pre": {
+                                        p: 2,
+                                        backgroundColor: "grey.100",
+                                        borderRadius: 1,
+                                    },
+                                }}
+                            >
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    sx={{ wordBreak: "break-word" }}
+                                >
+                                    {tour.description}
+                                </ReactMarkdown>
+                            </Box>
                         </Paper>
 
                         {/* Tabs for Details */}
@@ -697,7 +730,7 @@ export default function TourDetails() {
                     </Grid>
 
                     {/* Sidebar */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md="auto">
                         {/* Booking Card */}
                         <Card
                             sx={{
@@ -711,13 +744,13 @@ export default function TourDetails() {
                                 {/* <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
                                 ${tour.price}
                             </Typography> */}
-                                <Typography
+                                {/* <Typography
                                     variant="body2"
                                     color="text.primary"
                                     gutterBottom
                                 >
                                     per person
-                                </Typography>
+                                </Typography> */}
 
                                 <Box sx={{ my: 2 }}>
                                     <Button
