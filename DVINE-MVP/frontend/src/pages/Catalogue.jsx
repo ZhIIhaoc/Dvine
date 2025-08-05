@@ -212,6 +212,7 @@ export function Catalogue() {
         fetchCataloguesData();
         fetchToursData();
         fetchFeaturedToursData();
+        window.scrollTo(0, 0);
     }, []);
     // useEffect(() => {
     //     console.log("Catalogues:", catalogues);
@@ -850,7 +851,9 @@ export function Catalogue() {
                                                     size="small"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleDeleteTour(tour.tourId);
+                                                        handleDeleteTour(
+                                                            tour.tourId
+                                                        );
                                                     }}
                                                     color="error"
                                                 >

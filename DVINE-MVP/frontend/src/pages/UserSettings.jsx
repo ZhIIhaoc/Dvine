@@ -72,6 +72,7 @@ const UserSettings = () => {
     ];
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         if (userInfo) {
             setFormData({
                 email: userInfo.email || "",
@@ -159,7 +160,12 @@ const UserSettings = () => {
                     />
                     <Typography
                         variant="h5"
-                        sx={{ fontWeight: 700, color: "text.tertiary", mb: 1, mt: 2 }}
+                        sx={{
+                            fontWeight: 700,
+                            color: "text.tertiary",
+                            mb: 1,
+                            mt: 2,
+                        }}
                     >
                         Account Settings
                     </Typography>

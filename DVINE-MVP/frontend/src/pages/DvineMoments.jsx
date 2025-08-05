@@ -80,6 +80,7 @@ export const DvineMoments = () => {
 
     // load moment data
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchMoments();
     }, []);
 
@@ -385,30 +386,47 @@ export const DvineMoments = () => {
 
     return (
         <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-            <Container sx={{ py: 3 }}>
-                {/* Header */}
-                <Box
+            <Box
+                sx={{
+                    position: "fixed",
+                    top: 0,
+                    zIndex: 10,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    backgroundColor: "background.default",
+                    width: "100%",
+                    mb: 3,
+                    px: { xs: 3, sm: 10, xl: 33 },
+                    pt: 14,
+                    pb: 3,
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    fontWeight="bold"
+                    color="text.tertiary"
                     sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mb: 3,
+                        fontSize: {
+                            xs: "1.2rem",
+                            sm: "1.5rem",
+                            md: "2rem",
+                        },
                     }}
                 >
-                    <Typography variant="h4" fontWeight="bold" color="primary">
-                        DVINE Moments
-                    </Typography>
-                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                        <Button
-                            variant="contained"
-                            startIcon={<Add />}
-                            onClick={() => setCreateDialogOpen(true)}
-                        >
-                            Share Moment
-                        </Button>
-                    </Box>
+                    DVINE Moments
+                </Typography>
+                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<Add />}
+                        onClick={() => setCreateDialogOpen(true)}
+                    >
+                        Share Moment
+                    </Button>
                 </Box>
-
+            </Box>
+            <Container sx={{ py: 3, pt: 12 }}>
                 {/* Error Alert */}
                 {error && (
                     <Alert severity="error" sx={{ mb: 3 }}>
