@@ -123,6 +123,7 @@ export default function PostedToursPanel() {
                         backgroundColor: "rgba(0, 0, 0, 0.7)",
                     },
                 }}
+                disableScrollLock
             >
                 <Box
                     sx={{

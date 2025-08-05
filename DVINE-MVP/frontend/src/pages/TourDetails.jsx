@@ -324,6 +324,7 @@ export default function TourDetails() {
                 startIcon={<BackIcon />}
                 onClick={() => navigate("/catalogue")}
                 sx={{
+                    mt: -4,
                     mb: 3,
                     color: "gray",
                     fontWeight: "regular",
@@ -341,7 +342,7 @@ export default function TourDetails() {
                     pagination={{ clickable: true }}
                     autoplay={{ delay: 5000 }}
                     loop={true}
-                    style={{ width: "80%", height: "400px" }}
+                    style={{ width: "80%", height: "500px" }}
                 >
                     {tour.images?.map((image, index) => (
                         <SwiperSlide key={index}>
@@ -351,7 +352,7 @@ export default function TourDetails() {
                                 alt={`${tour.title} - Image ${index + 1}`}
                                 sx={{
                                     width: "100%",
-                                    height: "400px",
+                                    height: "500px",
                                     objectFit: "cover",
                                 }}
                             />
@@ -981,6 +982,7 @@ export default function TourDetails() {
                 onClose={() => setEditOpen(false)}
                 maxWidth="md"
                 fullWidth
+                disableScrollLock
             >
                 <DialogTitle>Edit Tour</DialogTitle>
                 <DialogContent>
@@ -991,15 +993,15 @@ export default function TourDetails() {
                                 gutterBottom
                                 sx={{ mt: 2, mb: 1 }}
                             >
-                                Tour Information
+                                Experience Information
                             </Typography>
                             <Typography
                                 variant="body2"
                                 color="text.primary"
                                 sx={{ mb: 2 }}
                             >
-                                Update tour details and click "Update" to save
-                                changes.
+                                Update experience details and click "Update" to
+                                save changes.
                             </Typography>
                             <TextField
                                 fullWidth
@@ -1011,6 +1013,11 @@ export default function TourDetails() {
                                         title: e.target.value,
                                     })
                                 }
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
                                 margin="normal"
                                 required
                             />
@@ -1028,7 +1035,11 @@ export default function TourDetails() {
                                 multiline
                                 rows={3}
                             /> */}
-                            <Typography variant="body1" gutterBottom>
+                            <Typography
+                                variant="body1"
+                                gutterBottom
+                                sx={{ mt: 1 }}
+                            >
                                 Experience Description
                             </Typography>
                             <Box
@@ -1100,6 +1111,12 @@ export default function TourDetails() {
                                     })
                                 }
                                 margin="normal"
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
+                                sx={{ mt: 4 }}
                             />
                             <TextField
                                 fullWidth
@@ -1113,6 +1130,12 @@ export default function TourDetails() {
                                 }
                                 margin="normal"
                                 type="number"
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
+                                sx={{ mt: 4 }}
                             />
                             <TextField
                                 fullWidth
@@ -1126,6 +1149,12 @@ export default function TourDetails() {
                                 }
                                 margin="normal"
                                 type="number"
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
+                                sx={{ mt: 4 }}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
