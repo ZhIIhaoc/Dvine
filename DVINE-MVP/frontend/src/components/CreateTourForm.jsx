@@ -232,16 +232,16 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 gap: 3,
             }}
         >
-            <Typography variant="h6">Create New Tour</Typography>
+            <Typography variant="h6">Create New Experience</Typography>
 
             {/* Tour Information Section */}
             <Box sx={{ mt: 2 }}>
                 <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                    Tour Information
+                    Experience Information
                 </Typography>
                 <TextField
-                    label="Tour Title"
-                    placeholder="Tour Title"
+                    label="Experience Title"
+                    placeholder="Experience Title"
                     sx={{ mb: 4, width: "100%" }}
                     value={tourTitle}
                     onChange={(event) => setTourTitle(event.target.value)}
@@ -349,8 +349,8 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     inputProps={{ min: 0 }}
                 />
                 <TextField
-                    label="Tour Destination"
-                    placeholder="Tour Destination"
+                    label="Experience Destination"
+                    placeholder="Experience Destination"
                     fullWidth
                     sx={{ mb: 6, width: "100%" }}
                     value={tourDestination}
@@ -383,17 +383,14 @@ export default function CreateTourForm({ onClose, catalogueList }) {
             {/* Tour Images Section */}
             <Box sx={{ mt: 3 }}>
                 <Divider sx={{ mb: 2 }}>
-                    <Typography variant="h6" color="text.secondary">
+                    <Typography variant="h6" color="text.primary">
                         Tour Images
                     </Typography>
                 </Divider>
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 2 }}
-                >
-                    Select images for your tour. The first image will be set as
-                    the primary image.
+
+                <Typography variant="body2" color="text.primary" sx={{ mb: 2 }}>
+                    Select images for your experience. The first image will be
+                    set as the primary image.
                     {userInfo?.permission < 4 &&
                         " Note: Images will be uploaded after tour approval."}
                 </Typography>
