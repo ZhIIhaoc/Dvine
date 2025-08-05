@@ -17,6 +17,7 @@ import TourImageUpload from "./TourImageUpload";
 import { useAuth } from "../components/AuthContext";
 import ReactMarkdown from "react-markdown";
 import MDEditor from "@uiw/react-md-editor";
+import remarkBreaks from "remark-breaks";
 
 export default function CreateTourForm({ onClose, catalogueList }) {
     const { userInfo } = useAuth();
@@ -332,6 +333,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                                     theme.palette.background.default,
                                 color: theme.palette.text.primary,
                             },
+                            remarkPlugins: [remarkBreaks],
                         }}
                     />
                 </Box>
