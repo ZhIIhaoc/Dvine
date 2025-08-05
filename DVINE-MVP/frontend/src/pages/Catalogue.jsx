@@ -498,16 +498,18 @@ export function Catalogue() {
                         <Typography variant="h5" fontWeight="bold">
                             Manage Catalogues
                         </Typography>
-                        <Tooltip title="Create New Catalogue">
-                            <Fab
-                                color="primary"
-                                size="medium"
-                                onClick={() => setCreateCatalogueOpen(true)}
-                                sx={{ ml: 2 }}
-                            >
-                                <AddIcon />
-                            </Fab>
-                        </Tooltip>
+                        {userInfo?.permission >= 4 && (
+                            <Tooltip title="Create New Catalogue">
+                                <Fab
+                                    color="primary"
+                                    size="medium"
+                                    onClick={() => setCreateCatalogueOpen(true)}
+                                    sx={{ ml: 2 }}
+                                >
+                                    <AddIcon />
+                                </Fab>
+                            </Tooltip>
+                        )}
                     </Box>
 
                     {/* Catalogue Cards */}
@@ -632,30 +634,32 @@ export function Catalogue() {
                                         >
                                             View Tours
                                         </Button>
-                                        <Box>
-                                            <IconButton
-                                                size="small"
-                                                onClick={() =>
-                                                    handleEditCatalogue(
-                                                        catalogue
-                                                    )
-                                                }
-                                                color="primary"
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                size="small"
-                                                onClick={() =>
-                                                    handleDeleteCatalogue(
-                                                        catalogue.catalogueId
-                                                    )
-                                                }
-                                                color="error"
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Box>
+                                        {userInfo?.permission >= 4 && (
+                                            <Box>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() =>
+                                                        handleEditCatalogue(
+                                                            catalogue
+                                                        )
+                                                    }
+                                                    color="primary"
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() =>
+                                                        handleDeleteCatalogue(
+                                                            catalogue.catalogueId
+                                                        )
+                                                    }
+                                                    color="error"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Box>
+                                        )}
                                     </CardActions>
                                 </Card>
                             </Grid>
@@ -836,16 +840,18 @@ export function Catalogue() {
                                                     <EditIcon />
                                                 </IconButton>
                                             )}
-                                            <IconButton
-                                                size="small"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteTour(tour.tourId);
-                                                }}
-                                                color="error"
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
+                                            {userInfo?.permission >= 3 && (
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteTour(tour.tourId);
+                                                    }}
+                                                    color="error"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
                                         </Box>
                                     </CardActions>
                                 </Card>
