@@ -29,7 +29,8 @@ export default function BookNowButton({ tourId, quantity = 1, travelDate, disabl
       // Use checkoutUrl from backend response
       const checkoutUrl = result.data?.checkoutUrl;
       if (result.code !== 0 || !checkoutUrl) throw new Error(result.msg || "Failed to create payment session");
-      window.open(checkoutUrl, "_blank"); // Open Stripe checkout in new tab
+      //window.open(checkoutUrl, "_blank"); // Open Stripe checkout in new tab
+      window.location.href = checkoutUrl; // Redirect current tab to Stripe checkout
     } catch (err) {
       alert("Payment error: " + err.message);
     } finally {
