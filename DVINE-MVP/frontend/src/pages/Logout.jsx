@@ -21,6 +21,7 @@ const Logout = () => {
     const [message, setMessage] = useState("");
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const doLogout = async () => {
             try {
                 await logout(

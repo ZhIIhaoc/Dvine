@@ -26,13 +26,16 @@ export function UserDashboard() {
             // determine type
             const type = userInfo?.permission === 0 ? "PREMIUM" : "PARTNER";
 
-            const response = await fetch(`http://localhost:8080/subscription/checkout/${type}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `${token}`,
-                },
-            });
+            const response = await fetch(
+                `http://localhost:8080/subscription/checkout/${type}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `${token}`,
+                    },
+                }
+            );
 
             const responseInfo = await response.json();
 
@@ -108,6 +111,7 @@ export function UserDashboard() {
         }
     };
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchSubscriptionStatus();
     }, []);
     return isUser ? (
@@ -134,28 +138,6 @@ export function UserDashboard() {
                         {" "}
                         Welcome Back {userName}{" "}
                     </Typography>
-                    {userInfo.permission === 0 && (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            sx={{ mb: 3 }}
-                            startIcon={<CreditCardIcon />}
-                            onClick={handleSubscriptionUpgrade}
-                        >
-                            Upgrade to Premium ($9.99/month)
-                        </Button>
-                    )}
-                    {subscriptionStatus?.hasActiveSubscription && (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            sx={{ mb: 3 }}
-                            startIcon={<CreditCardIcon />}
-                            onClick={handleUnsubscribe}
-                        >
-                            Unsubscribe
-                        </Button>
-                    )}
                     <Box
                         sx={{
                             width: "100%",
@@ -263,7 +245,9 @@ export function UserDashboard() {
                                     }}
                                 >
                                     <Button
-                                        onClick={() => setActivePanel("payments")}
+                                        onClick={() =>
+                                            setActivePanel("payments")
+                                        }
                                         fullWidth
                                         sx={{
                                             justifyContent: "flex-start",
@@ -275,7 +259,10 @@ export function UserDashboard() {
                                             },
                                         }}
                                     >
-                                        <CreditCardIcon style={{ marginRight: 8 }} sx={{ color: "text.tertiary" }} />
+                                        <CreditCardIcon
+                                            style={{ marginRight: 8 }}
+                                            sx={{ color: "text.tertiary" }}
+                                        />
                                         <Typography
                                             sx={{
                                                 color: "text.primary",
@@ -337,13 +324,45 @@ export function UserDashboard() {
                                     {activePanel === "home" && (
                                         <>
                                             <Box sx={{ mt: 4 }}>
-                                                This is an admin dashboard. Please select options on the left. (Temp Message)
+                                                This is a user dashboard. Please
+                                                select options on the left.
                                             </Box>
                                             {subscriptionStatus?.currentPeriodEnd && (
                                                 <Typography sx={{ my: 2 }}>
                                                     Subscription valid until:{" "}
-                                                    {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}
+                                                    {new Date(
+                                                        subscriptionStatus.currentPeriodEnd
+                                                    ).toLocaleDateString()}
                                                 </Typography>
+                                            )}
+                                            {userInfo.permission === 0 && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    sx={{ mt: 3 }}
+                                                    startIcon={
+                                                        <CreditCardIcon />
+                                                    }
+                                                    onClick={
+                                                        handleSubscriptionUpgrade
+                                                    }
+                                                >
+                                                    Upgrade to Premium
+                                                    ($9.99/month)
+                                                </Button>
+                                            )}
+                                            {subscriptionStatus?.hasActiveSubscription && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    sx={{ mt: 3 }}
+                                                    startIcon={
+                                                        <CreditCardIcon />
+                                                    }
+                                                    onClick={handleUnsubscribe}
+                                                >
+                                                    Unsubscribe
+                                                </Button>
                                             )}
                                         </>
                                     )}

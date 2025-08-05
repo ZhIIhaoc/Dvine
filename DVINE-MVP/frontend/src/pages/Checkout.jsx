@@ -58,6 +58,8 @@ export default function Checkout() {
                     position: "absolute",
                     top: 0,
                     left: 16,
+                    color: "gray",
+                    fontWeight: "regular",
                 }}
             >
                 Back to Experience Page

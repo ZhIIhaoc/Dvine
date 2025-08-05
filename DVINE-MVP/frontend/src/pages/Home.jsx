@@ -62,6 +62,7 @@ export const Home = () => {
     const [featuredTours, setFeaturedTours] = useState([]);
     const navigate = useNavigate();
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchFeaturedToursData();
     }, []);
     // Fetch featured tours from API
@@ -205,6 +206,7 @@ export const Home = () => {
                     justifyContent: "center",
                     gridAutoColumns: "auto",
                     mt: 3,
+                    mx: "auto",
                 }}
             >
                 <Box padding={3} sx={{ mb: 5 }}>
@@ -222,7 +224,15 @@ export const Home = () => {
                         <Typography
                             variant="h5"
                             fontWeight="bold"
-                            sx={{ mb: 2 }}
+                            sx={{
+                                mb: 2,
+                                fontSize: {
+                                    xs: "1.25rem",
+                                    sm: "1.5rem",
+                                    md: "1.75rem",
+                                },
+                                mx: "auto",
+                            }}
                             color="text.primary"
                         >
                             Explore your next all inclusive tour
