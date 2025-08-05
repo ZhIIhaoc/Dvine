@@ -31,6 +31,7 @@ export function PartnerDashboard() {
     const [refetchSubscription, setRefetchSubscription] = useState(false);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchSubscriptionStatus();
     }, [refetchSubscription]);
 
@@ -272,9 +273,7 @@ export function PartnerDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-
                                                 Create Experiences
-                                                
                                             </Typography>
                                         </Button>
                                     </Box>
@@ -455,48 +454,72 @@ export function PartnerDashboard() {
                                 >
                                     {/* Panels */}
                                     {activePanel === "home" && (
-                                         <React.Fragment key={subscriptionStatus?.status || "none"}>
+                                        <React.Fragment
+                                            key={
+                                                subscriptionStatus?.status ||
+                                                "none"
+                                            }
+                                        >
                                             <Box sx={{ mt: 4 }}>
                                                 This is the Partner Dashboard.
-                                                Please select an option on the left.
+                                                Please select an option on the
+                                                left.
                                             </Box>
 
                                             {subscriptionStatus === null ? (
-                                                <CircularProgress sx={{ my: 3 }} />
+                                                <CircularProgress
+                                                    sx={{ my: 3 }}
+                                                />
                                             ) : userInfo?.permission === 2 ? (
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
                                                     sx={{ my: 3 }}
-                                                    startIcon={<CreditCardIcon />}
-                                                    onClick={handleSubscriptionUpgrade}
+                                                    startIcon={
+                                                        <CreditCardIcon />
+                                                    }
+                                                    onClick={
+                                                        handleSubscriptionUpgrade
+                                                    }
                                                 >
-                                                    Upgrade to Paid Partner ($99.99/week)
+                                                    Upgrade to Paid Partner
+                                                    ($99.99/week)
                                                 </Button>
                                             ) : userInfo?.permission === 3 ? (
-                                                subscriptionStatus.status === "CANCELED" ? (
+                                                subscriptionStatus.status ===
+                                                "CANCELED" ? (
                                                     <Typography sx={{ my: 3 }}>
-                                                        You’ve cancelled your subscription. You still have access until{" "}
-                                                        {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}.
+                                                        You’ve cancelled your
+                                                        subscription. You still
+                                                        have access until{" "}
+                                                        {new Date(
+                                                            subscriptionStatus.currentPeriodEnd
+                                                        ).toLocaleDateString()}
+                                                        .
                                                     </Typography>
                                                 ) : (
                                                     <Button
                                                         variant="outlined"
                                                         color="error"
                                                         sx={{ my: 3 }}
-                                                        onClick={handleUnsubscribe}
+                                                        onClick={
+                                                            handleUnsubscribe
+                                                        }
                                                     >
-                                                        Unsubscribe from Subscription
+                                                        Unsubscribe from
+                                                        Subscription
                                                     </Button>
                                                 )
                                             ) : null}
                                             {subscriptionStatus?.currentPeriodEnd && (
                                                 <Typography sx={{ my: 2 }}>
                                                     Subscription valid until:{" "}
-                                                    {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}
+                                                    {new Date(
+                                                        subscriptionStatus.currentPeriodEnd
+                                                    ).toLocaleDateString()}
                                                 </Typography>
                                             )}
-                                            </React.Fragment>
+                                        </React.Fragment>
                                     )}
 
                                     {activePanel === "createTour" && (

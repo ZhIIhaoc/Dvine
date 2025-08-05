@@ -67,6 +67,7 @@ export function AdminDashboard() {
     // }, [userInfo]);
     useEffect(() => {
         getCatalogueInfo();
+        window.scrollTo(0, 0);
     }, []);
     useEffect(() => {
         fetchAdminApprovals();

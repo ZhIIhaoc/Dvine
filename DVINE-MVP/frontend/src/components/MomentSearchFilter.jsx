@@ -13,6 +13,7 @@ import {
     IconButton,
     Collapse,
     Grid,
+    useTheme,
 } from "@mui/material";
 import {
     Search as SearchIcon,
@@ -28,7 +29,7 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
     const [sortBy, setSortBy] = useState("latest");
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilters, setActiveFilters] = useState([]);
-
+    const theme = useTheme();
     const sortOptions = [
         { value: "latest", label: "Latest", icon: <AccessTimeIcon /> },
         { value: "popular", label: "Most Popular", icon: <TrendingUpIcon /> },
@@ -101,9 +102,7 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                     onKeyPress={handleKeyPress}
                     InputProps={{
                         startAdornment: (
-                            <SearchIcon
-                                sx={{ mr: 1, color: "text.secondary" }}
-                            />
+                            <SearchIcon sx={{ mr: 1, color: "text.primary" }} />
                         ),
                     }}
                     sx={{
@@ -220,6 +219,11 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                                 label="Location"
                                 placeholder="Enter location keyword"
                                 size="small"
+                                InputLabelProps={{
+                                    sx: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>

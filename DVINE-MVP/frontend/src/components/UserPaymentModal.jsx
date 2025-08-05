@@ -8,11 +8,16 @@ import {
     List,
     ListItem,
     ListItemText,
-    Button
+    Button,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function UserPaymentsModal({ open, handleClose, userId, token }) {
+export default function UserPaymentsModal({
+    open,
+    handleClose,
+    userId,
+    token,
+}) {
     const [loading, setLoading] = useState(false);
     const [payments, setPayments] = useState([]);
 
@@ -20,12 +25,15 @@ export default function UserPaymentsModal({ open, handleClose, userId, token }) 
         const fetchPayments = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`http://localhost:8080/payments/user/${userId}`, {
-                    headers: {
-                        Authorization: token,
-                        "Content-Type": "application/json"
+                const res = await fetch(
+                    `http://localhost:8080/payments/user/${userId}`,
+                    {
+                        headers: {
+                            Authorization: token,
+                            "Content-Type": "application/json",
+                        },
                     }
-                });
+                );
                 const data = await res.json();
                 if (data.code === 0) {
                     setPayments(data.data);
@@ -64,12 +72,43 @@ export default function UserPaymentsModal({ open, handleClose, userId, token }) 
                         {payments.map((payment) => (
                             <ListItem key={payment.paymentId} divider>
                                 <ListItemText
-                                    primary={`[${payment.status}] ${payment.tourTitle} - ${payment.amount} ${payment.currency}`}
+                                    primary={
+                                        <Typography
+                                            variant="subtitle1"
+                                            fontWeight="bold"
+                                        >
+                                            [{payment.status}]{" "}
+                                            {payment.tourTitle} -{" "}
+                                            {payment.amount} {payment.currency}
+                                        </Typography>
+                                    }
                                     secondary={
                                         <>
-                                            <div><strong>Booking Ref:</strong> {payment.bookingReference}</div>
-                                            <div><strong>Destination:</strong> {payment.tourDestination}</div>
-                                            <div><strong>Paid At:</strong> {payment.paidAt ? new Date(payment.paidAt).toLocaleString() : "—"}</div>
+                                            <Typography
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                <strong>Booking Ref:</strong>{" "}
+                                                {payment.bookingReference}
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                <strong>Destination:</strong>{" "}
+                                                {payment.tourDestination}
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                <strong>Paid At:</strong>{" "}
+                                                {payment.paidAt
+                                                    ? new Date(
+                                                          payment.paidAt
+                                                      ).toLocaleString()
+                                                    : "—"}
+                                            </Typography>
                                         </>
                                     }
                                 />
@@ -79,7 +118,9 @@ export default function UserPaymentsModal({ open, handleClose, userId, token }) 
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="contained">Close</Button>
+                <Button onClick={handleClose} variant="contained">
+                    Close
+                </Button>
             </DialogActions>
         </Dialog>
     );

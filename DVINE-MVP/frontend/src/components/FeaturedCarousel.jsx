@@ -69,7 +69,7 @@ export default function FeaturedCarousel({
                         pauseOnMouseEnter: true,
                     }}
                     loop={tours.length > 1}
-                    slidesPerView={1}
+                    slidesPerView={1.1}
                     centeredSlides={true}
                     spaceBetween={80}
                     breakpoints={{
