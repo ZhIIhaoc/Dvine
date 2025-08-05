@@ -24,6 +24,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
     const [tourTitle, setTourTitle] = React.useState("");
     const [tourDescription, setTourDescription] = React.useState("");
     const [tourPrice, setTourPrice] = React.useState("");
+    const [premiumPrice, setPremiumPrice] = React.useState("");
     const [tourDestination, setTourDestination] = React.useState("");
     const [selectedCatalogue, setSelectedCatalogue] = React.useState(null);
     const [tourImages, setTourImages] = React.useState([]);
@@ -93,7 +94,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 description: tourDescription,
                 destination: tourDestination,
                 regularPrice: tourPrice,
-                premiumPrice: tourPrice, // Use same price for premium for now
+                premiumPrice: premiumPrice, // Use same price for premium for now
                 primaryImageUrl: getPrimaryImageUrl() || "",
                 images: getImageUrls(),
                 catalogueId: selectedCatalogue?.catalogueId || null,
@@ -345,6 +346,19 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ my: 6, width: "100%" }}
                     value={tourPrice}
                     onChange={(e) => setTourPrice(e.target.value)}
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
+                    inputProps={{ min: 0 }}
+                />
+                <TextField
+                    label="Premium Price"
+                    placeholder="Premium Price"
+                    fullWidth
+                    type="number"
+                    sx={{ my: 6, width: "100%" }}
+                    value={premiumPrice}
+                    onChange={(e) => setPremiumPrice(e.target.value)}
                     InputLabelProps={{
                         sx: { color: "text.primary" },
                     }}

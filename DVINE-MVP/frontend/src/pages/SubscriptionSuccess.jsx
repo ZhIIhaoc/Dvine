@@ -7,7 +7,7 @@ export default function SubscriptionSuccess() {
     const navigate = useNavigate();
 
     return (
-        <Box sx={{ textAlign: "center", mt: 10 }}>
+        <Box sx={{ textAlign: "center", minHeight: "90vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <Typography variant="h4" sx={{ mb: 2 }}>
                 Subscription Successful!
             </Typography>
@@ -16,7 +16,7 @@ export default function SubscriptionSuccess() {
             </Typography>
 
             <Button variant="contained" onClick={() => navigate("/")}>
-                Back to Dashboard
+                Back To Home Page            
             </Button>
         </Box>
     );
