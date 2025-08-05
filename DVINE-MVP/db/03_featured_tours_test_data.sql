@@ -33,49 +33,36 @@ VALUES
 INSERT INTO images (tourId, imageUrl, isPrimary)
 VALUES
     -- Images for Tokyo tour (tourId: 1)
-    (1, 'https://example.com/tokyo-skyline.jpg', TRUE),
-    (1, 'https://example.com/tokyo-temple.jpg', FALSE),
-    (1, 'https://example.com/tokyo-cuisine.jpg', FALSE),
-    
+    (1, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/1/Tokyo1.jpg', TRUE),
+    (1, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/1/tokyo2.jpeg', FALSE),
     -- Images for Paris tour (tourId: 2)
-    (2, 'https://example.com/paris-eiffel.jpg', TRUE),
-    (2, 'https://example.com/paris-louvre.jpg', FALSE),
-    (2, 'https://example.com/paris-dining.jpg', FALSE),
+    (2, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/2/Paris1.jpg', TRUE),
+    (2, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/2/Paris2.jpeg', FALSE),
+    (2, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/2/Paris3.jpeg', FALSE),
     
     -- Images for Swiss Alps tour (tourId: 3)
-    (3, 'https://example.com/alps-mountain.jpg', TRUE),
-    (3, 'https://example.com/alps-skiing.jpg', FALSE),
-    (3, 'https://example.com/alps-spa.jpg', FALSE),
-    
+    (3, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/3/Swiss1.jpeg', TRUE),
+    (3, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/3/Swiss2.jpeg', FALSE),
+
     -- Images for Amazon tour (tourId: 4)
-    (4, 'https://example.com/amazon-rainforest.jpg', TRUE),
-    (4, 'https://example.com/amazon-wildlife.jpg', FALSE),
-    (4, 'https://example.com/amazon-river.jpg', FALSE),
-    
+    (4, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/4/Amazon1.jpeg', TRUE),
+    (4, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/4/Amazon2.jpeg', FALSE),
+
     -- Images for Himalayan tour (tourId: 5)
-    (5, 'https://example.com/everest-basecamp.jpg', TRUE),
-    (5, 'https://example.com/himalayan-peaks.jpg', FALSE),
-    (5, 'https://example.com/sherpa-guide.jpg', FALSE),
+    (5, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/5/Himalayan1.jpeg', TRUE),
     
     -- Images for Safari tour (tourId: 6)
-    (6, 'https://example.com/serengeti-lions.jpg', TRUE),
-    (6, 'https://example.com/safari-elephants.jpg', FALSE),
-    (6, 'https://example.com/migration-scene.jpg', FALSE),
-    
+    (6, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/6/Safari2.jpeg', TRUE),
+    (6, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/6/Safari2.jpeg', FALSE),
+
     -- Images for Rome tour (tourId: 7)
-    (7, 'https://example.com/colosseum.jpg', TRUE),
-    (7, 'https://example.com/roman-forum.jpg', FALSE),
-    (7, 'https://example.com/vatican-city.jpg', FALSE),
+    (7, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/7/Rome1.jpeg', TRUE),
     
     -- Images for Kyoto tour (tourId: 8)
-    (8, 'https://example.com/kyoto-temple.jpg', TRUE),
-    (8, 'https://example.com/tea-ceremony.jpg', FALSE),
-    (8, 'https://example.com/zen-garden.jpg', FALSE),
+    (8, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/8/Kyoto.jpeg', TRUE),
     
     -- Images for Egypt tour (tourId: 9)
-    (9, 'https://example.com/giza-pyramids.jpg', TRUE),
-    (9, 'https://example.com/sphinx.jpg', FALSE),
-    (9, 'https://example.com/cairo-museum.jpg', FALSE);
+    (9, 'https://dvine-media.s3.ap-southeast-2.amazonaws.com/tours/9/Egypt.jpeg', TRUE);
 
 -- Insert featured tours (these will be displayed on the main page)
 -- Adding 5 featured tours in specific display order
