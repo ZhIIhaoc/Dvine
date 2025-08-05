@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
     Box,
     Button,
@@ -9,24 +9,28 @@ import {
     Chip,
     CircularProgress,
     Alert,
-} from '@mui/material';
+} from "@mui/material";
 import {
     CloudUpload as CloudUploadIcon,
     Delete as DeleteIcon,
     Add as AddIcon,
     Image as ImageIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
-const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }) => {
+const MomentImageUpload = ({
+    onImagesSelected,
+    maxImages = 5,
+    disabled = false,
+}) => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const fileInputRef = useRef(null);
 
     const handleFileSelect = (event) => {
         const files = Array.from(event.target.files);
-        setError('');
+        setError("");
 
         // Validate file count
         if (selectedFiles.length + files.length > maxImages) {
@@ -35,13 +39,14 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
         }
 
         // Validate file type and size
-        const validFiles = files.filter(file => {
-            if (!file.type.startsWith('image/')) {
-                setError('Only image files can be uploaded');
+        const validFiles = files.filter((file) => {
+            if (!file.type.startsWith("image/")) {
+                setError("Only image files can be uploaded");
                 return false;
             }
-            if (file.size > 5 * 1024 * 1024) { // 5MB
-                setError('Image size cannot exceed 5MB');
+            if (file.size > 5 * 1024 * 1024) {
+                // 5MB
+                setError("Image size cannot exceed 5MB");
                 return false;
             }
             return true;
@@ -50,11 +55,13 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
         if (validFiles.length === 0) return;
 
         // Create preview URLs
-        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
-        
-        setSelectedFiles(prev => [...prev, ...validFiles]);
-        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
-        
+        const newPreviewUrls = validFiles.map((file) =>
+            URL.createObjectURL(file)
+        );
+
+        setSelectedFiles((prev) => [...prev, ...validFiles]);
+        setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+
         // Notify parent component
         onImagesSelected([...selectedFiles, ...validFiles]);
     };
@@ -62,10 +69,10 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
     const removeImage = (index) => {
         const newFiles = selectedFiles.filter((_, i) => i !== index);
         const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
-        
+
         // Release preview URL memory
         URL.revokeObjectURL(previewUrls[index]);
-        
+
         setSelectedFiles(newFiles);
         setPreviewUrls(newPreviewUrls);
         onImagesSelected(newFiles);
@@ -89,7 +96,7 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
     };
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: "100%" }}>
             {/* Error message */}
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
@@ -100,17 +107,19 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
             {/* Upload Area */}
             <Paper
                 sx={{
-                    border: '2px dashed',
-                    borderColor: 'divider',
+                    border: "2px dashed",
+                    borderColor: "divider",
                     borderRadius: 2,
                     p: 3,
-                    textAlign: 'center',
-                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    textAlign: "center",
+                    cursor: disabled ? "not-allowed" : "pointer",
                     opacity: disabled ? 0.6 : 1,
-                    bgcolor: 'background.paper',
-                    '&:hover': {
-                        borderColor: disabled ? 'divider' : 'primary.main',
-                        backgroundColor: disabled ? 'transparent' : 'action.hover',
+                    bgcolor: "background.paper",
+                    "&:hover": {
+                        borderColor: disabled ? "divider" : "primary.main",
+                        backgroundColor: disabled
+                            ? "transparent"
+                            : "action.hover",
                     },
                 }}
                 onDragOver={handleDragOver}
@@ -123,21 +132,23 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
                     multiple
                     accept="image/*"
                     onChange={handleFileSelect}
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     disabled={disabled}
                 />
-                
-                <CloudUploadIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary" gutterBottom>
+
+                <CloudUploadIcon
+                    sx={{ fontSize: 48, color: "text.tertiary", mb: 2 }}
+                />
+                <Typography variant="h6" color="text.primary" gutterBottom>
                     Drag images here or click to upload
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.primary">
                     Supports JPG, PNG, GIF formats, max 5MB per image
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.primary">
                     Maximum {maxImages} images can be uploaded
                 </Typography>
-                
+
                 <Button
                     variant="outlined"
                     startIcon={<AddIcon />}
@@ -159,11 +170,11 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
                             <Grid item xs={6} sm={4} md={3} key={index}>
                                 <Paper
                                     sx={{
-                                        position: 'relative',
+                                        position: "relative",
                                         borderRadius: 2,
-                                        overflow: 'hidden',
+                                        overflow: "hidden",
                                         boxShadow: 2,
-                                        bgcolor: 'background.paper',
+                                        bgcolor: "background.paper",
                                     }}
                                 >
                                     <Box
@@ -171,21 +182,23 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
                                         src={url}
                                         alt={`Preview ${index + 1}`}
                                         sx={{
-                                            width: '100%',
+                                            width: "100%",
                                             height: 150,
-                                            objectFit: 'cover',
+                                            objectFit: "cover",
                                         }}
                                     />
                                     <IconButton
                                         size="small"
                                         sx={{
-                                            position: 'absolute',
+                                            position: "absolute",
                                             top: 4,
                                             right: 4,
-                                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                            backgroundColor:
+                                                "rgba(0, 0, 0, 0.5)",
+                                            color: "white",
+                                            "&:hover": {
+                                                backgroundColor:
+                                                    "rgba(0, 0, 0, 0.7)",
                                             },
                                         }}
                                         onClick={() => removeImage(index)}
@@ -197,11 +210,12 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
                                         label={`Image ${index + 1}`}
                                         size="small"
                                         sx={{
-                                            position: 'absolute',
+                                            position: "absolute",
                                             bottom: 4,
                                             left: 4,
-                                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                            color: 'white',
+                                            backgroundColor:
+                                                "rgba(0, 0, 0, 0.7)",
+                                            color: "white",
                                         }}
                                     />
                                 </Paper>
@@ -213,9 +227,9 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
 
             {/* Upload Progress */}
             {uploading && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
                     <CircularProgress size={20} sx={{ mr: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.primary">
                         Uploading images...
                     </Typography>
                 </Box>
@@ -224,4 +238,4 @@ const MomentImageUpload = ({ onImagesSelected, maxImages = 5, disabled = false }
     );
 };
 
-export default MomentImageUpload; 
+export default MomentImageUpload;

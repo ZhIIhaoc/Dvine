@@ -11,11 +11,14 @@ import {
     Typography,
     CircularProgress,
     TextField,
+    useTheme,
     Button,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import removeMarkdown from "remove-markdown";
 
 export default function Checkout() {
+    const theme = useTheme();
     const { tourId } = useParams();
     const navigate = useNavigate();
     const [tour, setTour] = useState(null);
@@ -53,7 +56,7 @@ export default function Checkout() {
                 onClick={() => navigate(`/tour/${tourId}`)}
                 sx={{
                     position: "absolute",
-                    top: 16,
+                    top: 0,
                     left: 16,
                 }}
             >
@@ -76,8 +79,23 @@ export default function Checkout() {
                 <Typography color="text.secondary">
                     {tour.destination}
                 </Typography>
-                <Typography sx={{ my: 2 }}>{tour.description}</Typography>
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+                <Typography
+                    sx={{
+                        mt: -1,
+                        mb: 4,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {removeMarkdown(tour.description)}
+                </Typography>
+                <LocalizationProvider
+                    dateAdapter={AdapterDateFns}
+                    adapterLocale={enGB}
+                >
                     <DatePicker
                         label="Select Travel Date"
                         value={travelDate}
@@ -90,13 +108,14 @@ export default function Checkout() {
                                 )
                             )
                         }
+                        format="DD/MM/YYY"
                         slotProps={{
                             textField: {
                                 fullWidth: true,
                                 margin: "normal",
                                 InputLabelProps: {
                                     shrink: true,
-                                    sx: { color: "text.primary" },
+                                    sx: { color: theme.palette.text.primary },
                                 },
                             },
                         }}
@@ -109,6 +128,19 @@ export default function Checkout() {
                     onChange={(e) => setQuantity(Number(e.target.value))}
                     fullWidth
                     margin="normal"
+                    InputProps={{
+                        inputProps: {
+                            min: 1,
+                            step: 1,
+                        },
+                        sx: { color: theme.palette.text.primary },
+                    }}
+                    InputLabelProps={{
+                        shrink: true,
+                        sx: {
+                            color: theme.palette.text.primary,
+                        },
+                    }}
                 />
                 <Box sx={{ mt: 3 }}>
                     <BookNowButton

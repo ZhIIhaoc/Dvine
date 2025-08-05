@@ -128,6 +128,7 @@ export default function PartnerBookingsPanel({ userId }) {
                 onClose={() => setSelectedBooking(null)}
                 aria-labelledby="booking-modal-title"
                 aria-describedby="booking-modal-description"
+                disableScrollLock
             >
                 <Box
                     sx={{
