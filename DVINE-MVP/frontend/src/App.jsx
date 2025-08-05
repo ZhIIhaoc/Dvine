@@ -105,8 +105,6 @@ function App() {
                             path="/subscription/success"
                             element={<SubscriptionSuccess />}
 
-                            path="/tour-image-test"
-                            element={<TourImageTest />}
                         />
                         <Route
                             path="/test-endpoints"

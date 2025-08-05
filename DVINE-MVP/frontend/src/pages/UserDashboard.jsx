@@ -11,6 +11,7 @@ import BookOnLineIcon from "@mui/icons-material/BookOnline";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import BookingPanel from "../components/BookingPanel.jsx";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import MyPayments from "../components/MyPayments.jsx";
 
 export function UserDashboard() {
     const { userInfo, token } = useContext(AuthContext);
@@ -18,6 +19,7 @@ export function UserDashboard() {
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
     const isUser = userInfo?.permission === 0 || userInfo?.permission === 1;
     const [activePanel, setActivePanel] = useState("home");
+    const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
     const handleSubscriptionUpgrade = async () => {
         try {
@@ -44,7 +46,70 @@ export function UserDashboard() {
             alert("An error occurred while creating the subscription session.");
         }
     };
+    const fetchSubscriptionStatus = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8080/subscription/status",
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `${token}`,
+                    },
+                }
+            );
 
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                console.log("Subscription Status Response:", responseInfo);
+                setSubscriptionStatus(responseInfo.data);
+            } else {
+                console.error(
+                    "Failed to fetch subscription status:",
+                    responseInfo.msg
+                );
+            }
+        } catch (err) {
+            console.error("Error fetching subscription status:", err);
+        }
+    };
+
+    const handleUnsubscribe = async () => {
+        if (
+            !window.confirm(
+                "Are you sure you want to unsubscribe? Your benefits will last until the end of the billing period."
+            )
+        )
+            return;
+
+        try {
+            const response = await fetch(
+                "http://localhost:8080/subscription/unsubscribe",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `${token}`,
+                    },
+                }
+            );
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                console.log("Unsubscribed successfully.");
+                fetchSubscriptionStatus();
+            } else {
+                alert(responseInfo.msg || " Failed to unsubscribe.");
+            }
+        } catch (err) {
+            console.error("Unsubscribe error:", err);
+            alert(" An error occurred while trying to unsubscribe.");
+        }
+    };
+    useEffect(() => {
+        fetchSubscriptionStatus();
+    }, []);
     return isUser ? (
         <Box sx={{ minHeight: "120vh", width: "100%" }}>
             {userInfo ? (
@@ -78,6 +143,17 @@ export function UserDashboard() {
                             onClick={handleSubscriptionUpgrade}
                         >
                             Upgrade to Premium ($9.99/month)
+                        </Button>
+                    )}
+                    {subscriptionStatus?.hasActiveSubscription && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ mb: 3 }}
+                            startIcon={<CreditCardIcon />}
+                            onClick={handleUnsubscribe}
+                        >
+                            Unsubscribe
                         </Button>
                     )}
                     <Box
@@ -180,6 +256,39 @@ export function UserDashboard() {
                                 <Box
                                     sx={{
                                         textAlign: "start",
+                                        backgroundColor:
+                                            activePanel === "payments"
+                                                ? "background.secondary"
+                                                : "transparent",
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => setActivePanel("payments")}
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            py: 3,
+                                            pl: 2,
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
+                                        }}
+                                    >
+                                        <CreditCardIcon style={{ marginRight: 8 }} sx={{ color: "text.tertiary" }} />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Payment History
+                                        </Typography>
+                                    </Button>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        textAlign: "start",
                                         // backgroundColor:
                                         //     activePanel === "createTour"
                                         //         ? "background.secondary"
@@ -226,16 +335,25 @@ export function UserDashboard() {
                                     }}
                                 >
                                     {activePanel === "home" && (
-                                        <Box sx={{ mt: 4 }}>
-                                            This is an admin dashboard. Please
-                                            select options on the left. (Temp
-                                            Message)
-                                        </Box>
+                                        <>
+                                            <Box sx={{ mt: 4 }}>
+                                                This is an admin dashboard. Please select options on the left. (Temp Message)
+                                            </Box>
+                                            {subscriptionStatus?.currentPeriodEnd && (
+                                                <Typography sx={{ my: 2 }}>
+                                                    Subscription valid until:{" "}
+                                                    {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}
+                                                </Typography>
+                                            )}
+                                        </>
                                     )}
                                     {activePanel === "bookings" && (
                                         <BookingPanel
                                             userId={userInfo?.userId}
                                         />
+                                    )}
+                                    {activePanel === "payments" && (
+                                        <MyPayments userId={userInfo?.userId} />
                                     )}
                                 </Box>
                             </Grid>
