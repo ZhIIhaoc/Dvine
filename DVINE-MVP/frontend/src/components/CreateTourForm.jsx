@@ -33,18 +33,18 @@ export default function CreateTourForm({ onClose, catalogueList }) {
     };
 
     const getPrimaryImageUrl = () => {
-        const primaryImage = tourImages.find(img => img.isPrimary);
+        const primaryImage = tourImages.find((img) => img.isPrimary);
         return primaryImage ? primaryImage.url : null;
     };
 
     const getImageUrls = () => {
-        return tourImages.map(img => img.url);
+        return tourImages.map((img) => img.url);
     };
 
     const getImageFiles = () => {
         return tourImages
-            .filter(img => img.file) // Only get images that have actual files
-            .map(img => img.file);
+            .filter((img) => img.file) // Only get images that have actual files
+            .map((img) => img.file);
     };
 
     const createTours = async () => {
@@ -89,14 +89,17 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 premiumPrice: tourPrice, // Use same price for premium for now
                 primaryImageUrl: getPrimaryImageUrl() || "",
                 images: getImageUrls(),
-                catalogueId: selectedCatalogue?.catalogueId || null
+                catalogueId: selectedCatalogue?.catalogueId || null,
             };
 
             // Get image files for upload
             const imageFiles = getImageFiles();
 
             // Create tour with images
-            const responseInfo = await CreateToursWithImages(tourData, imageFiles);
+            const responseInfo = await CreateToursWithImages(
+                tourData,
+                imageFiles
+            );
 
             console.log("Tour creation response:", responseInfo);
 
@@ -106,7 +109,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 console.log("Received pendingTourId:", pendingTourId);
                 console.log("Response info:", responseInfo);
                 setSuccess("Tour submitted for approval. Uploading images...");
-                
+
                 // Upload images for the pending tour
                 if (pendingTourId && tourImages.length > 0) {
                     try {
@@ -114,37 +117,64 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         if (imageFiles.length > 0) {
                             const formData = new FormData();
                             imageFiles.forEach((file, index) => {
-                                formData.append('files', file);
+                                formData.append("files", file);
                             });
-                            
-                            console.log("Uploading images for pending tour:", pendingTourId);
-                            console.log("Image files count:", imageFiles.length);
-                            
-                            const imageResponse = await fetch(`http://localhost:8080/pending-tours/${pendingTourId}/images?isPrimary=true`, {
-                                method: 'POST',
-                                body: formData
-                            });
-                            
-                            console.log("Image upload response status:", imageResponse.status);
-                            const imageResponseData = await imageResponse.json();
-                            console.log("Image upload response data:", imageResponseData);
-                            
+
+                            console.log(
+                                "Uploading images for pending tour:",
+                                pendingTourId
+                            );
+                            console.log(
+                                "Image files count:",
+                                imageFiles.length
+                            );
+
+                            const imageResponse = await fetch(
+                                `http://localhost:8080/pending-tours/${pendingTourId}/images?isPrimary=true`,
+                                {
+                                    method: "POST",
+                                    body: formData,
+                                }
+                            );
+
+                            console.log(
+                                "Image upload response status:",
+                                imageResponse.status
+                            );
+                            const imageResponseData =
+                                await imageResponse.json();
+                            console.log(
+                                "Image upload response data:",
+                                imageResponseData
+                            );
+
                             if (imageResponse.ok) {
-                                setSuccess("Tour submitted for approval and images uploaded successfully!");
+                                setSuccess(
+                                    "Tour submitted for approval and images uploaded successfully!"
+                                );
                             } else {
-                                setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
+                                setSuccess(
+                                    "Tour submitted for approval, but image upload failed. You can upload images later."
+                                );
                             }
                         } else {
-                            setSuccess("Tour submitted for approval successfully!");
+                            setSuccess(
+                                "Tour submitted for approval successfully!"
+                            );
                         }
                     } catch (error) {
-                        console.error("Error uploading images for pending tour:", error);
-                        setSuccess("Tour submitted for approval, but image upload failed. You can upload images later.");
+                        console.error(
+                            "Error uploading images for pending tour:",
+                            error
+                        );
+                        setSuccess(
+                            "Tour submitted for approval, but image upload failed. You can upload images later."
+                        );
                     }
                 } else {
                     setSuccess("Tour submitted for approval successfully!");
                 }
-                
+
                 // Reset form after submission
                 setTimeout(() => {
                     setTourTitle("");
@@ -161,7 +191,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 console.log("Tour created successfully:", responseInfo.message);
                 setCreatedTourId(responseInfo.data?.tourId);
                 setSuccess("Tour created successfully with images!");
-                
+
                 // Reset form after successful creation
                 setTimeout(() => {
                     setTourTitle("");
@@ -196,16 +226,16 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                 gap: 3,
             }}
         >
-            <Typography variant="h6">Create New Tour</Typography>
-            
+            <Typography variant="h6">Create New Experience</Typography>
+
             {/* Tour Information Section */}
             <Box sx={{ mt: 2 }}>
                 <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                    Tour Information
+                    Experience Information
                 </Typography>
                 <TextField
-                    label="Tour Title"
-                    placeholder="Tour Title"
+                    label="Experience Title"
+                    placeholder="Experience Title"
                     sx={{ mb: 4, width: "100%" }}
                     value={tourTitle}
                     onChange={(event) => setTourTitle(event.target.value)}
@@ -214,8 +244,8 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     }}
                 />
                 <TextField
-                    label="Tour Description"
-                    placeholder="Tour Description"
+                    label="Experience Description"
+                    placeholder="Experience Description"
                     fullWidth
                     multiline
                     rows={4}
@@ -246,8 +276,8 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     inputProps={{ min: 0 }}
                 />
                 <TextField
-                    label="Tour Destination"
-                    placeholder="Tour Destination"
+                    label="Experience Destination"
+                    placeholder="Experience Destination"
                     fullWidth
                     sx={{ mb: 6, width: "100%" }}
                     value={tourDestination}
@@ -284,9 +314,11 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         Tour Images
                     </Typography>
                 </Divider>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Select images for your tour. The first image will be set as the primary image. 
-                    {userInfo?.permission < 4 && " Note: Images will be uploaded after tour approval."}
+                <Typography variant="body2" color="text.primary" sx={{ mb: 2 }}>
+                    Select images for your Experience. The first image will be
+                    set as the primary image.
+                    {userInfo?.permission < 4 &&
+                        " Note: Images will be uploaded after tour approval."}
                 </Typography>
                 <TourImageUpload
                     tourId={null} // Pass null to indicate this is for a new tour
@@ -328,10 +360,17 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         Cancel
                     </Button>
                 )}
-                <Button 
-                    variant="contained" 
+                <Button
+                    variant="contained"
                     onClick={createTours}
-                    disabled={!tourTitle || !tourDescription || !tourPrice || !tourDestination || !selectedCatalogue || isCreating}
+                    disabled={
+                        !tourTitle ||
+                        !tourDescription ||
+                        !tourPrice ||
+                        !tourDestination ||
+                        !selectedCatalogue ||
+                        isCreating
+                    }
                 >
                     {isCreating ? "Creating Tour..." : "Create Tour"}
                 </Button>
