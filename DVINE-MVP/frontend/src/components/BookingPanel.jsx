@@ -1,19 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     Box,
     Typography,
     CircularProgress,
     TextField,
-    Modal,
     Button,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PaymentDetailsModal from "../components/PaymentDetailsModal.jsx";
+import { AuthContext } from "../components/AuthContext.jsx";
 
 export default function PartnerBookingsPanel({ userId }) {
+    const { token } = useContext(AuthContext);
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedBooking, setSelectedBooking] = useState(null);
     const [cancelling, setCancelling] = useState(false);
+
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [paymentBookingId, setPaymentBookingId] = useState(null);
 
     useEffect(() => {
         if (userId) {
@@ -24,9 +32,7 @@ export default function PartnerBookingsPanel({ userId }) {
     const fetchBookings = async () => {
         setLoading(true);
         try {
-            const response = await fetch(
-                `http://localhost:8080/bookings/user/${userId}`
-            );
+            const response = await fetch(`http://localhost:8080/bookings/user/${userId}`);
             const responseInfo = await response.json();
 
             if (responseInfo.code === 0) {
@@ -42,8 +48,7 @@ export default function PartnerBookingsPanel({ userId }) {
     };
 
     const cancelBooking = async (bookingId) => {
-        if (!window.confirm("Are you sure you want to cancel this booking?"))
-            return;
+        if (!window.confirm("Are you sure you want to cancel this booking?")) return;
 
         setCancelling(true);
         try {
@@ -61,8 +66,7 @@ export default function PartnerBookingsPanel({ userId }) {
 
             if (responseInfo.code === 0) {
                 alert("Booking cancelled successfully.");
-                setSelectedBooking(null); // close modal
-                fetchBookings(); // refresh the list
+                fetchBookings();
             } else {
                 alert(responseInfo.msg || "Failed to cancel booking.");
             }
@@ -72,6 +76,7 @@ export default function PartnerBookingsPanel({ userId }) {
             setCancelling(false);
         }
     };
+
     const filteredBookings = bookings.filter((booking) =>
         booking.tourDestination.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -104,108 +109,53 @@ export default function PartnerBookingsPanel({ userId }) {
 
             {!loading &&
                 filteredBookings.map((booking) => (
-                    <Box
-                        key={booking.bookingId}
-                        onClick={() => setSelectedBooking(booking)}
-                        sx={{
-                            mb: 2,
-                            p: 2,
-                            border: "1px solid #ccc",
-                            borderRadius: 2,
-                            bgcolor: "background.secondary",
-                            cursor: "pointer",
-                            "&:hover": { bgcolor: "action.hover" },
-                        }}
-                    >
-                        <Typography variant="h6">
-                            {booking.tourDestination}
-                        </Typography>
-                    </Box>
-                ))}
-
-            <Modal
-                open={selectedBooking}
-                onClose={() => setSelectedBooking(null)}
-                aria-labelledby="booking-modal-title"
-                aria-describedby="booking-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: "background.paper",
-                        borderRadius: 2,
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
-                    {selectedBooking && (
-                        <>
-                            <Typography
-                                id="booking-modal-title"
-                                variant="h6"
-                                sx={{ mb: 2 }}
-                            >
-                                Booking Details
+                    <Accordion key={booking.bookingId} sx={{ mb: 2 }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography sx={{ fontWeight: "bold" }}>
+                                {booking.tourDestination} - {booking.tourTitle}
                             </Typography>
-                            <Typography>
-                                <strong>Destination:</strong>{" "}
-                                {selectedBooking.tourDestination}
-                            </Typography>
-                            <Typography>
-                                <strong>Tour:</strong>{" "}
-                                {selectedBooking.tourTitle}
-                            </Typography>
-                            <Typography>
-                                <strong>Reference:</strong>{" "}
-                                {selectedBooking.bookingReference}
-                            </Typography>
-                            <Typography>
-                                <strong>Status:</strong>{" "}
-                                {selectedBooking.status}
-                            </Typography>
-                            <Typography>
-                                <strong>Date:</strong>{" "}
-                                {selectedBooking.travelDate}
-                            </Typography>
-                            <Typography>
-                                <strong>Total Paid:</strong> $
-                                {selectedBooking.totalAmount}{" "}
-                                {selectedBooking.currency}
-                            </Typography>
-
-                            {selectedBooking.status !== "CANCELLED" && (
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    fullWidth
-                                    sx={{ mt: 3 }}
-                                    disabled={cancelling}
-                                    onClick={() =>
-                                        cancelBooking(selectedBooking.bookingId)
-                                    }
-                                >
-                                    {cancelling
-                                        ? "Cancelling..."
-                                        : "Cancel Booking"}
-                                </Button>
-                            )}
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography><strong>Reference:</strong> {booking.bookingReference}</Typography>
+                            <Typography><strong>Status:</strong> {booking.status}</Typography>
+                            <Typography><strong>Date:</strong> {booking.travelDate}</Typography>
+                            <Typography><strong>Total Paid:</strong> ${booking.totalAmount} {booking.currency}</Typography>
 
                             <Button
                                 variant="contained"
                                 fullWidth
                                 sx={{ mt: 2 }}
-                                onClick={() => setSelectedBooking(null)}
+                                onClick={() => {
+                                    setPaymentBookingId(booking.bookingId);
+                                    setPaymentModalOpen(true);
+                                }}
                             >
-                                Close
+                                View Payment
                             </Button>
-                        </>
-                    )}
-                </Box>
-            </Modal>
+
+                            {booking.status !== "CANCELLED" && (
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    fullWidth
+                                    sx={{ mt: 2 }}
+                                    disabled={cancelling}
+                                    onClick={() => cancelBooking(booking.bookingId)}
+                                >
+                                    {cancelling ? "Cancelling..." : "Cancel Booking"}
+                                </Button>
+                            )}
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
+
+            {/* Payment Modal */}
+            <PaymentDetailsModal
+                open={paymentModalOpen}
+                handleClose={() => setPaymentModalOpen(false)}
+                bookingId={paymentBookingId}
+                token={token}
+            />
         </Box>
     );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from "react";
+import React from "react";
 import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../components/AuthContext.jsx";
@@ -27,10 +28,11 @@ export function PartnerDashboard() {
     const isPartner = userInfo?.permission === 3 || userInfo?.permission === 2;
     const premiumPartner = userInfo?.permission === 3;
     const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+    const [refetchSubscription, setRefetchSubscription] = useState(false);
 
     useEffect(() => {
         fetchSubscriptionStatus();
-    }, []);
+    }, [refetchSubscription]);
 
     const fetchSubscriptionStatus = async () => {
         try {
@@ -47,6 +49,7 @@ export function PartnerDashboard() {
             const responseInfo = await response.json();
 
             if (responseInfo.code === 0) {
+                console.log("Subscription Status Response:", responseInfo);
                 setSubscriptionStatus(responseInfo.data);
             } else {
                 console.error(
@@ -115,7 +118,7 @@ export function PartnerDashboard() {
             const responseInfo = await response.json();
 
             if (responseInfo.code === 0) {
-                fetchSubscriptionStatus();
+                setRefetchSubscription(!refetchSubscription);
             } else {
                 alert(responseInfo.msg || " Failed to unsubscribe.");
             }
@@ -269,7 +272,7 @@ export function PartnerDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Create Tour
+                                                Create Tour 
                                             </Typography>
                                         </Button>
                                     </Box>
@@ -450,40 +453,48 @@ export function PartnerDashboard() {
                                 >
                                     {/* Panels */}
                                     {activePanel === "home" && (
-                                        <>
+                                         <React.Fragment key={subscriptionStatus?.status || "none"}>
                                             <Box sx={{ mt: 4 }}>
                                                 This is the Partner Dashboard.
-                                                Please select an option on the
-                                                left.
+                                                Please select an option on the left.
                                             </Box>
-                                            {isPartner && (
+
+                                            {subscriptionStatus === null ? (
+                                                <CircularProgress sx={{ my: 3 }} />
+                                            ) : userInfo?.permission === 2 ? (
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
                                                     sx={{ my: 3 }}
-                                                    startIcon={
-                                                        <CreditCardIcon />
-                                                    }
-                                                    onClick={
-                                                        handleSubscriptionUpgrade
-                                                    }
+                                                    startIcon={<CreditCardIcon />}
+                                                    onClick={handleSubscriptionUpgrade}
                                                 >
-                                                    Upgrade to Paid Partner
-                                                    ($99.99/week)
+                                                    Upgrade to Paid Partner ($99.99/week)
                                                 </Button>
+                                            ) : userInfo?.permission === 3 ? (
+                                                subscriptionStatus.status === "CANCELED" ? (
+                                                    <Typography sx={{ my: 3 }}>
+                                                        You’ve cancelled your subscription. You still have access until{" "}
+                                                        {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}.
+                                                    </Typography>
+                                                ) : (
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        sx={{ my: 3 }}
+                                                        onClick={handleUnsubscribe}
+                                                    >
+                                                        Unsubscribe from Subscription
+                                                    </Button>
+                                                )
+                                            ) : null}
+                                            {subscriptionStatus?.currentPeriodEnd && (
+                                                <Typography sx={{ my: 2 }}>
+                                                    Subscription valid until:{" "}
+                                                    {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}
+                                                </Typography>
                                             )}
-                                            {subscriptionStatus?.hasActiveSubscription && (
-                                                <Button
-                                                    variant="outlined"
-                                                    color="error"
-                                                    sx={{ my: 3 }}
-                                                    onClick={handleUnsubscribe}
-                                                >
-                                                    Unsubscribe from
-                                                    Subscription
-                                                </Button>
-                                            )}
-                                        </>
+                                            </React.Fragment>
                                     )}
 
                                     {activePanel === "createTour" && (

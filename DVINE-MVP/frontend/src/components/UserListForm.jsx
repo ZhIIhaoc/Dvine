@@ -3,7 +3,6 @@ import {
     Box,
     Button,
     Typography,
-    Modal,
     List,
     ListItem,
     ListItemText,
@@ -15,7 +14,7 @@ import {
 } from "@mui/material";
 import { AuthContext } from "../components/AuthContext.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
-import SearchIcon from "@mui/icons-material/Search";
+import UserPaymentModal from "../components/UserPaymentModal.jsx";
 
 const permissionsLabels = {
     0: "Regular",
@@ -25,6 +24,7 @@ const permissionsLabels = {
     4: "Manager (Admin)",
     5: "Owner (Admin)",
 };
+
 export default function UserListForm({ onClose }) {
     const { token, userInfo } = useContext(AuthContext);
     const isOwner = userInfo?.permission === 5;
@@ -37,6 +37,8 @@ export default function UserListForm({ onClose }) {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("info");
+
+    const [selectedUserId, setSelectedUserId] = useState(null);
 
     const showSnackbar = (message, severity) => {
         setSnackbarMessage(message);
@@ -57,30 +59,22 @@ export default function UserListForm({ onClose }) {
             if (responseInfo.code === 0) {
                 setUsers(responseInfo.data);
             } else {
-                showSnackbar(
-                    responseInfo.msg || "Failed to fetch users.",
-                    "error"
-                );
+                showSnackbar(responseInfo.msg || "Failed to fetch users.", "error");
             }
         } catch (error) {
-            showSnackbar(
-                "Network error. Please try again. " + error.message,
-                "error"
-            );
+            showSnackbar("Network error. Please try again. " + error.message, "error");
         } finally {
             setUsersLoading(false);
         }
     };
+
     const handlePermissionChange = async (userId, newPermission, userName) => {
         const result = await updateUserPermission(userId, newPermission);
         const newRole = permissionsLabels[newPermission] || "Unknown";
         if (result?.code === 0) {
-            // Update local user state
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
-                    user.userId === userId
-                        ? { ...user, permission: newPermission }
-                        : user
+                    user.userId === userId ? { ...user, permission: newPermission } : user
                 )
             );
             showSnackbar(
@@ -89,28 +83,25 @@ export default function UserListForm({ onClose }) {
             );
         } else {
             showSnackbar(
-                result?.msg ||
-                    `Failed to update user permission for ${userName}.`,
+                result?.msg || `Failed to update user permission for ${userName}.`,
                 "error"
             );
         }
     };
+
     const updateUserPermission = async (userId, permission) => {
         try {
-            const response = await fetch(
-                "http://localhost:8080/users/permission",
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: token,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        userId: userId,
-                        permission: permission,
-                    }),
-                }
-            );
+            const response = await fetch("http://localhost:8080/users/permission", {
+                method: "PUT",
+                headers: {
+                    Authorization: token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    permission: permission,
+                }),
+            });
             return await response.json();
         } catch (err) {
             console.error("Error updating user permission:", err);
@@ -120,18 +111,15 @@ export default function UserListForm({ onClose }) {
             );
         }
     };
-    // Fetch users when modal opens
-    useEffect(() => {
-        if (open) {
-            fetchUsers();
-        }
-    }, [open]);
 
-    // Filter users based on search query
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
     useEffect(() => {
         const query = searchQuery.toLowerCase();
         const filtered = users
-            .filter((user) => user.userId !== userInfo?.userId) // Exclude current user
+            .filter((user) => user.userId !== userInfo?.userId)
             .filter((user) => user.permission < userInfo?.permission)
             .filter((user) =>
                 (user.nickName || user.firstName || user.email || "")
@@ -141,7 +129,6 @@ export default function UserListForm({ onClose }) {
         setFilteredUsers(filtered);
     }, [searchQuery, users, userInfo]);
 
-    // Smooth loading indicator
     useEffect(() => {
         let timeout;
         if (usersLoading) {
@@ -154,18 +141,8 @@ export default function UserListForm({ onClose }) {
 
     return (
         <>
-            <Box
-                sx={{
-                    width: "100%",
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 3,
-                }}
-            >
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                    Registered Users
-                </Typography>
+            <Box sx={{ width: "100%", p: 2, display: "flex", flexDirection: "column", gap: 3 }}>
+                <Typography variant="h6">Registered Users</Typography>
 
                 <TextField
                     label="Search Users"
@@ -175,25 +152,13 @@ export default function UserListForm({ onClose }) {
                     sx={{ mb: 2 }}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
                 />
 
                 <Box sx={{ maxHeight: 600, overflow: "auto", mb: 2 }}>
                     {showLoading ? (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: 120,
-                            }}
-                        >
-                            <span>Loading...</span>
-                        </Box>
+                        <Typography align="center">Loading...</Typography>
                     ) : users.length === 0 && !showLoading ? (
-                        <Typography color="error" sx={{ textAlign: "center" }}>
+                        <Typography color="error" align="center">
                             No users found
                         </Typography>
                     ) : (
@@ -204,32 +169,21 @@ export default function UserListForm({ onClose }) {
                                     sx={{
                                         display: "flex",
                                         justifyContent: "space-between",
+                                        alignItems: "center",
+                                        cursor: "pointer",
                                     }}
                                 >
-                                    <ListItemText
-                                        primary={
-                                            user.nickName ||
-                                            user.firstName ||
-                                            user.email ||
-                                            `User #${user.userId}`
-                                        }
-                                        secondary={`Permission: ${
-                                            permissionsLabels[
-                                                user.permission
-                                            ] || "Unknown"
-                                        }`}
-                                    />
-                                    <FormControl
-                                        size="small"
-                                        sx={{ minWidth: 520 }}
-                                        variant="outlined"
-                                    >
-                                        <InputLabel
-                                            id={`role-label-${user.userId}`}
-                                            sx={{ color: "text.primary" }}
-                                        >
-                                            Role
-                                        </InputLabel>
+                                    <Box onClick={() => setSelectedUserId(user.userId)}>
+                                        <Typography variant="subtitle1" sx={{ textDecoration: "underline", color: "primary.main" }}>
+                                            {user.nickName || user.firstName || user.email || `User #${user.userId}`}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Permission: {permissionsLabels[user.permission] || "Unknown"}
+                                        </Typography>
+                                    </Box>
+
+                                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                                        <InputLabel id={`role-label-${user.userId}`}>Role</InputLabel>
                                         <Select
                                             labelId={`role-label-${user.userId}`}
                                             value={user.permission}
@@ -238,33 +192,15 @@ export default function UserListForm({ onClose }) {
                                                 handlePermissionChange(
                                                     user.userId,
                                                     e.target.value,
-                                                    user.nickName ||
-                                                        user.firstName ||
-                                                        user.email
+                                                    user.nickName || user.firstName || user.email
                                                 )
                                             }
                                         >
-                                            <MenuItem value={0}>
-                                                Regular
-                                            </MenuItem>
-                                            <MenuItem value={1}>
-                                                Premium
-                                            </MenuItem>
-                                            {isOwner && (
-                                                <MenuItem value={2}>
-                                                    Partner (Unpaid)
-                                                </MenuItem>
-                                            )}
-                                            {isOwner && (
-                                                <MenuItem value={3}>
-                                                    Partner (Paid)
-                                                </MenuItem>
-                                            )}
-                                            {isOwner && (
-                                                <MenuItem value={4}>
-                                                    Manager
-                                                </MenuItem>
-                                            )}
+                                            <MenuItem value={0}>Regular</MenuItem>
+                                            <MenuItem value={1}>Premium</MenuItem>
+                                            {isOwner && <MenuItem value={2}>Partner (Unpaid)</MenuItem>}
+                                            {isOwner && <MenuItem value={3}>Partner (Paid)</MenuItem>}
+                                            {isOwner && <MenuItem value={4}>Manager</MenuItem>}
                                         </Select>
                                     </FormControl>
                                 </ListItem>
@@ -273,26 +209,21 @@ export default function UserListForm({ onClose }) {
                     )}
                 </Box>
 
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        mt: 2,
-                    }}
-                >
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     {onClose && (
-                        <Box sx={{ textAlign: "right" }}>
-                            <Button
-                                variant="outlined"
-                                onClick={onClose}
-                                sx={{ color: "text.tertiary" }}
-                            >
-                                Close
-                            </Button>
-                        </Box>
+                        <Button variant="outlined" onClick={onClose}>
+                            Close
+                        </Button>
                     )}
                 </Box>
             </Box>
+
+            <UserPaymentModal
+                open={selectedUserId !== null}
+                handleClose={() => setSelectedUserId(null)}
+                userId={selectedUserId}
+                token={token}
+            />
 
             <MessageAlert
                 open={snackbarOpen}
