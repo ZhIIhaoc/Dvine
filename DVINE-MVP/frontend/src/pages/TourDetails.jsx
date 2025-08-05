@@ -34,6 +34,7 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
+    useTheme,
 } from "@mui/material";
 import {
     LocationOn as LocationIcon,
@@ -59,6 +60,7 @@ import {
 } from "@mui/icons-material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import MDEditor from "@uiw/react-md-editor";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -164,6 +166,7 @@ const mockTour = {
 };
 
 export default function TourDetails() {
+    const theme = useTheme();
     const { id } = useParams();
     const navigate = useNavigate();
     const [tour, setTour] = useState(null);
@@ -1011,7 +1014,7 @@ export default function TourDetails() {
                                 margin="normal"
                                 required
                             />
-                            <TextField
+                            {/* <TextField
                                 fullWidth
                                 label="Description"
                                 value={editForm.description}
@@ -1024,7 +1027,68 @@ export default function TourDetails() {
                                 margin="normal"
                                 multiline
                                 rows={3}
-                            />
+                            /> */}
+                            <Typography variant="body1" gutterBottom>
+                                Experience Description
+                            </Typography>
+                            <Box
+                                data-color-mode="dark"
+                                sx={{
+                                    "& .w-md-editor": {
+                                        backgroundColor: "background.default",
+                                        border: `1px solid ${theme.palette.divider}`,
+                                        "--w-md-editor-text-color":
+                                            theme.palette.text.primary,
+                                        "--w-md-editor-background-color":
+                                            theme.palette.background.default,
+                                        color:
+                                            theme.palette.text.primary +
+                                            " !important",
+                                    },
+                                    "& .w-md-editor-preview": {
+                                        backgroundColor:
+                                            "background.default !important",
+                                        color:
+                                            theme.palette.text.primary +
+                                            " !important",
+                                    },
+                                    "& .w-md-editor-toolbar": {
+                                        backgroundColor:
+                                            theme.palette.background.default,
+                                        borderBottom: `0.1px solid ${theme.palette.divider}`,
+                                    },
+                                    "& .w-md-editor-toolbar button svg path": {
+                                        stroke: `${theme.palette.text.primary} !important`,
+                                        fill: `${theme.palette.text.primary} !important`,
+                                    },
+                                }}
+                            >
+                                <MDEditor
+                                    value={editForm.description}
+                                    onChange={(val) =>
+                                        setEditForm({
+                                            ...editForm,
+                                            description: val || "",
+                                        })
+                                    }
+                                    preview="live"
+                                    // height={300}
+                                    textareaProps={{
+                                        placeholder: "Write Markdown here…",
+                                        style: {
+                                            color: theme.palette.text.primary,
+                                        },
+                                    }}
+                                    previewOptions={{
+                                        style: {
+                                            backgroundColor:
+                                                theme.palette.background
+                                                    .default,
+                                            color: theme.palette.text.primary,
+                                        },
+                                    }}
+                                />
+                            </Box>
                             <TextField
                                 fullWidth
                                 label="Destination"
