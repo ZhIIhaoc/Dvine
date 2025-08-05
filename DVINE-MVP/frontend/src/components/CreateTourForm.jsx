@@ -8,11 +8,15 @@ import {
     Autocomplete,
     Divider,
     Alert,
+    Paper,
+    useTheme,
 } from "@mui/material";
 // import CreateCatalogue from "../endpoints/CreateCatalogue"; change back to this in sprint 2
 import { CreateToursWithImages } from "../endpoints/CreateTours";
 import TourImageUpload from "./TourImageUpload";
 import { useAuth } from "../components/AuthContext";
+import ReactMarkdown from "react-markdown";
+import MDEditor from "@uiw/react-md-editor";
 
 export default function CreateTourForm({ onClose, catalogueList }) {
     const { userInfo } = useAuth();
@@ -27,6 +31,8 @@ export default function CreateTourForm({ onClose, catalogueList }) {
     const [success, setSuccess] = React.useState("");
     const [isCreating, setIsCreating] = React.useState(false);
     const accessToken = localStorage.getItem("accessToken");
+    const [value, setValue] = React.useState("");
+    const theme = useTheme();
 
     const handleImagesUpdate = (images) => {
         setTourImages(images);
@@ -243,14 +249,15 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         sx: { color: "text.primary" },
                     }}
                 />
-                <TextField
-                    label="Experience Description"
-                    placeholder="Experience Description"
+
+                {/* <TextField
+                    label="Tour Description"
+                    placeholder="Tour Description (Write Markdown here)"
                     fullWidth
                     multiline
                     rows={4}
                     sx={{
-                        mb: 6,
+                        mb: 3,
                         width: "100%",
                         "& .MuiInputBase-inputMultiline": {
                             resize: "vertical",
@@ -262,12 +269,78 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         sx: { color: "text.primary" },
                     }}
                 />
+
+                <Typography variant="body1" gutterBottom>
+                    Experience Description Preview
+                </Typography>
+                <Paper
+                    sx={{
+                        mb: 6,
+                        p: 2,
+                        height: "100%",
+                        overflowY: "auto",
+                        backgroundColor: "background.paper",
+                        border: 1,
+                        borderColor: "divider",
+                    }}
+                >
+                    <ReactMarkdown>{tourDescription}</ReactMarkdown>
+                </Paper> */}
+                <Typography variant="body1" gutterBottom>
+                    Experience Description
+                </Typography>
+                <Box
+                    data-color-mode="dark"
+                    sx={{
+                        "& .w-md-editor": {
+                            backgroundColor: "background.default",
+                            border: `1px solid ${theme.palette.divider}`,
+                            "--w-md-editor-text-color":
+                                theme.palette.text.primary,
+                            "--w-md-editor-background-color":
+                                theme.palette.background.default,
+                            color: theme.palette.text.primary + " !important",
+                        },
+                        "& .w-md-editor-preview": {
+                            backgroundColor: "background.default !important",
+                            color: theme.palette.text.primary + " !important",
+                        },
+                        "& .w-md-editor-toolbar": {
+                            backgroundColor: theme.palette.background.default,
+                            borderBottom: `0.1px solid ${theme.palette.divider}`,
+                        },
+                        "& .w-md-editor-toolbar button svg path": {
+                            stroke: `${theme.palette.text.primary} !important`,
+                            fill: `${theme.palette.text.primary} !important`,
+                        },
+                    }}
+                >
+                    <MDEditor
+                        value={tourDescription}
+                        onChange={(val) => setTourDescription(val || "")}
+                        preview="live"
+                        // height={300}
+                        textareaProps={{
+                            placeholder: "Write Markdown here…",
+                            style: {
+                                color: theme.palette.text.primary,
+                            },
+                        }}
+                        previewOptions={{
+                            style: {
+                                backgroundColor:
+                                    theme.palette.background.default,
+                                color: theme.palette.text.primary,
+                            },
+                        }}
+                    />
+                </Box>
                 <TextField
                     label="Price"
                     placeholder="Price"
                     fullWidth
                     type="number"
-                    sx={{ mb: 6, width: "100%" }}
+                    sx={{ my: 6, width: "100%" }}
                     value={tourPrice}
                     onChange={(e) => setTourPrice(e.target.value)}
                     InputLabelProps={{
@@ -310,12 +383,13 @@ export default function CreateTourForm({ onClose, catalogueList }) {
             {/* Tour Images Section */}
             <Box sx={{ mt: 3 }}>
                 <Divider sx={{ mb: 2 }}>
-                    <Typography variant="h6" color="text.secondary">
+                    <Typography variant="h6" color="text.primary">
                         Tour Images
                     </Typography>
                 </Divider>
+
                 <Typography variant="body2" color="text.primary" sx={{ mb: 2 }}>
-                    Select images for your Experience. The first image will be
+                    Select images for your experience. The first image will be
                     set as the primary image.
                     {userInfo?.permission < 4 &&
                         " Note: Images will be uploaded after tour approval."}
