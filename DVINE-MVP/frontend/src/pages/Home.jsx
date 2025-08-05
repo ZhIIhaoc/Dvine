@@ -9,7 +9,7 @@ import {
     Button,
     useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import homepageImage from "/src/assets/homepage_pic.png";
@@ -17,7 +17,17 @@ import premiumImage from "/src/assets/premium.jpg";
 import { ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
 import FeaturedCarousel from "../components/FeaturedCarousel";
 import { fetchFeaturedTours } from "../endpoints/CatalogueEndpoints";
+import { AuthContext } from "../components/AuthContext.jsx";
 
+
+const PERMISSIONS = {
+    REGULAR: 0,
+    PREMIUM: 1,
+    UNPAID_PARTNER: 2,
+    PAID_PARTNER: 3,
+    MANAGER: 4,
+    ADMIN: 5,
+};
 // Mock data for fallback
 const tours = [
     {
@@ -60,10 +70,32 @@ const tours = [
 
 export const Home = () => {
     const [featuredTours, setFeaturedTours] = useState([]);
+    const { token } = useContext(AuthContext);
+    const [subscriptionInfo, setSubscriptionInfo] = useState(null);
+
+    const fetchSubscriptionStatus = async () => {
+        try {
+            const res = await fetch("http://localhost:8080/subscription/status", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await res.json();
+            if (data.code === 0) {
+                setSubscriptionInfo(data.data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch subscription status:", err);
+        }
+    };
+
     const navigate = useNavigate();
     useEffect(() => {
         fetchFeaturedToursData();
-    }, []);
+        if (token) {
+            fetchSubscriptionStatus();
+        }
+    }, [token]);
     // Fetch featured tours from API
     const fetchFeaturedToursData = async () => {
         try {
@@ -79,7 +111,67 @@ export const Home = () => {
             setFeaturedTours([]);
         }
     };
+    const createCheckoutSession = async (type) => {
+        try {
+            const res = await fetch(`http://localhost:8080/subscription/checkout/${type}`, {
+                method: "POST",
+                headers: {
+                    Authorization: token,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await res.json();
+
+            if (data.code === 0 && data.data?.checkoutUrl) {
+                // ✅ Redirect to Stripe checkout
+                window.location.href = data.data.checkoutUrl;
+            } else {
+                console.error("Failed to create checkout session:", data.msg);
+                alert(`Failed to create checkout session: ${data.msg}`);
+            }
+        } catch (err) {
+            console.error("Error creating checkout session:", err);
+            alert("Unexpected error during subscription.");
+        }
+    };
     const theme = useTheme();
+    const commonCardStyles = {
+        width: { xs: "80%", md: "100%" },
+        mx: "auto",
+        height: "100%",
+        backgroundColor: theme.palette.header.main,
+        backdropFilter: "blur(5px)",
+        WebkitBackdropFilter: "blur(5px)",
+        color: "text.primary",
+        p: 3,
+        borderRadius: 3,
+        boxShadow: 4,
+        textAlign: "center",
+        display: "flex",
+    };
+
+    const subscribeBtnStyles = {
+        mt: 3,
+        px: 4,
+        borderRadius: 8,
+        fontWeight: "bold",
+        backgroundColor: "primary.main",
+        "&:hover": {
+            backgroundColor: "primary.main",
+        },
+    };
+
+    const currentPermission = subscriptionInfo?.currentPermission;
+
+    const isUnpaidPartner = currentPermission === PERMISSIONS.UNPAID_PARTNER;
+    const isRegularUser = currentPermission === PERMISSIONS.REGULAR;
+    const isAlreadyElevated = [
+        PERMISSIONS.PREMIUM,
+        PERMISSIONS.PAID_PARTNER,
+        PERMISSIONS.MANAGER,
+        PERMISSIONS.ADMIN,
+    ].includes(currentPermission);
     return (
         <Box>
             <Box
@@ -338,7 +430,7 @@ export const Home = () => {
                                 justifyContent: "center",
                             }}
                         >
-                            <Card
+                            {/* <Card
                                 sx={{
                                     width: {
                                         xs: "80%",
@@ -395,7 +487,94 @@ export const Home = () => {
                                         Subscribe Now
                                     </Button>
                                 </CardContent>
-                            </Card>
+                            </Card> */}
+                            {!token ? (
+                                <Card sx={commonCardStyles}>
+                                    <CardContent>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Become a Member
+                                        </Typography>
+                                        <Typography variant="body2" gutterBottom>
+                                            Log in to access exclusive features and member discounts.
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            size="large"
+                                            sx={subscribeBtnStyles}
+                                            onClick={() => navigate("/login")}
+                                        >
+                                            Login / Register
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ) : isAlreadyElevated ? (
+                                <Card sx={commonCardStyles}>
+                                    <CardContent>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Enjoy Your Benefits!
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            You already have full access with your current plan.
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            ) : isUnpaidPartner ? (
+                                <Card sx={commonCardStyles}>
+                                    <CardContent>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Partner Access
+                                        </Typography>
+                                        <Typography variant="body2" gutterBottom>
+                                            Subscribe to unlock partner tools and begin uploading tours.
+                                        </Typography>
+                                        <Typography
+                                            variant="h4"
+                                            fontWeight="bold"
+                                            color="text.tertiary"
+                                            gutterBottom
+                                        >
+                                            $99.99/month
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            size="large"
+                                            sx={subscribeBtnStyles}
+                                            onClick={() => createCheckoutSession("PARTNER")}
+                                        >
+                                            Subscribe as Partner
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ) : isRegularUser ? (
+                                <Card sx={commonCardStyles}>
+                                    <CardContent>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                            Exclusive Membership
+                                        </Typography>
+                                        <Typography
+                                            variant="h4"
+                                            fontWeight="bold"
+                                            color="text.tertiary"
+                                            gutterBottom
+                                        >
+                                            $9.99/month
+                                        </Typography>
+                                        <Typography variant="body2" gutterBottom>
+                                            Cancel anytime. Enjoy premium features instantly.
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            size="large"
+                                            sx={subscribeBtnStyles}
+                                            onClick={() => createCheckoutSession("PREMIUM")}
+                                        >
+                                            Subscribe Now
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ) : null}
+
+
                         </Grid>
                     </Grid>
                 </Box>
