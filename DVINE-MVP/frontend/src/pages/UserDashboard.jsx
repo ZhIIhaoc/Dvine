@@ -10,13 +10,40 @@ import HomeIcon from "@mui/icons-material/Home";
 import BookOnLineIcon from "@mui/icons-material/BookOnline";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import BookingPanel from "../components/BookingPanel.jsx";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 export function UserDashboard() {
-    const { userInfo } = useContext(AuthContext);
+    const { userInfo, token } = useContext(AuthContext);
     const navigate = useNavigate();
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
-    const isUser = userInfo?.permission === 0;
+    const isUser = userInfo?.permission === 0 || userInfo?.permission === 1;
     const [activePanel, setActivePanel] = useState("home");
+
+    const handleSubscriptionUpgrade = async () => {
+        try {
+            // determine type
+            const type = userInfo?.permission === 0 ? "PREMIUM" : "PARTNER";
+
+            const response = await fetch(`http://localhost:8080/subscription/checkout/${type}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            });
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                window.location.href = responseInfo.data.checkoutUrl;
+            } else {
+                alert(responseInfo.msg || "Subscription failed");
+            }
+        } catch (err) {
+            console.error("Subscription error:", err);
+            alert("An error occurred while creating the subscription session.");
+        }
+    };
 
     return isUser ? (
         <Box sx={{ minHeight: "120vh", width: "100%" }}>
@@ -42,6 +69,17 @@ export function UserDashboard() {
                         {" "}
                         Welcome Back {userName}{" "}
                     </Typography>
+                    {userInfo.permission === 0 && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ mb: 3 }}
+                            startIcon={<CreditCardIcon />}
+                            onClick={handleSubscriptionUpgrade}
+                        >
+                            Upgrade to Premium ($9.99/month)
+                        </Button>
+                    )}
                     <Box
                         sx={{
                             width: "100%",
@@ -111,7 +149,9 @@ export function UserDashboard() {
                                     }}
                                 >
                                     <Button
-                                        onClick={() => setActivePanel("bookings")}
+                                        onClick={() =>
+                                            setActivePanel("bookings")
+                                        }
                                         fullWidth
                                         sx={{
                                             justifyContent: "flex-start",
@@ -193,7 +233,9 @@ export function UserDashboard() {
                                         </Box>
                                     )}
                                     {activePanel === "bookings" && (
-                                        <BookingPanel userId={userInfo?.userId} />
+                                        <BookingPanel
+                                            userId={userInfo?.userId}
+                                        />
                                     )}
                                 </Box>
                             </Grid>

@@ -7,11 +7,13 @@ import {
     Typography,
     Link,
     Button,
+    useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import homepageImage from "/src/assets/homepage_pic.png";
+import premiumImage from "/src/assets/premium.jpg";
 import { ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
 import FeaturedCarousel from "../components/FeaturedCarousel";
 import { fetchFeaturedTours } from "../endpoints/CatalogueEndpoints";
@@ -77,6 +79,7 @@ export const Home = () => {
             setFeaturedTours([]);
         }
     };
+    const theme = useTheme();
     return (
         <Box>
             <Box
@@ -204,7 +207,7 @@ export const Home = () => {
                     mt: 3,
                 }}
             >
-                <Box padding={3} sx={{ mb: 10 }}>
+                <Box padding={3} sx={{ mb: 5 }}>
                     <Link
                         component={RouterLink}
                         to="/catalogue"
@@ -233,37 +236,168 @@ export const Home = () => {
                         }
                         onTourClick={(tourId) => navigate(`/tour/${tourId}`)}
                     />
-                    {/* <Grid container spacing={4} justifyContent="center">
-                        {tours.map((tour) => (
-                            <Grid item xs={12} sm={6} md={4} key={tour.id}>
-                                <Card sx={{ boxShadow: 1 }}>
-                                    <CardMedia
-                                        component="img"
-                                        image={tour.image}
-                                        alt={tour.title}
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    minHeight: "70vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignContent: "center",
+                    alignItems: "center",
+                    backgroundImage: `url(${premiumImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    color: "background.default",
+                    position: "relative",
+                    py: { xs: 6, sm: 10 },
+                    "::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        zIndex: 0,
+                    },
+                }}
+            >
+                <Box sx={{ zIndex: 1 }}>
+                    <Typography
+                        component="h3"
+                        sx={{
+                            fontSize: {
+                                xs: "1.5rem",
+                                md: "3rem",
+                            },
+                            lineHeight: 1.2,
+                            textAlign: "center",
+                            mb: 4,
+                            mx: "auto",
+                            position: "relative",
+                            color: "#fbf9f5",
+                        }}
+                    >
+                        Be an Exclusive Member Today
+                    </Typography>
+                    <Grid
+                        container
+                        spacing={4}
+                        justifyContent="center"
+                        alignItems="stretch"
+                    >
+                        <Grid
+                            item
+                            xs={12}
+                            md={6}
+                            sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                            <Card
+                                sx={{
+                                    width: {
+                                        xs: "80%",
+                                        md: "100%",
+                                    },
+                                    minWidth: 300,
+                                    mx: "auto",
+                                    height: "100%",
+                                    backgroundColor: theme.palette.header.main,
+                                    backdropFilter: "blur(5px)",
+                                    WebkitBackdropFilter: "blur(5px)",
+                                    color: "text.primary",
+                                    p: 3,
+                                    borderRadius: 3,
+                                    boxShadow: 4,
+                                    flex: 1,
+                                    textAlign: "center",
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight="bold"
+                                        gutterBottom
+                                    >
+                                        Why Go Exclusive?
+                                    </Typography>
+                                    <Typography variant="body1" gutterBottom>
+                                        ✔ Member discounts <br />
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+                        <Grid
+                            item
+                            xs={12}
+                            md={6}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <Card
+                                sx={{
+                                    width: {
+                                        xs: "80%",
+                                        md: "100%",
+                                    },
+                                    mx: "auto",
+                                    height: "100%",
+                                    backgroundColor: theme.palette.header.main,
+                                    backdropFilter: "blur(5px)",
+                                    WebkitBackdropFilter: "blur(5px)",
+                                    color: "text.primary",
+                                    p: 3,
+                                    borderRadius: 3,
+                                    boxShadow: 4,
+                                    textAlign: "center",
+                                    display: "flex",
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight="bold"
+                                        gutterBottom
+                                    >
+                                        Exclusive Membership
+                                    </Typography>
+                                    <Typography
+                                        variant="h4"
+                                        fontWeight="bold"
+                                        color="text.tertiary"
+                                        gutterBottom
+                                    >
+                                        $9.99/month
+                                    </Typography>
+                                    <Typography variant="body2" gutterBottom>
+                                        Cancel anytime. Enjoy premium features
+                                        instantly.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        size="large"
                                         sx={{
-                                            height: 300,
-                                            width: 400,
-                                            objectFit: "cover",
-                                            objectPosition: "center",
-                                            cursor: "pointer",
+                                            mt: 3,
+                                            px: 4,
+                                            borderRadius: 8,
+                                            fontWeight: "bold",
+                                            backgroundColor: "primary.main",
+                                            "&:hover": {
+                                                backgroundColor: "primary.main",
+                                            },
                                         }}
-                                        onClick={() =>
-                                            navigate(`/tour/${tour.id}`)
-                                        }
-                                    />
-                                    <CardContent>
-                                        <Typography
-                                            variant="body1"
-                                            fontWeight="bold"
-                                        >
-                                            {tour.title}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid> */}
+                                        onClick={() => navigate("/subscribe")}
+                                    >
+                                        Subscribe Now
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
                 </Box>
             </Box>
         </Box>

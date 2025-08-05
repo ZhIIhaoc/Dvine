@@ -247,7 +247,7 @@ export function AdminDashboard() {
                                                 fontWeight: "bold",
                                             }}
                                         >
-                                            Create Tour
+                                            Create Experience
                                         </Typography>
                                     </Button>
                                 </Box>
@@ -387,8 +387,7 @@ export function AdminDashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                Manage Tours
-
+                                                Manage Experiences
                                             </Typography>
                                             <Badge
                                                 badgeContent={
@@ -431,6 +430,7 @@ export function AdminDashboard() {
                                             textTransform: "none",
                                             py: 3,
                                             pl: 2,
+                                            pr: 3,
                                             "&:hover": {
                                                 backgroundColor: "action.hover",
                                             },
@@ -446,7 +446,7 @@ export function AdminDashboard() {
                                                 fontWeight: "bold",
                                             }}
                                         >
-                                            Your Personal Tour Bookings
+                                            Your Personal Experience Bookings
                                         </Typography>
                                     </Button>
                                 </Box>
@@ -460,7 +460,9 @@ export function AdminDashboard() {
                                     }}
                                 >
                                     <Button
-                                        onClick={() => setActivePanel("admin_bookings")}
+                                        onClick={() =>
+                                            setActivePanel("admin_bookings")
+                                        }
                                         fullWidth
                                         sx={{
                                             justifyContent: "flex-start",
@@ -482,7 +484,7 @@ export function AdminDashboard() {
                                                 fontWeight: "bold",
                                             }}
                                         >
-                                            View All Bookings Tours
+                                            View All Bookings
                                         </Typography>
                                     </Button>
                                 </Box>
@@ -496,19 +498,33 @@ export function AdminDashboard() {
                                     }}
                                 >
                                     <Button
-                                        onClick={() => setActivePanel("posted_tours")}
+                                        onClick={() =>
+                                            setActivePanel("posted_tours")
+                                        }
                                         fullWidth
                                         sx={{
                                             justifyContent: "flex-start",
                                             textTransform: "none",
                                             py: 3,
                                             pl: 2,
-                                            "&:hover": { backgroundColor: "action.hover" },
+                                            "&:hover": {
+                                                backgroundColor: "action.hover",
+                                            },
                                         }}
                                     >
-                                        <TourIcon sx={{ mr: 1, color: "text.tertiary" }} />
-                                        <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
-                                            View Posted Tours Live
+                                        <TourIcon
+                                            sx={{
+                                                mr: 1,
+                                                color: "text.tertiary",
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                color: "text.primary",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            View Posted Experiences Live
                                         </Typography>
                                     </Button>
                                 </Box>

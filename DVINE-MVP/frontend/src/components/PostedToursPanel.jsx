@@ -25,32 +25,32 @@ export default function PostedToursPanel() {
         fetchPostedTours();
     }, []);
 
-   const fetchPostedTours = async () => {
-    setLoading(true);
-    try {
-        const response = await fetch(
-            `http://localhost:8080/tours?createdBy=${userInfo.userId}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+    const fetchPostedTours = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(
+                `http://localhost:8080/tours?createdBy=${userInfo.userId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-        const responseInfo = await response.json();
-        if (responseInfo.code === 0) {
-            setTours(responseInfo.data);
-            console.log("Posted Tours Count:", responseInfo.data.length);
-        } else {
-            console.error("Failed to fetch tours:", responseInfo.msg);
+            const responseInfo = await response.json();
+            if (responseInfo.code === 0) {
+                setTours(responseInfo.data);
+                console.log("Posted Tours Count:", responseInfo.data.length);
+            } else {
+                console.error("Failed to fetch tours:", responseInfo.msg);
+            }
+        } catch (error) {
+            console.error("Fetch tours error:", error);
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        console.error("Fetch tours error:", error);
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     const fetchTourBookings = async (tour) => {
         setModalLoading(true);
@@ -79,14 +79,14 @@ export default function PostedToursPanel() {
     );
 
     return (
-        <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-                Your Posted Tours
+        <Box sx={{ mt: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 4 }}>
+                Your Posted Experiences
             </Typography>
 
             {loading && <CircularProgress />}
             {!loading && tours.length === 0 && (
-                <Typography>You haven’t posted any tours yet.</Typography>
+                <Typography>You haven’t posted any experiences yet.</Typography>
             )}
 
             {!loading &&
@@ -105,7 +105,7 @@ export default function PostedToursPanel() {
                         onClick={() => fetchTourBookings(tour)}
                     >
                         <Typography variant="h6">{tour.title}</Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.primary">
                             Click to view bookings
                         </Typography>
                     </Box>
@@ -118,6 +118,12 @@ export default function PostedToursPanel() {
                     setTourBookings([]);
                     setSearchTerm("");
                 }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    },
+                }}
+                disableScrollLock
             >
                 <Box
                     sx={{
@@ -125,16 +131,16 @@ export default function PostedToursPanel() {
                         top: "50%",
                         left: "50%",
                         transform: "translate(-50%, -50%)",
-                        width: 500,
+                        width: 700,
                         maxHeight: "80vh",
                         bgcolor: "background.paper",
                         borderRadius: 2,
                         boxShadow: 24,
-                        p: 4,
+                        p: 6,
                         overflowY: "auto",
                     }}
                 >
-                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 4 }}>
                         Bookings for {selectedTour?.title}
                     </Typography>
 
@@ -150,13 +156,20 @@ export default function PostedToursPanel() {
                                 label="Search by customer name"
                                 fullWidth
                                 variant="outlined"
-                                sx={{ mb: 2 }}
+                                sx={{
+                                    mb: 2,
+                                    "& .MuiInputLabel-root": {
+                                        color: "text.primary",
+                                    },
+                                }}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
 
                             {filteredBookings.length === 0 ? (
-                                <Typography>No matching bookings found.</Typography>
+                                <Typography>
+                                    No matching bookings found.
+                                </Typography>
                             ) : (
                                 filteredBookings.map((booking) => (
                                     <Box
@@ -169,11 +182,21 @@ export default function PostedToursPanel() {
                                             backgroundColor: "#f9f9f9",
                                         }}
                                     >
-                                        <Typography><strong>{booking.userName}</strong></Typography>
-                                        <Typography>Email: {booking.userEmail}</Typography>
-                                        <Typography>Phone: {booking.userPhone}</Typography>
-                                        <Typography>Quantity: {booking.quantity}</Typography>
-                                        <Typography>Status: {booking.status}</Typography>
+                                        <Typography>
+                                            <strong>{booking.userName}</strong>
+                                        </Typography>
+                                        <Typography>
+                                            Email: {booking.userEmail}
+                                        </Typography>
+                                        <Typography>
+                                            Phone: {booking.userPhone}
+                                        </Typography>
+                                        <Typography>
+                                            Quantity: {booking.quantity}
+                                        </Typography>
+                                        <Typography>
+                                            Status: {booking.status}
+                                        </Typography>
                                     </Box>
                                 ))
                             )}
