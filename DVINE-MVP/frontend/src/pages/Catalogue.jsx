@@ -26,6 +26,7 @@ import {
     CardActions,
     Rating,
     Badge,
+    useTheme,
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -55,6 +56,8 @@ import CatalogueSearch from "../components/CatalogueSearch";
 import FeaturedCarousel from "../components/FeaturedCarousel";
 import PriceDisplay from "../components/PriceDisplay";
 import TourImageUpload from "../components/TourImageUpload";
+import removeMarkdown from "remove-markdown";
+import MDEditor from "@uiw/react-md-editor";
 
 // Mock data for fallback
 const mockTours = [
@@ -128,6 +131,7 @@ export function Catalogue() {
     const [selectedCatalogue, setSelectedCatalogue] = useState(null);
     const [createCatalogueOpen, setCreateCatalogueOpen] = useState(false);
     const [editCatalogueOpen, setEditCatalogueOpen] = useState(false);
+    const theme = useTheme();
     const [catalogueForm, setCatalogueForm] = useState({
         title: "",
         description: "",
@@ -771,11 +775,16 @@ export function Catalogue() {
                                             </Typography>
                                         </Box>
                                         <Typography
-                                            variant="body2"
-                                            color="text.primary"
-                                            sx={{ mb: 2 }}
+                                            sx={{
+                                                mb: 4,
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 3,
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                            }}
                                         >
-                                            {tour.description}
+                                            {removeMarkdown(tour.description)}
                                         </Typography>
                                         <Box
                                             sx={{
@@ -1172,8 +1181,8 @@ export function Catalogue() {
                                 color="text.secondary"
                                 sx={{ mb: 2 }}
                             >
-                                Update tour details and click "Update" to save
-                                changes.
+                                Update experience details and click "Update" to
+                                save changes.
                             </Typography>
                             <TextField
                                 fullWidth
@@ -1188,7 +1197,7 @@ export function Catalogue() {
                                 margin="normal"
                                 required
                             />
-                            <TextField
+                            {/* <TextField
                                 fullWidth
                                 label="Description"
                                 value={tourForm.description}
@@ -1201,7 +1210,68 @@ export function Catalogue() {
                                 margin="normal"
                                 multiline
                                 rows={3}
-                            />
+                            /> */}
+                            <Typography variant="body1" gutterBottom>
+                                Experience Description
+                            </Typography>
+                            <Box
+                                data-color-mode="dark"
+                                sx={{
+                                    "& .w-md-editor": {
+                                        backgroundColor: "background.default",
+                                        border: `1px solid ${theme.palette.divider}`,
+                                        "--w-md-editor-text-color":
+                                            theme.palette.text.primary,
+                                        "--w-md-editor-background-color":
+                                            theme.palette.background.default,
+                                        color:
+                                            theme.palette.text.primary +
+                                            " !important",
+                                    },
+                                    "& .w-md-editor-preview": {
+                                        backgroundColor:
+                                            "background.default !important",
+                                        color:
+                                            theme.palette.text.primary +
+                                            " !important",
+                                    },
+                                    "& .w-md-editor-toolbar": {
+                                        backgroundColor:
+                                            theme.palette.background.default,
+                                        borderBottom: `0.1px solid ${theme.palette.divider}`,
+                                    },
+                                    "& .w-md-editor-toolbar button svg path": {
+                                        stroke: `${theme.palette.text.primary} !important`,
+                                        fill: `${theme.palette.text.primary} !important`,
+                                    },
+                                }}
+                            >
+                                <MDEditor
+                                    value={tourForm.description}
+                                    onChange={(val) =>
+                                        setTourForm({
+                                            ...tourForm,
+                                            description: val || "",
+                                        })
+                                    }
+                                    preview="live"
+                                    // height={300}
+                                    textareaProps={{
+                                        placeholder: "Write Markdown here…",
+                                        style: {
+                                            color: theme.palette.text.primary,
+                                        },
+                                    }}
+                                    previewOptions={{
+                                        style: {
+                                            backgroundColor:
+                                                theme.palette.background
+                                                    .default,
+                                            color: theme.palette.text.primary,
+                                        },
+                                    }}
+                                />
+                            </Box>
                             <TextField
                                 fullWidth
                                 label="Destination"

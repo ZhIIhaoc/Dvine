@@ -160,7 +160,7 @@ export default function AdminBookingsPanel() {
                                     <b>Email</b>
                                 </TableCell>
                                 <TableCell>
-                                    <b>Tour</b>
+                                    <b>Experience</b>
                                 </TableCell>
                                 <TableCell>
                                     <b>Travel Date</b>
@@ -180,7 +180,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                         }}
                                     >
                                         {b.bookingReference}
@@ -189,7 +189,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                         }}
                                     >
                                         {b.userName || "—"}
@@ -198,7 +198,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                         }}
                                     >
                                         {b.userEmail || "—"}
@@ -207,7 +207,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                         }}
                                     >
                                         {b.tourTitle}
@@ -216,7 +216,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                         }}
                                     >
                                         {b.travelDate}
@@ -225,7 +225,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                             fontWeight: "bold",
                                             color:
                                                 (b.status === "CONFIRMED" &&
@@ -243,7 +243,7 @@ export default function AdminBookingsPanel() {
                                         sx={{
                                             fontSize: isMobile
                                                 ? "0.75rem"
-                                                : "1rem",
+                                                : "0.8rem",
                                             fontWeight: "bold",
                                             color:
                                                 b.paymentStatus === "SUCCEEDED"

@@ -34,6 +34,7 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
+    useTheme,
 } from "@mui/material";
 import {
     LocationOn as LocationIcon,
@@ -59,6 +60,7 @@ import {
 } from "@mui/icons-material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import MDEditor from "@uiw/react-md-editor";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -69,6 +71,9 @@ import TourImageUpload from "../components/TourImageUpload";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 
 // Mock data for fallback
 const mockTour = {
@@ -162,6 +167,7 @@ const mockTour = {
 };
 
 export default function TourDetails() {
+    const theme = useTheme();
     const { id } = useParams();
     const navigate = useNavigate();
     const [tour, setTour] = useState(null);
@@ -210,6 +216,7 @@ export default function TourDetails() {
 
     useEffect(() => {
         fetchTourDetails();
+        window.scrollTo(0, 0);
     }, [id]);
 
     // Handle booking submission
@@ -319,6 +326,7 @@ export default function TourDetails() {
                 startIcon={<BackIcon />}
                 onClick={() => navigate("/catalogue")}
                 sx={{
+                    mt: -4,
                     mb: 3,
                     color: "gray",
                     fontWeight: "regular",
@@ -336,7 +344,7 @@ export default function TourDetails() {
                     pagination={{ clickable: true }}
                     autoplay={{ delay: 5000 }}
                     loop={true}
-                    style={{ width: "80%", height: "400px" }}
+                    style={{ width: "80%", height: "500px" }}
                 >
                     {tour.images?.map((image, index) => (
                         <SwiperSlide key={index}>
@@ -346,7 +354,7 @@ export default function TourDetails() {
                                 alt={`${tour.title} - Image ${index + 1}`}
                                 sx={{
                                     width: "100%",
-                                    height: "400px",
+                                    height: "500px",
                                     objectFit: "cover",
                                 }}
                             />
@@ -354,16 +362,26 @@ export default function TourDetails() {
                     ))}
                 </Swiper>
             </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    px: 2,
-                }}
-            >
-                <Grid container spacing={4}>
+            <Box sx={{ display: "flex", justifyContent: "center", px: 2 }}>
+                <Grid
+                    container
+                    spacing={4}
+                    sx={{
+                        width: "100%",
+                        flexWrap: { xs: "wrap", md: "nowrap" },
+                    }}
+                >
                     {/* Main Content */}
-                    <Grid item xs={12} md={8}>
+                    <Grid
+                        item
+                        xs={12}
+                        md
+                        sx={{
+                            flexBasis: 0,
+                            flexGrow: 1,
+                            flexShrink: 1,
+                        }}
+                    >
                         {/* Tour Header */}
                         <Box sx={{ mb: 3 }}>
                             <Box
@@ -501,7 +519,14 @@ export default function TourDetails() {
                         </Box>
 
                         {/* Description */}
-                        <Paper sx={{ p: 3, mb: 3 }}>
+                        <Paper
+                            sx={{
+                                p: 3,
+                                mb: 3,
+                                width: "100%",
+                                wordBreak: "break-word",
+                            }}
+                        >
                             <Typography
                                 variant="h5"
                                 fontWeight="bold"
@@ -509,9 +534,23 @@ export default function TourDetails() {
                             >
                                 About This Tour
                             </Typography>
-                            <Typography variant="body1" paragraph>
-                                {tour.description}
-                            </Typography>
+                            <Box
+                                sx={{
+                                    "& img": { maxWidth: "100%" },
+                                    "& pre": {
+                                        p: 2,
+                                        backgroundColor: "grey.100",
+                                        borderRadius: 1,
+                                    },
+                                }}
+                            >
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm, remarkBreaks]}
+                                    sx={{ wordBreak: "break-word" }}
+                                >
+                                    {tour.description}
+                                </ReactMarkdown>
+                            </Box>
                         </Paper>
 
                         {/* Tabs for Details */}
@@ -697,7 +736,7 @@ export default function TourDetails() {
                     </Grid>
 
                     {/* Sidebar */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md="auto">
                         {/* Booking Card */}
                         <Card
                             sx={{
@@ -711,13 +750,13 @@ export default function TourDetails() {
                                 {/* <Typography variant="h4" color="primary" fontWeight="bold" gutterBottom>
                                 ${tour.price}
                             </Typography> */}
-                                <Typography
+                                {/* <Typography
                                     variant="body2"
                                     color="text.primary"
                                     gutterBottom
                                 >
                                     per person
-                                </Typography>
+                                </Typography> */}
 
                                 <Box sx={{ my: 2 }}>
                                     <Button
@@ -945,6 +984,7 @@ export default function TourDetails() {
                 onClose={() => setEditOpen(false)}
                 maxWidth="md"
                 fullWidth
+                disableScrollLock
             >
                 <DialogTitle>Edit Tour</DialogTitle>
                 <DialogContent>
@@ -955,15 +995,15 @@ export default function TourDetails() {
                                 gutterBottom
                                 sx={{ mt: 2, mb: 1 }}
                             >
-                                Tour Information
+                                Experience Information
                             </Typography>
                             <Typography
                                 variant="body2"
                                 color="text.primary"
                                 sx={{ mb: 2 }}
                             >
-                                Update tour details and click "Update" to save
-                                changes.
+                                Update experience details and click "Update" to
+                                save changes.
                             </Typography>
                             <TextField
                                 fullWidth
@@ -975,10 +1015,15 @@ export default function TourDetails() {
                                         title: e.target.value,
                                     })
                                 }
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
                                 margin="normal"
                                 required
                             />
-                            <TextField
+                            {/* <TextField
                                 fullWidth
                                 label="Description"
                                 value={editForm.description}
@@ -991,7 +1036,72 @@ export default function TourDetails() {
                                 margin="normal"
                                 multiline
                                 rows={3}
-                            />
+                            /> */}
+                            <Typography
+                                variant="body1"
+                                gutterBottom
+                                sx={{ mt: 1 }}
+                            >
+                                Experience Description
+                            </Typography>
+                            <Box
+                                data-color-mode="dark"
+                                sx={{
+                                    "& .w-md-editor": {
+                                        backgroundColor: "background.default",
+                                        border: `1px solid ${theme.palette.divider}`,
+                                        "--w-md-editor-text-color":
+                                            theme.palette.text.primary,
+                                        "--w-md-editor-background-color":
+                                            theme.palette.background.default,
+                                        color:
+                                            theme.palette.text.primary +
+                                            " !important",
+                                    },
+                                    "& .w-md-editor-preview": {
+                                        backgroundColor:
+                                            "background.default !important",
+                                        color:
+                                            theme.palette.text.primary +
+                                            " !important",
+                                    },
+                                    "& .w-md-editor-toolbar": {
+                                        backgroundColor:
+                                            theme.palette.background.default,
+                                        borderBottom: `0.1px solid ${theme.palette.divider}`,
+                                    },
+                                    "& .w-md-editor-toolbar button svg path": {
+                                        stroke: `${theme.palette.text.primary} !important`,
+                                        fill: `${theme.palette.text.primary} !important`,
+                                    },
+                                }}
+                            >
+                                <MDEditor
+                                    value={editForm.description}
+                                    onChange={(val) =>
+                                        setEditForm({
+                                            ...editForm,
+                                            description: val || "",
+                                        })
+                                    }
+                                    preview="live"
+                                    // height={300}
+                                    textareaProps={{
+                                        placeholder: "Write Markdown here…",
+                                        style: {
+                                            color: theme.palette.text.primary,
+                                        },
+                                    }}
+                                    previewOptions={{
+                                        style: {
+                                            backgroundColor:
+                                                theme.palette.background
+                                                    .default,
+                                            color: theme.palette.text.primary,
+                                        },
+                                    }}
+                                />
+                            </Box>
                             <TextField
                                 fullWidth
                                 label="Destination"
@@ -1003,6 +1113,12 @@ export default function TourDetails() {
                                     })
                                 }
                                 margin="normal"
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
+                                sx={{ mt: 4 }}
                             />
                             <TextField
                                 fullWidth
@@ -1016,6 +1132,12 @@ export default function TourDetails() {
                                 }
                                 margin="normal"
                                 type="number"
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
+                                sx={{ mt: 4 }}
                             />
                             <TextField
                                 fullWidth
@@ -1029,6 +1151,12 @@ export default function TourDetails() {
                                 }
                                 margin="normal"
                                 type="number"
+                                InputLabelProps={{
+                                    style: {
+                                        color: theme.palette.text.primary,
+                                    },
+                                }}
+                                sx={{ mt: 4 }}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>

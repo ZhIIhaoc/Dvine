@@ -81,12 +81,12 @@ export default function PostedToursPanel() {
     return (
         <Box sx={{ mt: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 4 }}>
-                Your Posted Tours
+                Your Posted Experiences
             </Typography>
 
             {loading && <CircularProgress />}
             {!loading && tours.length === 0 && (
-                <Typography>You haven’t posted any tours yet.</Typography>
+                <Typography>You haven’t posted any experiences yet.</Typography>
             )}
 
             {!loading &&
@@ -123,6 +123,7 @@ export default function PostedToursPanel() {
                         backgroundColor: "rgba(0, 0, 0, 0.7)",
                     },
                 }}
+                disableScrollLock
             >
                 <Box
                     sx={{

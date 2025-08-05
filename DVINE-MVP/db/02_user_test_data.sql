@@ -81,3 +81,18 @@ VALUES
      'Er',
      'https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg',
      5);
+
+/* ------------------------------------------------------------------
+   Seed data for table `subscriptions`
+   – endless subscriptions for premium member and partner
+   – currentPeriodEnd set to year 9999 for effectively endless time
+   ------------------------------------------------------------------ */
+
+INSERT INTO subscriptions
+(userId, subscriptionType, stripeSubscriptionId, status, currentPeriodEnd)
+VALUES
+/* Premium member (userId=2, permission=1) - endless premium subscription */
+    (2, 'PREMIUM', 'sub_endless_premium_test', 'ACTIVE', '2099-12-31 23:59:59'),
+
+/* Partner (userId=4, permission=3) - endless partner subscription */  
+    (4, 'PARTNER', 'sub_endless_partner_test', 'ACTIVE', '2099-12-31 23:59:59');

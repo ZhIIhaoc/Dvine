@@ -841,6 +841,7 @@ export const DvineMoments = () => {
                         bgcolor: "background.paper",
                     },
                 }}
+                disableScrollLock
             >
                 <DialogTitle>
                     <Box

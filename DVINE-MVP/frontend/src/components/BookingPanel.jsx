@@ -120,7 +120,6 @@ export default function PartnerBookingsPanel({ userId }) {
                             <Typography><strong>Status:</strong> {booking.status}</Typography>
                             <Typography><strong>Date:</strong> {booking.travelDate}</Typography>
                             <Typography><strong>Total Paid:</strong> ${booking.totalAmount} {booking.currency}</Typography>
-
                             <Button
                                 variant="contained"
                                 fullWidth
@@ -132,7 +131,7 @@ export default function PartnerBookingsPanel({ userId }) {
                             >
                                 View Payment
                             </Button>
-
+                       
                             {booking.status !== "CANCELLED" && (
                                 <Button
                                     variant="outlined"
