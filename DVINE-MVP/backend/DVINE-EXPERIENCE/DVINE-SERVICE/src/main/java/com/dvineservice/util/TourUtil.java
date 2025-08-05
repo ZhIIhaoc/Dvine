@@ -29,14 +29,16 @@ public class TourUtil {
             imageUrls.add(tour.getPrimaryImageUrl());
         }
 
-        // Create images list
-        List<Image> images = imageUrls.stream().map(imgStr -> {
-            Image image = new Image();
-            image.setTourId(tour.getTourId());
-            image.setImageUrl(imgStr);
-            image.setIsPrimary(tour.getPrimaryImageUrl() != null && tour.getPrimaryImageUrl().equals(imgStr));
-            return image;
-        }).toList();
+        // Create images list, filtering out empty or null URLs
+        List<Image> images = imageUrls.stream()
+                .filter(imgStr -> imgStr != null && !imgStr.trim().isEmpty())
+                .map(imgStr -> {
+                    Image image = new Image();
+                    image.setTourId(tour.getTourId());
+                    image.setImageUrl(imgStr);
+                    image.setIsPrimary(tour.getPrimaryImageUrl() != null && tour.getPrimaryImageUrl().equals(imgStr));
+                    return image;
+                }).toList();
         return images;
     }
 

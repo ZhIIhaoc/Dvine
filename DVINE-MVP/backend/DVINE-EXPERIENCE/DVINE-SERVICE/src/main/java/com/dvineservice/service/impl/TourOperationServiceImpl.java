@@ -49,7 +49,11 @@ public class TourOperationServiceImpl implements TourOperationService {
         
         tourMapper.createTour(tour);
         List<Image> images = TourUtil.getImages(tour);
-        imageService.createImages(images);
+        
+        // Only create images if there are actual images to create
+        if (images != null && !images.isEmpty()) {
+            imageService.createImages(images);
+        }
     }
 
     @Override
