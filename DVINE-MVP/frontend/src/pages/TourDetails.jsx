@@ -216,6 +216,7 @@ export default function TourDetails() {
 
     useEffect(() => {
         fetchTourDetails();
+        window.scrollTo(0, 0);
     }, [id]);
 
     // Handle booking submission

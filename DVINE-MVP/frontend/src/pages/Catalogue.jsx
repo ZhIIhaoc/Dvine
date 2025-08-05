@@ -775,9 +775,14 @@ export function Catalogue() {
                                             </Typography>
                                         </Box>
                                         <Typography
-                                            variant="body2"
-                                            color="text.primary"
-                                            sx={{ mb: 2 }}
+                                            sx={{
+                                                mb: 4,
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 3,
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                            }}
                                         >
                                             {removeMarkdown(tour.description)}
                                         </Typography>
