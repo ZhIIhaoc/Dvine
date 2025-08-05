@@ -13,7 +13,7 @@ const TourPurchaseFail = () => {
         // Fetch tour information using the tour ID
         try {
             const localHost = "http://localhost:8080";
-            const response = await fetch(`${localHost}/tours/${id}`, {
+            const response = await fetch(`${localHost}/bookings/${id}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const TourPurchaseFail = () => {
                         fontWeight="bold"
                         gutterBottom
                     >
-                        Purchase Failed for Tour ID: {pageInfo.title}
+                        Purchase Failed for : {pageInfo.tourTitle}
                     </Typography>
                     <Typography
                         variant="h6"
