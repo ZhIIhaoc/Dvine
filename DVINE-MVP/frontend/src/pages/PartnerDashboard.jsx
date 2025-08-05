@@ -120,6 +120,7 @@ export function PartnerDashboard() {
 
             if (responseInfo.code === 0) {
                 setRefetchSubscription(!refetchSubscription);
+                window.location.reload();
             } else {
                 alert(responseInfo.msg || " Failed to unsubscribe.");
             }

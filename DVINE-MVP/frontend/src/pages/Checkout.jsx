@@ -110,7 +110,7 @@ export default function Checkout() {
                                 )
                             )
                         }
-                        format="DD/MM/YYY"
+                        
                         slotProps={{
                             textField: {
                                 fullWidth: true,

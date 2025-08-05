@@ -179,7 +179,7 @@ export default function PostedToursPanel() {
                                             p: 2,
                                             border: "1px solid #ddd",
                                             borderRadius: 2,
-                                            backgroundColor: "#f9f9f9",
+                                            backgroundColor: "background.defaults",
                                         }}
                                     >
                                         <Typography>

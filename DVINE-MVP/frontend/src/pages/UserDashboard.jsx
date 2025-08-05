@@ -102,6 +102,7 @@ export function UserDashboard() {
             if (responseInfo.code === 0) {
                 console.log("Unsubscribed successfully.");
                 fetchSubscriptionStatus();
+                window.location.reload();
             } else {
                 alert(responseInfo.msg || " Failed to unsubscribe.");
             }
