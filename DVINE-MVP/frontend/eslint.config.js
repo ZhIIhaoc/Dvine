@@ -28,7 +28,15 @@ export default [
             ...reactHooks.configs.recommended.rules,
             "react/react-in-jsx-scope": "off",
             "react/jsx-uses-react": "off",
-            "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
+            "react/prop-types": "off",
+            "no-unused-vars": [
+                "error",
+                {
+                    varsIgnorePattern: "^[A-Z_]",
+                    argsIgnorePattern: "^_",
+                    ignoreRestSiblings: true,
+                },
+            ],
             "react-refresh/only-export-components": [
                 "warn",
                 { allowConstantExport: true },
@@ -37,5 +45,26 @@ export default [
         settings: {
             react: { version: "detect" },
         },
+    },
+    {
+        files: ["**/*.{test,spec}.{js,jsx}"],
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                vi: true,
+                describe: true,
+                it: true,
+                expect: true,
+                global: true,
+            },
+        },
+    },
+    {
+        files: [
+            "*.config.{js,cjs,mjs}",
+            "scripts/**/*.{js,jsx}",
+            "eslint.config.js",
+        ],
+        languageOptions: { globals: { ...globals.node } },
     },
 ];
