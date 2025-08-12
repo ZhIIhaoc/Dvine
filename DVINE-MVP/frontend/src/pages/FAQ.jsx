@@ -104,7 +104,7 @@ export function FAQ() {
         answer: "",
     });
 
-    const { userInfo, token } = useAuth();
+    const { userInfo } = useAuth();
     const isAdmin = userInfo?.permission >= 4;
 
     // Fetch FAQs from API

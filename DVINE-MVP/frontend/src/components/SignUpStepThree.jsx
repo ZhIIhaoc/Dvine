@@ -58,14 +58,25 @@ const SignUpStepThree = ({
                 Confirm your email
             </Typography>
 
-            <Typography variant="body1" align="center" sx={{ mb: 4, maxWidth: 400 }}>
-                We've sent a verification code to your email. Please enter it below to complete your registration.
+            <Typography
+                variant="body1"
+                align="center"
+                sx={{ mb: 4, maxWidth: 400 }}
+            >
+                We&apos;ve sent a verification code to your email. Please enter
+                it below to complete your registration.
             </Typography>
 
             <Stepper activeStep={2} sx={{ width: "40%", mb: 6 }}>
-                <Step><StepLabel /></Step>
-                <Step><StepLabel /></Step>
-                <Step><StepLabel /></Step>
+                <Step>
+                    <StepLabel />
+                </Step>
+                <Step>
+                    <StepLabel />
+                </Step>
+                <Step>
+                    <StepLabel />
+                </Step>
             </Stepper>
 
             <TextField
@@ -97,11 +108,13 @@ const SignUpStepThree = ({
                     }}
                     onClick={handleResend}
                 >
-                    {resending
-                        ? <CircularProgress size={24} />
-                        : cooldown > 0
-                            ? `Resend (${cooldown})`
-                            : "Resend Code"}
+                    {resending ? (
+                        <CircularProgress size={24} />
+                    ) : cooldown > 0 ? (
+                        `Resend (${cooldown})`
+                    ) : (
+                        "Resend Code"
+                    )}
                 </Button>
 
                 <Button
@@ -114,9 +127,11 @@ const SignUpStepThree = ({
                     }}
                     onClick={handleVerify}
                 >
-                    {verifying
-                        ? <CircularProgress size={24} sx={{ color: "#fff" }} />
-                        : "Verify Email"}
+                    {verifying ? (
+                        <CircularProgress size={24} sx={{ color: "#fff" }} />
+                    ) : (
+                        "Verify Email"
+                    )}
                 </Button>
             </Box>
         </Box>

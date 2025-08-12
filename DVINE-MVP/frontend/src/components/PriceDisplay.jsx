@@ -13,7 +13,6 @@ export default function PriceDisplay({
     userPermission,
 }) {
     const isPremium = userPermission === 1;
-    const isRegular = userPermission === 0;
     const showDiscount =
         typeof regularPrice === "number" &&
         typeof premiumPrice === "number" &&
