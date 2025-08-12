@@ -116,7 +116,7 @@ const UserSettings = () => {
             } else {
                 showSnackbar(data.msg || "Update failed", "error");
             }
-        } catch (error) {
+        } catch {
             showSnackbar("Network error. Try again.", "error");
         }
     };

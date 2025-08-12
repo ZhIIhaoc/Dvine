@@ -18,8 +18,9 @@ import {
     FilterList as FilterIcon,
     Clear as ClearIcon,
 } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
-export default function CatalogueSearch({ onSearch, onClear }) {
+export default function CatalogueSearch({ onSearch }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [priceRange, setPriceRange] = useState([0, 5000]);
     const [selectedCatalogue, setSelectedCatalogue] = useState("");
@@ -71,7 +72,7 @@ export default function CatalogueSearch({ onSearch, onClear }) {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         InputLabelProps={{
-                            sx: (theme) => ({
+                            sx: () => ({
                                 color: "text.primary",
                             }),
                         }}
@@ -333,3 +334,7 @@ export default function CatalogueSearch({ onSearch, onClear }) {
         </Paper>
     );
 }
+
+CatalogueSearch.propTypes = {
+    onSearch: PropTypes.func,
+};

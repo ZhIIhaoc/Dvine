@@ -12,7 +12,7 @@ import SubmitEmailRegistration from "../endpoints/SubmitEmailRegistration.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { useContext } from "react";
 
-export const Register = ({ isDarkMode, setIsDarkMode }) => {
+export const Register = ({ isDarkMode }) => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const { setToken } = useContext(AuthContext);

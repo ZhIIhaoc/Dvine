@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
     Box,
     Typography,
@@ -6,23 +6,21 @@ import {
     TextField,
     Button,
     Alert,
-    Container
-} from '@mui/material';
-import TourImageUpload from '../components/TourImageUpload';
+    Container,
+} from "@mui/material";
+import TourImageUpload from "../components/TourImageUpload";
 
 const TourImageTest = () => {
-    const [tourId, setTourId] = useState('');
+    const [tourId, setTourId] = useState("");
     const [images, setImages] = useState([]);
-    const [error, setError] = useState('');
 
     const handleImagesUpdate = (newImages) => {
         setImages(newImages);
-        console.log('Images updated:', newImages);
+        console.log("Images updated:", newImages);
     };
 
     const handleTourIdChange = (event) => {
         setTourId(event.target.value);
-        setError('');
     };
 
     return (
@@ -30,7 +28,7 @@ const TourImageTest = () => {
             <Typography variant="h4" gutterBottom>
                 Tour Image Upload Test
             </Typography>
-            
+
             <Paper sx={{ p: 3, mb: 3 }}>
                 <Typography variant="h6" gutterBottom>
                     Test Configuration
@@ -45,8 +43,9 @@ const TourImageTest = () => {
                     sx={{ mb: 2 }}
                 />
                 <Alert severity="info" sx={{ mb: 2 }}>
-                    Enter a valid tour ID that you own to test the image upload functionality.
-                    The tour must exist and you must have permission to upload images to it.
+                    Enter a valid tour ID that you own to test the image upload
+                    functionality. The tour must exist and you must have
+                    permission to upload images to it.
                 </Alert>
             </Paper>
 
@@ -61,9 +60,10 @@ const TourImageTest = () => {
                     />
                 </Paper>
             ) : (
-                <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Paper sx={{ p: 3, textAlign: "center" }}>
                     <Typography variant="body1" color="text.secondary">
-                        Please enter a tour ID above to start testing image uploads
+                        Please enter a tour ID above to start testing image
+                        uploads
                     </Typography>
                 </Paper>
             )}
@@ -73,32 +73,34 @@ const TourImageTest = () => {
                     <Typography variant="h6" gutterBottom>
                         Current Images ({images.length})
                     </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
                         {images.map((image, index) => (
-                            <Box key={image.id} sx={{ position: 'relative' }}>
+                            <Box key={image.id} sx={{ position: "relative" }}>
                                 <img
                                     src={image.url}
                                     alt={`Tour image ${index + 1}`}
                                     style={{
                                         width: 150,
                                         height: 150,
-                                        objectFit: 'cover',
+                                        objectFit: "cover",
                                         borderRadius: 8,
-                                        border: image.isPrimary ? '3px solid #1976d2' : '1px solid #ddd'
+                                        border: image.isPrimary
+                                            ? "3px solid #1976d2"
+                                            : "1px solid #ddd",
                                     }}
                                 />
                                 {image.isPrimary && (
                                     <Box
                                         sx={{
-                                            position: 'absolute',
+                                            position: "absolute",
                                             top: 8,
                                             left: 8,
-                                            bgcolor: 'primary.main',
-                                            color: 'white',
+                                            bgcolor: "primary.main",
+                                            color: "white",
                                             px: 1,
                                             py: 0.5,
                                             borderRadius: 1,
-                                            fontSize: '0.75rem'
+                                            fontSize: "0.75rem",
                                         }}
                                     >
                                         Primary
@@ -113,4 +115,4 @@ const TourImageTest = () => {
     );
 };
 
-export default TourImageTest; 
+export default TourImageTest;

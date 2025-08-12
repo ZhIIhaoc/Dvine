@@ -12,6 +12,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PaymentDetailsModal from "../components/PaymentDetailsModal.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
+import PropTypes from "prop-types";
 
 export default function PartnerBookingsPanel({ userId }) {
     const { token } = useContext(AuthContext);
@@ -32,7 +33,9 @@ export default function PartnerBookingsPanel({ userId }) {
     const fetchBookings = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/bookings/user/${userId}`);
+            const response = await fetch(
+                `http://localhost:8080/bookings/user/${userId}`
+            );
             const responseInfo = await response.json();
 
             if (responseInfo.code === 0) {
@@ -48,7 +51,8 @@ export default function PartnerBookingsPanel({ userId }) {
     };
 
     const cancelBooking = async (bookingId) => {
-        if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+        if (!window.confirm("Are you sure you want to cancel this booking?"))
+            return;
 
         setCancelling(true);
         try {
@@ -116,10 +120,20 @@ export default function PartnerBookingsPanel({ userId }) {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography><strong>Reference:</strong> {booking.bookingReference}</Typography>
-                            <Typography><strong>Status:</strong> {booking.status}</Typography>
-                            <Typography><strong>Date:</strong> {booking.travelDate}</Typography>
-                            <Typography><strong>Total Paid:</strong> ${booking.totalAmount} {booking.currency}</Typography>
+                            <Typography>
+                                <strong>Reference:</strong>{" "}
+                                {booking.bookingReference}
+                            </Typography>
+                            <Typography>
+                                <strong>Status:</strong> {booking.status}
+                            </Typography>
+                            <Typography>
+                                <strong>Date:</strong> {booking.travelDate}
+                            </Typography>
+                            <Typography>
+                                <strong>Total Paid:</strong> $
+                                {booking.totalAmount} {booking.currency}
+                            </Typography>
                             <Button
                                 variant="contained"
                                 fullWidth
@@ -131,7 +145,7 @@ export default function PartnerBookingsPanel({ userId }) {
                             >
                                 View Payment
                             </Button>
-                       
+
                             {booking.status !== "CANCELLED" && (
                                 <Button
                                     variant="outlined"
@@ -139,9 +153,13 @@ export default function PartnerBookingsPanel({ userId }) {
                                     fullWidth
                                     sx={{ mt: 2 }}
                                     disabled={cancelling}
-                                    onClick={() => cancelBooking(booking.bookingId)}
+                                    onClick={() =>
+                                        cancelBooking(booking.bookingId)
+                                    }
                                 >
-                                    {cancelling ? "Cancelling..." : "Cancel Booking"}
+                                    {cancelling
+                                        ? "Cancelling..."
+                                        : "Cancel Booking"}
                                 </Button>
                             )}
                         </AccordionDetails>
@@ -158,3 +176,7 @@ export default function PartnerBookingsPanel({ userId }) {
         </Box>
     );
 }
+
+PartnerBookingsPanel.propTypes = {
+    userId: PropTypes.number,
+};

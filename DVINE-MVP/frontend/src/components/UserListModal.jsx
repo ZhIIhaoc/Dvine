@@ -1,19 +1,6 @@
-import { useEffect, useState, useContext } from "react";
-import {
-    Box,
-    Button,
-    Typography,
-    Modal,
-    List,
-    ListItem,
-    ListItemText,
-    TextField,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-} from "@mui/material";
+import { Box, Modal } from "@mui/material";
 import UserListForm from "./UserListForm.jsx";
+import PropTypes from "prop-types";
 
 export default function UserListModal({ open, onClose }) {
     return (
@@ -34,3 +21,8 @@ export default function UserListModal({ open, onClose }) {
         </Modal>
     );
 }
+
+UserListModal.propTypes = {
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+};

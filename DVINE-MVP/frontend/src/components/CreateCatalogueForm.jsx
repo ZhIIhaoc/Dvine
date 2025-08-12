@@ -10,6 +10,7 @@ import {
 import createNewCatalogue from "../endpoints/CreateCatalogue";
 import deleteCatalogue from "../endpoints/DeleteCatalogue";
 import MessageAlert from "../components/MessageAlert.jsx";
+import PropTypes from "prop-types";
 
 export default function CreateCatalogueForm({
     onClose,
@@ -245,3 +246,9 @@ export default function CreateCatalogueForm({
         </>
     );
 }
+
+CreateCatalogueForm.propTypes = {
+    onClose: PropTypes.func,
+    catalogueList: PropTypes.array,
+    onComplete: PropTypes.func,
+};
