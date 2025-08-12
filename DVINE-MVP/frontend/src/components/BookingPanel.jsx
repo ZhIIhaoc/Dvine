@@ -77,7 +77,7 @@ export default function PartnerBookingsPanel({ userId }) {
         }
     };
 
-    const filteredBookings = bookings.filter((booking) =>
+    const filteredBookings = (bookings || []).filter((booking) =>
         booking.tourDestination.toLowerCase().includes(searchTerm.toLowerCase())
     );
 

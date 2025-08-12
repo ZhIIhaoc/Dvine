@@ -125,6 +125,10 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                             onChange={(event) =>
                                 setLoginEmail(event.target.value)
                             }
+                            inputProps={{ 
+                                "data-testid": "email-input",
+                                "aria-label": "Email input"
+                            }}
                             InputLabelProps={{
                                 shrink: true,
                                 sx: {
@@ -140,6 +144,10 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                             sx={{ mb: 6, width: "70%" }}
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
+                            inputProps={{ 
+                                "data-testid": "password-input",
+                                "aria-label": "Password input"
+                            }}
                             InputLabelProps={{
                                 shrink: true,
                                 sx: {
@@ -158,6 +166,8 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                                 height: "56px",
                             }}
                             onClick={loginButton}
+                            data-testid="login-button"
+                            aria-label="Login button"
                         >
                             Log in
                         </Button>
