@@ -519,7 +519,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 sx={{
                                     color: "text.primary",
                                     borderBottom:
-                                        currentPath === "/user-dashboard"
+                                        currentPath === "/user/settings"
                                             ? "2px solid"
                                             : "none",
                                     borderColor: "text.tertiary",

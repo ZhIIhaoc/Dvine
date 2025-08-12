@@ -74,8 +74,10 @@ export default function PostedToursPanel() {
         }
     };
 
-    const filteredBookings = tourBookings.filter((booking) =>
-        booking.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredBookings = (tourBookings || []).filter((booking) =>
+        (booking.userName || "")
+            .toLowerCase()
+            .includes((searchTerm || "").toLowerCase())
     );
 
     return (
@@ -179,7 +181,8 @@ export default function PostedToursPanel() {
                                             p: 2,
                                             border: "1px solid #ddd",
                                             borderRadius: 2,
-                                            backgroundColor: "background.defaults",
+                                            backgroundColor:
+                                                "background.defaults",
                                         }}
                                     >
                                         <Typography>
