@@ -11,6 +11,7 @@ import {
     Button,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
 export default function UserPaymentsModal({
     open,
@@ -125,3 +126,10 @@ export default function UserPaymentsModal({
         </Dialog>
     );
 }
+
+UserPaymentsModal.propTypes = {
+    open: PropTypes.bool,
+    handleClose: PropTypes.func,
+    userId: PropTypes.number,
+    token: PropTypes.string,
+};

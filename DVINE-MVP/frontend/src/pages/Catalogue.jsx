@@ -1188,8 +1188,8 @@ export function Catalogue() {
                                 color="text.secondary"
                                 sx={{ mb: 2 }}
                             >
-                                Update experience details and click "Update" to
-                                save changes.
+                                Update experience details and click
+                                &quot;Update&quot; to save changes.
                             </Typography>
                             <TextField
                                 fullWidth

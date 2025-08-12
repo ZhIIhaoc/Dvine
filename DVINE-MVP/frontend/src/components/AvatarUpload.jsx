@@ -14,6 +14,7 @@ import {
     Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { uploadAvatar } from "../endpoints/AvatarEndpoints";
+import PropTypes from "prop-types";
 
 const AvatarUpload = ({
     currentAvatarUrl,
@@ -233,6 +234,14 @@ const AvatarUpload = ({
             )}
         </Box>
     );
+};
+
+AvatarUpload.propTypes = {
+    currentAvatarUrl: PropTypes.string,
+    onAvatarUpdate: PropTypes.func,
+    size: PropTypes.number,
+    showUploadButton: PropTypes.bool,
+    showDeleteButton: PropTypes.bool,
 };
 
 export default AvatarUpload;

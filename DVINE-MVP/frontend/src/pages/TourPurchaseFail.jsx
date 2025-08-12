@@ -59,7 +59,8 @@ const TourPurchaseFail = () => {
                         color="text.primary"
                         fontWeight="regular"
                     >
-                        We're sorry, but your purchase could not be completed.
+                        We&apos;re sorry, but your purchase could not be
+                        completed.
                     </Typography>
 
                     <Button

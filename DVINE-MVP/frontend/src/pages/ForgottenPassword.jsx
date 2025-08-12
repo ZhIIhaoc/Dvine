@@ -16,8 +16,9 @@ import MessageAlert from "../components/MessageAlert.jsx";
 import { useNavigate } from "react-router-dom";
 import SubmitForgottenPasswordRequest from "../endpoints/SubmitForgottenPasswordRequest.jsx";
 import Logo from "../components/Logo.jsx";
+import PropTypes from "prop-types";
 
-const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
+const ForgottenPassword = ({ isDarkMode }) => {
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -185,8 +186,12 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                         fullWidth
                                         sx={{ width: "70%", mb: 2 }}
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        inputProps={{ "data-testid": "email-input" }}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
+                                        inputProps={{
+                                            "data-testid": "email-input",
+                                        }}
                                         InputLabelProps={{
                                             shrink: true,
                                             sx: {
@@ -224,7 +229,7 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                         align="center"
                                         sx={{ mt: 4 }}
                                     >
-                                        Don't have an account?{" "}
+                                        Don&apos;t have an account?{" "}
                                         <Link
                                             underline="hover"
                                             color="secondary"
@@ -256,7 +261,13 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                         onChange={(e) =>
                                             setVerificationCode(e.target.value)
                                         }
-                                        inputProps={{ "data-testid": "verification-code-input" }}
+                                        InputLabelProps={{
+                                            sx: { color: "text.primary" },
+                                        }}
+                                        inputProps={{
+                                            "data-testid":
+                                                "verification-code-input",
+                                        }}
                                     />
                                     <TextField
                                         label="New Password"
@@ -272,7 +283,9 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                         onChange={(e) =>
                                             setNewPassword(e.target.value)
                                         }
-                                        inputProps={{ "data-testid": "new-password-input" }}
+                                        inputProps={{
+                                            "data-testid": "new-password-input",
+                                        }}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -293,6 +306,9 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        InputLabelProps={{
+                                            sx: { color: "text.primary" },
+                                        }}
                                     />
                                     <TextField
                                         label="Confirm New Password"
@@ -308,7 +324,10 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                         onChange={(e) =>
                                             setConfirmPassword(e.target.value)
                                         }
-                                        inputProps={{ "data-testid": "confirm-password-input" }}
+                                        inputProps={{
+                                            "data-testid":
+                                                "confirm-password-input",
+                                        }}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -328,6 +347,9 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
+                                        }}
+                                        InputLabelProps={{
+                                            sx: { color: "text.primary" },
                                         }}
                                     />
                                     <Button
@@ -376,174 +398,12 @@ const ForgottenPassword = ({ isDarkMode, setIsDarkMode }) => {
                     severity={snackbarSeverity}
                 />
             </Grid>
-            {/* <Box
-                sx={{
-                    minHeight: "90vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "100%",
-                    px: 4,
-                }}
-            >
-                {step === 0 ? (
-                    <>
-                        <Typography
-                            variant="h4"
-                            gutterBottom
-                            align="center"
-                            sx={{ mb: 2 }}
-                        >
-                            Forgotten Password
-                        </Typography>
-
-                        <Typography
-                            variant="body1"
-                            align="center"
-                            sx={{ maxWidth: 400, mb: 4 }}
-                        >
-                            If you’ve forgotten your password, enter your email
-                            and we’ll send you a reset code to your email.
-                        </Typography>
-                        <TextField
-                            label="Email"
-                            variant="outlined"
-                            fullWidth
-                            sx={{ width: "70%", mb: 4 }}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            InputLabelProps={{
-                                sx: { color: "text.primary" },
-                            }}
-                        />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            disabled={submitting || cooldown > 0}
-                            sx={{ height: "56px", width: "70%", mb: 2 }}
-                            onClick={handleSendResetCode}
-                        >
-                            {submitting ? (
-                                <CircularProgress
-                                    size={24}
-                                    sx={{ color: "white" }}
-                                />
-                            ) : cooldown > 0 ? (
-                                `Resend (${cooldown})`
-                            ) : (
-                                "Send Code"
-                            )}
-                        </Button>
-                    </>
-                ) : (
-                    <>
-                        <Typography
-                            variant="h4"
-                            gutterBottom
-                            align="center"
-                            sx={{ mb: 2 }}
-                        >
-                            Reset Your Password
-                        </Typography>
-                        <TextField
-                            label="Verification Code"
-                            variant="outlined"
-                            fullWidth
-                            sx={{ width: "70%", mb: 2 }}
-                            value={verificationCode}
-                            onChange={(e) =>
-                                setVerificationCode(e.target.value)
-                            }
-                        />
-                        <TextField
-                            label="New Password"
-                            variant="outlined"
-                            type={showNewPassword ? "text" : "password"}
-                            fullWidth
-                            sx={{ width: "70%", mb: 2 }}
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() =>
-                                                setShowNewPassword(
-                                                    (prev) => !prev
-                                                )
-                                            }
-                                            edge="end"
-                                        >
-                                            {showNewPassword ? (
-                                                <VisibilityOff />
-                                            ) : (
-                                                <Visibility />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <TextField
-                            label="Confirm New Password"
-                            variant="outlined"
-                            type={showConfirmPassword ? "text" : "password"}
-                            fullWidth
-                            sx={{ width: "70%", mb: 4 }}
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() =>
-                                                setShowConfirmPassword(
-                                                    (prev) => !prev
-                                                )
-                                            }
-                                            edge="end"
-                                        >
-                                            {showConfirmPassword ? (
-                                                <VisibilityOff />
-                                            ) : (
-                                                <Visibility />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            disabled={submitting}
-                            sx={{ height: "56px", width: "70%", mb: 2 }}
-                            onClick={handleResetPassword}
-                        >
-                            {submitting ? (
-                                <CircularProgress
-                                    size={24}
-                                    sx={{ color: "white" }}
-                                />
-                            ) : (
-                                "Reset Password"
-                            )}
-                        </Button>
-                    </>
-                )}
-
-                <MessageAlert
-                    open={snackbarOpen}
-                    onClose={() => setSnackbarOpen(false)}
-                    message={snackbarMessage}
-                    severity={snackbarSeverity}
-                />
-            </Box> */}
         </>
     );
+};
+
+ForgottenPassword.propTypes = {
+    isDarkMode: PropTypes.bool,
 };
 
 export default ForgottenPassword;

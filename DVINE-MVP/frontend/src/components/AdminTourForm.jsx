@@ -167,7 +167,7 @@ export default function AdminTourPage() {
                 fetchFeaturedTours();
                 showSnackbar("Removed from featured", "success");
             } else showSnackbar(responseInfo.msg, "error");
-        } catch (error) {
+        } catch {
             showSnackbar("Failed to remove", "error");
         }
     };

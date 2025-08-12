@@ -7,9 +7,9 @@ import {
     TextField,
     Autocomplete,
 } from "@mui/material";
-// import CreateCatalogue from "../endpoints/CreateCatalogue"; change back to this in sprint 2
 import CreateTours from "../endpoints/CreateTours";
 import CreateTourForm from "./CreateTourForm";
+import PropTypes from "prop-types";
 
 export function CreateTourModal({ open, onClose, catalogueList }) {
     return (
@@ -33,3 +33,9 @@ export function CreateTourModal({ open, onClose, catalogueList }) {
         </Modal>
     );
 }
+
+CreateTourModal.PropTypes = {
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    catalogueList: PropTypes.array,
+};
