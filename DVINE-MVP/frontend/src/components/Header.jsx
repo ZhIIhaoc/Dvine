@@ -120,7 +120,6 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                     {token && (
                         <Box
                             sx={{
-                                display: "flex",
                                 alignItems: "center",
                                 justifyContent: "flex-end",
                                 height: "100%",

@@ -10,7 +10,6 @@ import {
     Chip,
     Paper,
     Typography,
-    IconButton,
     Collapse,
     Grid,
     useTheme,
@@ -25,7 +24,7 @@ import {
     Favorite as FavoriteIcon,
 } from "@mui/icons-material";
 
-const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
+const MomentSearchFilter = ({ onSearch, onClear }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("latest");
     const [showFilters, setShowFilters] = useState(false);

@@ -3,19 +3,16 @@ import {
     Box,
     Button,
     Typography,
-    Modal,
     TextField,
     Autocomplete,
     Divider,
     Alert,
-    Paper,
     useTheme,
 } from "@mui/material";
 // import CreateCatalogue from "../endpoints/CreateCatalogue"; change back to this in sprint 2
 import { CreateToursWithImages } from "../endpoints/CreateTours";
 import TourImageUpload from "./TourImageUpload";
 import { useAuth } from "../components/AuthContext";
-import ReactMarkdown from "react-markdown";
 import MDEditor from "@uiw/react-md-editor";
 import remarkBreaks from "remark-breaks";
 
@@ -33,7 +30,6 @@ export default function CreateTourForm({ onClose, catalogueList }) {
     const [success, setSuccess] = React.useState("");
     const [isCreating, setIsCreating] = React.useState(false);
     const accessToken = localStorage.getItem("accessToken");
-    const [value, setValue] = React.useState("");
     const theme = useTheme();
 
     const handleImagesUpdate = (images) => {
