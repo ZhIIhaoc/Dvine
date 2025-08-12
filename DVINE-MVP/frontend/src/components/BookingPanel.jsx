@@ -12,7 +12,6 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PaymentDetailsModal from "../components/PaymentDetailsModal.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
-import PropTypes from "prop-types";
 
 export default function PartnerBookingsPanel({ userId }) {
     const { token } = useContext(AuthContext);
@@ -81,7 +80,7 @@ export default function PartnerBookingsPanel({ userId }) {
         }
     };
 
-    const filteredBookings = bookings.filter((booking) =>
+    const filteredBookings = (bookings || []).filter((booking) =>
         booking.tourDestination.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -176,7 +175,3 @@ export default function PartnerBookingsPanel({ userId }) {
         </Box>
     );
 }
-
-PartnerBookingsPanel.propTypes = {
-    userId: PropTypes.number,
-};

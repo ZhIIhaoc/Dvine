@@ -6,13 +6,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the source code
 COPY . .
 
 # Remove any existing node_modules from the copied files
-RUN rm -rf node_modules && npm install
+RUN rm -rf node_modules && npm install --legacy-peer-deps
 
 EXPOSE 5173
 

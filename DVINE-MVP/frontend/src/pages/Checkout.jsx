@@ -28,9 +28,16 @@ export default function Checkout() {
 
     useEffect(() => {
         async function loadTour() {
-            const result = await fetchTourById(tourId);
-            if (result.code === 0) setTour(result.data);
-            setLoading(false);
+            try {
+                const result = await fetchTourById(tourId);
+                if (result && result.code === 0) {
+                    setTour(result.data);
+                }
+            } catch (error) {
+                console.error('Error loading tour:', error);
+            } finally {
+                setLoading(false);
+            }
         }
         loadTour();
     }, [tourId]);

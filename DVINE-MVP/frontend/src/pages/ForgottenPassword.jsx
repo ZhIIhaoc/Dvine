@@ -184,13 +184,20 @@ const ForgottenPassword = ({ isDarkMode }) => {
                                         label="Email"
                                         variant="outlined"
                                         fullWidth
-                                        sx={{ width: "70%", mb: 4 }}
+                                        sx={{ width: "70%", mb: 2 }}
                                         value={email}
                                         onChange={(e) =>
                                             setEmail(e.target.value)
                                         }
+                                        inputProps={{
+                                            "data-testid": "email-input",
+                                        }}
                                         InputLabelProps={{
-                                            sx: { color: "text.primary" },
+                                            shrink: true,
+                                            sx: {
+                                                color: "text.primary",
+                                                fontSize: "1.2rem",
+                                            },
                                         }}
                                     />
                                     <Button
@@ -204,6 +211,7 @@ const ForgottenPassword = ({ isDarkMode }) => {
                                             mb: 2,
                                         }}
                                         onClick={handleSendResetCode}
+                                        data-testid="send-code-button"
                                     >
                                         {submitting ? (
                                             <CircularProgress
@@ -256,6 +264,10 @@ const ForgottenPassword = ({ isDarkMode }) => {
                                         InputLabelProps={{
                                             sx: { color: "text.primary" },
                                         }}
+                                        inputProps={{
+                                            "data-testid":
+                                                "verification-code-input",
+                                        }}
                                     />
                                     <TextField
                                         label="New Password"
@@ -271,6 +283,9 @@ const ForgottenPassword = ({ isDarkMode }) => {
                                         onChange={(e) =>
                                             setNewPassword(e.target.value)
                                         }
+                                        inputProps={{
+                                            "data-testid": "new-password-input",
+                                        }}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -309,6 +324,10 @@ const ForgottenPassword = ({ isDarkMode }) => {
                                         onChange={(e) =>
                                             setConfirmPassword(e.target.value)
                                         }
+                                        inputProps={{
+                                            "data-testid":
+                                                "confirm-password-input",
+                                        }}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -344,6 +363,7 @@ const ForgottenPassword = ({ isDarkMode }) => {
                                             mb: 2,
                                         }}
                                         onClick={handleResetPassword}
+                                        data-testid="reset-password-button"
                                     >
                                         {submitting ? (
                                             <CircularProgress
