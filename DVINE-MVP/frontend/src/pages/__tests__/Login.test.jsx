@@ -65,7 +65,7 @@ describe('Login', () => {
     
     expect(screen.getByTestId('email-input')).toBeInTheDocument();
     expect(screen.getByTestId('password-input')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
+    expect(screen.getByTestId('login-button')).toBeInTheDocument();
   });
 
   it('handles email input changes', async () => {
@@ -89,7 +89,7 @@ describe('Login', () => {
   it('shows validation error for empty fields', async () => {
     render(<Login isDarkMode={false} setIsDarkMode={() => {}} />);
     
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     expect(screen.getByTestId('message-alert')).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
@@ -151,7 +151,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'wrongpassword');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
@@ -175,7 +175,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
@@ -194,7 +194,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
@@ -236,7 +236,7 @@ describe('Login', () => {
     render(<Login isDarkMode={false} setIsDarkMode={() => {}} />);
     
     // Trigger validation error
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     // Close the alert
@@ -266,7 +266,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // The component doesn't handle enter key submission, so we'll test button click instead
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
@@ -281,7 +281,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     expect(screen.getByText(/please enter both email and password/i)).toBeInTheDocument();
@@ -294,7 +294,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('email-input'), 'test@example.com');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     expect(screen.getByText(/please enter both email and password/i)).toBeInTheDocument();
@@ -308,7 +308,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), '   ');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     // Since the component only checks for empty strings, it should proceed with the API call
@@ -335,7 +335,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
@@ -363,7 +363,7 @@ describe('Login', () => {
     await user.type(screen.getByTestId('password-input'), 'password123');
     
     // Submit form
-    const loginButton = screen.getByRole('button', { name: /log in/i });
+    const loginButton = screen.getByTestId('login-button');
     await user.click(loginButton);
     
     await waitFor(() => {
