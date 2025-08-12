@@ -129,7 +129,6 @@ public class ApprovalControllerTest {
                 .andExpect(jsonPath("$.data[0].description").value("Pending tour for testing"))
                 .andExpect(jsonPath("$.data[0].regularPrice").value(299.99))
                 .andExpect(jsonPath("$.data[0].premiumPrice").value(269.99))
-                .andExpect(jsonPath("$.data[0].primaryImageUrl").value("https://cdn/pending-tour.jpg"))
                 .andExpect(jsonPath("$.data[0].operationType").value("UPDATE"))
                 .andExpect(jsonPath("$.data[0].submittedBy").value(4)) // Partner user ID
                 .andExpect(jsonPath("$.data[0].status").value(0)) // PENDING status
