@@ -116,7 +116,7 @@ const MomentImageUpload = ({
                     opacity: disabled ? 0.6 : 1,
                     bgcolor: "background.paper",
                     "&:hover": {
-                        borderColor: disabled ? "divider" : "primary.main",
+                        borderColor: disabled ? "divider" : "text.tertiary",
                         backgroundColor: disabled
                             ? "transparent"
                             : "action.hover",
@@ -152,7 +152,7 @@ const MomentImageUpload = ({
                 <Button
                     variant="outlined"
                     startIcon={<AddIcon />}
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, color: "text.tertiary" }}
                     disabled={disabled || selectedFiles.length >= maxImages}
                 >
                     Select Images

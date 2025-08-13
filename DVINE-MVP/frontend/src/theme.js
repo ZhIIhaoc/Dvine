@@ -32,7 +32,8 @@ export const darkTheme = createTheme({
         text: {
             primary: "#fbf9f5",
             secondary: "#303030",
-            tertiary: "#c828caff",
+            // tertiary: "#c828caff",
+            tertiary: "#E366E5",
         },
         header: { main: "rgba(48, 48, 48, 0.8)" },
     },

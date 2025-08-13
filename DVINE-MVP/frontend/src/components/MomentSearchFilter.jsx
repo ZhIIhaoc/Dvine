@@ -116,7 +116,7 @@ const MomentSearchFilter = ({ onSearch, onClear }) => {
                                 borderColor: "divider",
                             },
                             "&:hover fieldset": {
-                                borderColor: "primary.main",
+                                borderColor: "text.tertiary",
                             },
                         },
                     }}
@@ -140,7 +140,7 @@ const MomentSearchFilter = ({ onSearch, onClear }) => {
                                     borderColor: "divider",
                                 },
                                 "&:hover fieldset": {
-                                    borderColor: "primary.main",
+                                    borderColor: "text.tertiary",
                                 },
                             },
                         }}
@@ -166,6 +166,7 @@ const MomentSearchFilter = ({ onSearch, onClear }) => {
                     variant="outlined"
                     startIcon={<FilterIcon />}
                     onClick={() => setShowFilters(!showFilters)}
+                    sx={{ color: "text.tertiary" }}
                 >
                     Filter
                 </Button>
