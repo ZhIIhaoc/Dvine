@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.FaqMapper">
+
+    <resultMap id="FaqResultMap" type="com.dvinedao.domain.Faq">
+        <id property="faqId" column="faqId"/>
+        <result property="question" column="question"/>
+        <result property="answer" column="answer"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+    </resultMap>
+
+    <insert id="createFaq" parameterType="com.dvinedao.domain.Faq" useGeneratedKeys="true" keyProperty="faqId">
+        INSERT INTO faqs (question, answer, createTime, updateTime)
+        VALUES (#{question}, #{answer}, NOW(), NOW())
+    </insert>
+
+    <select id="findAll" resultMap="FaqResultMap">
+        SELECT faqId, question, answer, createTime, updateTime
+        FROM faqs
+        ORDER BY faqId DESC
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="FaqResultMap">
+        SELECT faqId, question, answer, createTime, updateTime
+        FROM faqs
+        WHERE faqId = #{faqId}
+    </select>
+
+    <update id="updateFaq" parameterType="com.dvinedao.domain.Faq">
+        UPDATE faqs
+        SET question = #{question},
+            answer = #{answer},
+            updateTime = NOW()
+        WHERE faqId = #{faqId}
+    </update>
+
+    <delete id="deleteFaq" parameterType="long">
+        DELETE FROM faqs
+        WHERE faqId = #{faqId}
+    </delete>
+
+</mapper>

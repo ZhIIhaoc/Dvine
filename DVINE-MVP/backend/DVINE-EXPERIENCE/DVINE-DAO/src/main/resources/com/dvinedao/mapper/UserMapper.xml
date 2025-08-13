@@ -33,6 +33,7 @@
     <update id="updateUser" parameterType="com.dvinedao.domain.User">
         UPDATE users
         <set>
+            <if test="password != null and password != ''">password = #{password},</if>
             <if test="email != null and email != ''">email = #{email},</if>
             <if test="phone != null and phone != ''">phone = #{phone},</if>
             <if test="postcode != null and postcode != ''">postcode = #{postcode},</if>
@@ -79,6 +80,11 @@
             avatar,
             permission
         FROM users
-
     </select>
+
+    <update id="updateUserPermission">
+        UPDATE users 
+        SET permission = #{permission} 
+        WHERE userId = #{userId}
+    </update>
 </mapper>

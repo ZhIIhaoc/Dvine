@@ -6,8 +6,8 @@
 
     <insert id="createTour" parameterType="com.dvinedao.domain.Tour"
             useGeneratedKeys="true" keyProperty="tourId" keyColumn="tourId">
-        INSERT INTO tours (title, description, destination, catalogueId, price)
-        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{price})
+INSERT INTO tours (title, description, destination, catalogueId, regularPrice, premiumPrice, createdBy)
+        VALUES (#{title}, #{description}, #{destination}, #{catalogueId}, #{regularPrice}, #{premiumPrice}, #{createdBy})
     </insert>
 
     <update id="updateTour">
@@ -25,8 +25,11 @@
             <if test="catalogueId != null">
                 catalogueId = #{catalogueId},
             </if>
-            <if test="price != null">
-                price = #{price},
+            <if test="regularPrice != null">
+                regularPrice = #{regularPrice},
+            </if>
+            <if test="premiumPrice != null">
+                premiumPrice = #{premiumPrice},
             </if>
         </set>
         WHERE tourId = #{tourId}
@@ -40,22 +43,31 @@
     <select id="search" resultType="com.dvinedao.domain.Tour">
         SELECT
             t.tourId,
+            t.catalogueId,
             t.title,
             t.destination,
             t.description,
-            t.price,
+            t.regularPrice,
+            t.premiumPrice,
+            t.createdBy,
             (SELECT i.imageUrl
              FROM images i
              WHERE i.tourId = t.tourId AND i.isPrimary = TRUE
              LIMIT 1) as primaryImageUrl
         FROM
             tours t
+        <if test="catalogueName != null and catalogueName != ''">
+            INNER JOIN catalogues c ON t.catalogueId = c.catalogueId
+        </if>
         <where>
             <if test="tourId != null">
                 AND t.tourId = #{tourId}
             </if>
             <if test="catalogueId != null">
                 AND t.catalogueId = #{catalogueId}
+            </if>
+            <if test="catalogueName != null and catalogueName != ''">
+                AND c.title = #{catalogueName}
             </if>
             <if test="title != null and title != ''">
                 AND t.title LIKE CONCAT('%', #{title}, '%')
@@ -64,25 +76,33 @@
                 AND t.destination LIKE CONCAT('%', #{destination}, '%')
             </if>
             <if test="minPrice != null">
-                AND t.price &gt;= #{minPrice}
+                AND (t.regularPrice &gt;= #{minPrice} OR t.premiumPrice &gt;= #{minPrice})
             </if>
             <if test="maxPrice != null">
-                AND t.price &lt;= #{maxPrice}
+                AND (t.regularPrice &lt;= #{maxPrice} OR t.premiumPrice &lt;= #{maxPrice})
+            </if>
+            <if test="createdBy != null">
+                AND t.createdBy = #{createdBy}
             </if>
         </where>
         ORDER BY t.updateTime
-        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countSearch" resultType="long">
         SELECT COUNT(*)
         FROM tours t
+        <if test="catalogueName != null and catalogueName != ''">
+            INNER JOIN catalogues c ON t.catalogueId = c.catalogueId
+        </if>
         <where>
             <if test="tourId != null">
                 AND t.tourId = #{tourId}
             </if>
             <if test="catalogueId != null">
                 AND t.catalogueId = #{catalogueId}
+            </if>
+            <if test="catalogueName != null and catalogueName != ''">
+                AND c.title = #{catalogueName}
             </if>
             <if test="title != null and title != ''">
                 AND t.title LIKE CONCAT('%', #{title}, '%')
@@ -91,10 +111,13 @@
                 AND t.destination LIKE CONCAT('%', #{destination}, '%')
             </if>
             <if test="minPrice != null">
-                AND t.price &gt;= #{minPrice}
+                AND (t.regularPrice &gt;= #{minPrice} OR t.premiumPrice &gt;= #{minPrice})
             </if>
             <if test="maxPrice != null">
-                AND t.price &lt;= #{maxPrice}
+                AND (t.regularPrice &lt;= #{maxPrice} OR t.premiumPrice &lt;= #{maxPrice})
+            </if>
+            <if test="createdBy != null">
+                AND t.createdBy = #{createdBy}
             </if>
         </where>
     </select>
@@ -105,7 +128,9 @@
             t.title,
             t.destination,
             t.description,
-            t.price
+            t.regularPrice,
+            t.premiumPrice,
+            t.createdBy
         FROM
             tours t
         WHERE
@@ -118,7 +143,9 @@
             t.title,
             t.destination,
             t.description,
-            t.price
+            t.regularPrice,
+            t.premiumPrice,
+            t.createdBy
         FROM
             tours t
         WHERE

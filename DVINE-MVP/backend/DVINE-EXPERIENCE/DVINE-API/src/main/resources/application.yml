@@ -11,7 +11,12 @@ spring:
       host: localhost
       port: 6379
   jackson:
-    default-property-inclusion: non_null # ignore null value in response
+    default-property-inclusion: NON_NULL # ignore null value in response
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
 
 mybatis:
   configuration:
@@ -22,3 +27,45 @@ jwt:
   secret: KG0z7ycKfE7cHQJxPgW9WwO19o9I8y2tx7Gy3aJ9B4k=
   access-token-expiration: 3600000 # 1 hour
   refresh-token-expiration: 604800000 # 7 days
+
+stripe:
+  secret:
+    key: sk_test_51Rm729GfQkMoi85m3625oChFNXNhgKoeiGpupVUvyDZRfdOzCK3ShhwUB3XW73710JUoVxnXoYusJUF6qG948h1r00BsztoKNv
+  webhook:
+    secret: ${STRIPE_WEBHOOK_SECRET:whsec_f578b5d873b0e9ff3821b9c29b27180c19034b670fa5ed1150a29e24e535395e}
+  public:
+    key: pk_test_51Rm729GfQkMoi85mj5PvXe7k8AmUiMPTEsV6Pnxp3CWzcXc6emlYgQUwoLLa38sjOwqdJlXzI6U7lKKGCWRK9iIq00VLMXP3Tz
+
+
+app:
+  frontend:
+    success-url: ${FRONTEND_SUCCESS_URL:http://localhost:5173/booking/success}
+    cancel-url: ${FRONTEND_CANCEL_URL:http://localhost:5173/booking/cancel}
+    subscription-success-url: ${FRONTEND_SUBSCRIPTION_SUCCESS_URL:http://localhost:5173/subscription/success}
+    subscription-cancel-url: ${FRONTEND_SUBSCRIPTION_CANCEL_URL:http://localhost:5173/subscription/cancel}
+  booking:
+    session-expiry-minutes: 30
+    cancellation-hours: 48
+    max-quantity: 10
+
+aws:
+  ses:
+    access-key: AKIAYAF3XLATNGLF4YO4
+    secret-key: 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
+    region: ap-southeast-2
+    from-email: noreply@enmaai.online
+  s3:
+      access-key: AKIAYAF3XLATNGLF4YO4
+      secret-key: 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
+      region: ap-southeast-2
+      bucket-name: dvine-media
+      default-avatar-url: https://dvine-media.s3.ap-southeast-2.amazonaws.com/avatars/0/default-user.jpg
+
+email:
+  verification:
+    code-length: 6
+    expiration-minutes: 10
+
+springdoc:
+  swagger-ui:
+    url: /OpenAPI.yaml

@@ -11,7 +11,7 @@ services:
       MYSQL_DATABASE: dvine_db
     volumes:
       - db-data:/var/lib/mysql
-      - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # first 01... then 02... initialization scripts in order.
+      - ./DVINE-MVP/db:/docker-entrypoint-initdb.d  # first 01... then 02... then 03... then 04... initialization scripts in order.
     networks:
       - dvine-network
 
@@ -22,6 +22,21 @@ services:
       - "6379:6379"
     networks:
       - dvine-network
+
+  # Stripe CLI for webhook testing
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    command: ["listen", "--api-key", "sk_test_51Rm729GfQkMoi85m3625oChFNXNhgKoeiGpupVUvyDZRfdOzCK3ShhwUB3XW73710JUoVxnXoYusJUF6qG948h1r00BsztoKNv", "--forward-to", "http://backend:8080/webhooks/stripe"]
+    environment:
+      - STRIPE_SECRET_KEY=sk_test_51Rm729GfQkMoi85m3625oChFNXNhgKoeiGpupVUvyDZRfdOzCK3ShhwUB3XW73710JUoVxnXoYusJUF6qG948h1r00BsztoKNv
+    networks:
+      - dvine-network
+    volumes:
+      - ./shared:/shared
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   # Backend
   backend:
     build:
@@ -30,12 +45,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/dvine_db
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=1234
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/dvine_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     networks:
       - dvine-network
 
@@ -61,3 +77,4 @@ volumes:
   db-data:
   backend-data:
   frontend-data:
+  stripe-cli-data:

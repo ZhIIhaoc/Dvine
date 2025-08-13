@@ -12,6 +12,12 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * SignUpStepTwo component allows users to enter their first name, last name, phone number, and postcode
+ * as the second step in the sign up process.
+ * 
+ */
+
 const SignUpStepTwo = (props) => {
     const navigate = useNavigate();
     return (
@@ -34,6 +40,9 @@ const SignUpStepTwo = (props) => {
                 <Step>
                     <StepLabel />{" "}
                 </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
             </Stepper>
             <TextField
                 label="First Name"
@@ -42,6 +51,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ my: 4, width: "70%" }}
                 value={props.userInfo.firstName}
                 onChange={props.changeState("firstName")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Last Name"
@@ -50,6 +63,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.lastName}
                 onChange={props.changeState("lastName")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Phone Number"
@@ -58,6 +75,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.phone}
                 onChange={props.changeState("phone")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Postcode"
@@ -66,6 +87,10 @@ const SignUpStepTwo = (props) => {
                 sx={{ mb: 6, width: "70%", justifyContent: "center" }}
                 value={props.userInfo.postcode}
                 onChange={props.changeState("postcode")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <Box
                 sx={{
@@ -82,7 +107,7 @@ const SignUpStepTwo = (props) => {
                         mb: 4,
                         width: "30%",
                         height: "56px",
-                        color: "primary.main",
+                        color: "text.tertiary",
                         border: 3,
                         borderColor: "primary.main",
                     }}
@@ -98,7 +123,7 @@ const SignUpStepTwo = (props) => {
                         width: "70%",
                         height: "56px",
                     }}
-                    onClick={props.registerButton}
+                    onClick={props.confirmEmail}
                 >
                     Sign Up
                 </Button>
@@ -125,5 +150,5 @@ SignUpStepTwo.propTypes = {
     changeState: PropTypes.func.isRequired,
     userInfo: PropTypes.object.isRequired,
     pageBack: PropTypes.func.isRequired,
-    registerButton: PropTypes.func.isRequired,
+    confirmEmail: PropTypes.func.isRequired,
 };

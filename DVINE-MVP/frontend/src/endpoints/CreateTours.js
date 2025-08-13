@@ -1,17 +1,16 @@
-const CreateTours = async (tourTitle, tourDescription, tourImage, tourPrice, tourDestination, tourPrimaryImageURL, imageList, token) => {
+const CreateTours = async (tourTitle, tourDescription, tourDestination, tourPrice, tourPrimaryImageURL, imageList, token, chosenCatalogueId) => {
     const localHost = "http://localhost:8080";
     const response = await fetch(`${localHost}/tours`, {
         method: 'POST',
         headers: {
-            Authorization: `${token}`,
             'Content-Type': 'application/json'
-
         },
         body: JSON.stringify({
-            catalogueId: 1, // Assuming a static catalogue ID for now
+            catalogueId: chosenCatalogueId,
             title: tourTitle,
             destination: tourDestination,
-            price: parseFloat(tourPrice),
+            regularPrice: parseFloat(tourPrice),
+            premiumPrice: 3,
             description: tourDescription,
             primaryImageUrl: tourPrimaryImageURL,
             images: imageList
@@ -20,4 +19,76 @@ const CreateTours = async (tourTitle, tourDescription, tourImage, tourPrice, tou
     return response;
 }
 
+// New function to create tour with image files
+const CreateToursWithImages = async (tourData, imageFiles) => {
+    const localHost = "http://localhost:8080";
+    
+    // First, create the tour without images
+    const tourResponse = await fetch(`${localHost}/tours`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            catalogueId: tourData.catalogueId,
+            title: tourData.title,
+            destination: tourData.destination,
+            regularPrice: parseFloat(tourData.regularPrice),
+            premiumPrice: parseFloat(tourData.premiumPrice) || parseFloat(tourData.regularPrice),
+            description: tourData.description,
+            primaryImageUrl: "", // Don't send blob URLs
+            images: [] // Don't send blob URLs
+        })
+    });
+
+    const tourResult = await tourResponse.json();
+    
+    // Check if this is a TourSubmittedException (202 status)
+    if (tourResponse.status === 202) {
+        // Tour was submitted for approval - this is expected for partners
+        const pendingTourId = tourResult.data?.pendingTourId;
+        return {
+            ...tourResult,
+            pendingTourId: pendingTourId,
+            message: "Tour submitted for approval. You can now upload images for this pending tour.",
+            requiresApproval: true
+        };
+    }
+    
+    if (tourResult.code !== 0) {
+        throw new Error(tourResult.msg || 'Failed to create tour');
+    }
+
+    const tourId = tourResult.data?.tourId;
+    
+    if (!tourId) {
+        throw new Error('Tour created but no tour ID returned');
+    }
+
+    // If there are image files, upload them (only for Manager/Owner who can create tours directly)
+    if (imageFiles && imageFiles.length > 0) {
+        const formData = new FormData();
+        imageFiles.forEach((file, index) => {
+            formData.append('files', file);
+        });
+
+        // Set the first image as primary
+        const isPrimary = true;
+        
+        const imageResponse = await fetch(`${localHost}/tours/${tourId}/images?isPrimary=${isPrimary}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const imageResult = await imageResponse.json();
+        
+        if (imageResult.code !== 0) {
+            console.warn('Tour created but image upload failed:', imageResult.msg);
+        }
+    }
+
+    return tourResult;
+}
+
+export { CreateTours, CreateToursWithImages };
 export default CreateTours;

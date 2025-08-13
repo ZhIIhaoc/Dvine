@@ -1,6 +1,10 @@
 package com.dvineservice.exception;
 
-import com.dvinedao.domain.ReturnResult;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,9 +13,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.dvinedao.domain.ReturnResult;
+import com.stripe.exception.ApiConnectionException;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.InvalidRequestException;
+import com.stripe.exception.RateLimitException;
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
 
 /**
  * This class provides centralized exception handling across all controller methods
@@ -36,6 +47,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ReturnResult handleException(Exception e) {
         log.error("An error occurred:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleIllegalStateException(IllegalStateException e) {
+        log.error("IllegalState:", e);
         return ReturnResult.error(e.getMessage());
     }
 
@@ -86,7 +104,7 @@ public class GlobalExceptionHandler {
                 String entityName = referencedTable.substring(0, 1).toUpperCase() +
                                    referencedTable.substring(1, referencedTable.length() - 1);
 
-                return ReturnResult.error(entityName + " does not exist");
+                return ReturnResult.error(entityName + " not found");
             }
         }
 
@@ -99,6 +117,35 @@ public class GlobalExceptionHandler {
     public ReturnResult handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("An error occurred:", e);
         return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error("Method argument type mismatch:", e);
+        
+        String paramName = e.getName();
+        Object value = e.getValue();
+        Class<?> requiredType = e.getRequiredType();
+        
+        // Handle Payment.PaymentStatus enum specifically
+        if (requiredType != null && requiredType.getSimpleName().equals("PaymentStatus")) {
+            return ReturnResult.error("Invalid payment status");
+        }
+        
+        // Handle other enum conversion errors
+        if (requiredType != null && requiredType.isEnum()) {
+            return ReturnResult.error("Invalid " + paramName + " value: '" + value + "'. Valid values are: " + 
+                                    String.join(", ", getEnumValues(requiredType)));
+        }
+        
+        return ReturnResult.error("Invalid " + paramName + " format: '" + value + "'");
+    }
+    
+    private String[] getEnumValues(Class<?> enumClass) {
+        return java.util.Arrays.stream(enumClass.getEnumConstants())
+                .map(Object::toString)
+                .toArray(String[]::new);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -129,10 +176,119 @@ public class GlobalExceptionHandler {
         return ReturnResult.error(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler
+    public ReturnResult handleActiveSubscriptionException(ActiveSubscriptionException e) {
+        log.error("Active subscription conflict:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public ReturnResult handleNotFoundException(NotFoundException e) {
         log.error("Resource not found error:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleInvalidBookingStatusException(InvalidBookingStatusException e) {
+        log.error("Invalid booking status error:", e);
+        return ReturnResult.error(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ExceptionHandler
+    public ReturnResult handleTourSubmittedException(TourSubmittedException e) {
+        log.info("Tour submitted for approval with pendingTourId: {}", e.getPendingTourId());
+        // Return the pendingTourId in the response data so frontend can use it for image uploads
+        if (e.getPendingTourId() != null) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("pendingTourId", e.getPendingTourId());
+            return ReturnResult.success(data);
+        }
+        return ReturnResult.success();
+    }
+
+    // Payment-specific exception handlers
+
+    /**
+     * Handles Stripe API errors - general Stripe API issues
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleStripeException(StripeException e) {
+        log.error("Stripe API error:", e);
+        return ReturnResult.error("Payment processing error: " + e.getUserMessage());
+    }
+
+    /**
+     * Handles Stripe card errors - declined cards, insufficient funds, etc.
+     */
+    @ResponseStatus(HttpStatus.PAYMENT_REQUIRED)
+    @ExceptionHandler
+    public ReturnResult handleCardException(CardException e) {
+        log.error("Stripe card error:", e);
+        return ReturnResult.error("Payment failed: " + e.getUserMessage());
+    }
+
+    /**
+     * Handles invalid Stripe request parameters
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleInvalidRequestException(InvalidRequestException e) {
+        log.error("Invalid Stripe request:", e);
+        return ReturnResult.error("Invalid payment request: " + e.getUserMessage());
+    }
+
+    /**
+     * Handles Stripe authentication errors - invalid API keys
+     */
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler
+    public ReturnResult handleAuthenticationException(AuthenticationException e) {
+        log.error("Stripe authentication error:", e);
+        return ReturnResult.error("Payment service authentication failed");
+    }
+
+    /**
+     * Handles Stripe API connection errors
+     */
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler
+    public ReturnResult handleApiConnectionException(ApiConnectionException e) {
+        log.error("Stripe API connection error:", e);
+        return ReturnResult.error("Payment service unavailable. Please try again later.");
+    }
+
+    /**
+     * Handles Stripe rate limiting
+     */
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    @ExceptionHandler
+    public ReturnResult handleRateLimitException(RateLimitException e) {
+        log.error("Stripe rate limit exceeded:", e);
+        return ReturnResult.error("Too many payment requests. Please try again later.");
+    }
+
+    /**
+     * Handles Stripe webhook signature verification failures
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ReturnResult handleSignatureVerificationException(SignatureVerificationException e) {
+        log.error("Stripe webhook signature verification failed:", e);
+        return ReturnResult.error("Invalid webhook signature");
+    }
+
+    /**
+     * Handles payment status errors - operations attempted on payments with invalid status
+     */
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler
+    public ReturnResult handlePaymentStatusException(PaymentStatusException e) {
+        log.error("Payment status error:", e);
         return ReturnResult.error(e.getMessage());
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.PendingTourImageMapper">
+
+    <insert id="createImages" parameterType="java.util.List">
+        INSERT INTO pending_tour_images (pendingTourId, imageUrl, isPrimary)
+        VALUES
+        <foreach collection="images" item="image" separator=",">
+            (#{image.pendingTourId}, #{image.imageUrl}, #{image.isPrimary})
+        </foreach>
+    </insert>
+
+    <select id="findByPendingTourId" resultType="com.dvinedao.domain.PendingTourImage">
+        SELECT pendingImageId, pendingTourId, imageUrl, isPrimary
+        FROM pending_tour_images
+        WHERE pendingTourId = #{pendingTourId}
+        ORDER BY isPrimary DESC, pendingImageId ASC
+    </select>
+
+    <delete id="deleteByPendingTourId">
+        DELETE FROM pending_tour_images
+        WHERE pendingTourId = #{pendingTourId}
+    </delete>
+
+</mapper>

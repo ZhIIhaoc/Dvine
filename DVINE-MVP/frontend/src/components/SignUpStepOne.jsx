@@ -11,6 +11,10 @@ import {
     Stepper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+/**
+ * SignUpStepOne component allows users to enter their email, password, and confirm password
+ * one of 3 steps in the sign up process.
+ */ 
 
 const SignUpStepOne = (props) => {
     const navigate = useNavigate();
@@ -35,6 +39,9 @@ const SignUpStepOne = (props) => {
                 <Step>
                     <StepLabel />{" "}
                 </Step>
+                <Step>
+                    <StepLabel />{" "}
+                </Step>
             </Stepper>
             <TextField
                 label="Email"
@@ -43,6 +50,10 @@ const SignUpStepOne = (props) => {
                 sx={{ mb: 4, mt: 10, width: "70%" }}
                 value={props.userInfo.email}
                 onChange={props.changeState("email")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Password"
@@ -52,6 +63,10 @@ const SignUpStepOne = (props) => {
                 sx={{ mb: 4, width: "70%" }}
                 value={props.userInfo.password}
                 onChange={props.changeState("password")}
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
+                }}
             />
             <TextField
                 label="Confirm Password"
@@ -61,19 +76,47 @@ const SignUpStepOne = (props) => {
                 sx={{ mb: 11, width: "70%" }}
                 value={props.userInfo.confirmPassword}
                 onChange={props.changeState("confirmPassword")}
-            />
-            <Button
-                variant="contained"
-                sx={{
-                    bgcolor: "primary",
-                    mb: 4,
-                    width: "70%",
-                    height: "56px",
+                InputLabelProps={{
+                    shrink: true,
+                    sx: { color: "text.primary", fontSize: "1.2rem" },
                 }}
-                onClick={props.pageNext}
+            />
+            <Box
+                sx={{
+                    display: "flex",
+                    width: "70%",
+                    justifyContent: "center",
+                    gap: 4,
+                }}
             >
-                Next
-            </Button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: "background.default",
+                        mb: 4,
+                        width: "30%",
+                        height: "56px",
+                        color: "text.tertiary",
+                        border: 3,
+                        borderColor: "primary.main",
+                    }}
+                    onClick={props.pageBack}
+                >
+                    Back
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: "primary",
+                        mb: 4,
+                        width: "70%",
+                        height: "56px",
+                    }}
+                    onClick={props.pageNext}
+                >
+                    Next
+                </Button>
+            </Box>
             <Typography variant="body2" align="center">
                 Already have an account?{" "}
                 <Link

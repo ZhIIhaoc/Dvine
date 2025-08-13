@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dvinedao.mapper.FeaturedTourMapper">
+
+    <!-- Result map for FeaturedTour -->
+    <resultMap id="FeaturedTourResultMap" type="com.dvinedao.domain.FeaturedTour">
+        <id property="featuredTourId" column="featuredTourId"/>
+        <result property="tourId" column="tourId"/>
+        <result property="title" column="title"/>
+        <result property="displayOrder" column="displayOrder"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+    </resultMap>
+
+    <!-- Get featured tours for main page with complete tour details -->
+    <select id="getFeaturedToursForMainPage" resultType="com.dvinedao.domain.Tour">
+        SELECT 
+            t.tourId,
+            t.catalogueId,
+            t.title,
+            t.destination,
+            t.description,
+            t.regularPrice,
+            t.premiumPrice,
+            t.createdBy,
+            t.createTime,
+            t.updateTime,
+            (SELECT i.imageUrl
+             FROM images i
+             WHERE i.tourId = t.tourId AND i.isPrimary = TRUE
+             LIMIT 1) as primaryImageUrl
+        FROM featured_tours ft
+        JOIN tours t ON ft.tourId = t.tourId
+        ORDER BY ft.displayOrder
+    </select>
+
+    <!-- Get all featured tour entries for management -->
+    <select id="getAllFeaturedTours" resultMap="FeaturedTourResultMap">
+        SELECT 
+            ft.featuredTourId, 
+            ft.tourId, 
+            t.title,
+            ft.displayOrder, 
+            ft.createTime, 
+            ft.updateTime
+        FROM featured_tours ft
+        JOIN tours t ON ft.tourId = t.tourId
+        ORDER BY ft.displayOrder
+    </select>
+
+    <!-- Add a tour to featured list -->
+    <insert id="addFeaturedTour" parameterType="com.dvinedao.domain.FeaturedTour" useGeneratedKeys="true" keyProperty="featuredTourId">
+        INSERT INTO featured_tours (tourId, displayOrder)
+        VALUES (#{tourId}, #{displayOrder})
+    </insert>
+
+    <!-- Remove a tour from featured list -->
+    <delete id="removeFeaturedTour">
+        DELETE FROM featured_tours WHERE tourId = #{tourId}
+    </delete>
+
+    <!-- Update display order of a featured tour -->
+    <update id="updateDisplayOrder">
+        UPDATE featured_tours 
+        SET displayOrder = #{newOrder}
+        WHERE tourId = #{tourId}
+    </update>
+
+    <!-- Get the maximum display order -->
+    <select id="getMaxDisplayOrder" resultType="java.lang.Integer">
+        SELECT COALESCE(MAX(displayOrder), 0) FROM featured_tours
+    </select>
+
+    <!-- Check if a tour is already featured -->
+    <select id="isTourFeatured" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM featured_tours WHERE tourId = #{tourId}
+    </select>
+
+    <!-- Batch update for reordering featured tours -->
+    <update id="reorderFeaturedTours">
+        UPDATE featured_tours 
+        SET displayOrder = CASE tourId
+            <foreach collection="featuredTours" item="item">
+                WHEN #{item.tourId} THEN #{item.displayOrder}
+            </foreach>
+        END
+        WHERE tourId IN 
+        <foreach collection="featuredTours" item="item" open="(" close=")" separator=",">
+            #{item.tourId}
+        </foreach>
+    </update>
+
+</mapper>

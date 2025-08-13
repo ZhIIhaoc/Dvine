@@ -82,4 +82,18 @@ public class UserQueryParam {
     public void setPermission(Integer permission) {
         this.permission = permission;
     }
+
+    public User toUser() {
+        User user = new User();
+        user.setUserId(this.userId);
+        user.setEmail(this.email);
+        user.setPhone(this.phone);
+        user.setPostcode(this.postcode);
+        user.setNickName(this.nickName);
+        user.setFirstName(this.firstName);
+        user.setLastName(this.lastName);
+        user.setAvatar(this.avatar);
+        user.setPermission(this.permission);
+        return user;
+    }
 }

@@ -1,236 +1,907 @@
-import { useEffect, useState } from "react";
-// import propTypes from "prop-types";
-// import axios from "axios";
-import { Box, Typography, Button, Grid, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Modal, CircularProgress } from "@mui/material";
-import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
+import { useEffect, useState, useContext } from "react";
+import {
+    Box,
+    Typography,
+    Badge,
+    Button,
+    Grid,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    List,
+    ListItem,
+    ListItemText,
+    Modal,
+    CircularProgress,
+    useTheme,
+    useMediaQuery,
+    Menu,
+    MenuItem,
+} from "@mui/material";
+// import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
-import { CreateTourModal } from "../components/CreateTourModal.jsx";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CreateTourForm from "../components/CreateTourForm.jsx";
+import ManageTourForm from "../components/AdminTourForm.jsx";
+import BookingPanel from "../components/BookingPanel.jsx";
+import UploadedTourForm from "../components/CurrentUploadedToursForm.jsx";
+import ApprovalIcon from "@mui/icons-material/Approval";
+import PeopleIcon from "@mui/icons-material/People";
+import PostedToursPanel from "../components/PostedToursPanel.jsx";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { AuthContext } from "../components/AuthContext.jsx";
+import UserListModal from "../components/UserListModal.jsx";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import UserListForm from "../components/UserListForm.jsx";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import CreateCatalogueForm from "../components/CreateCatalogueForm.jsx";
+import HomeIcon from "@mui/icons-material/Home";
+import BookOnLineIcon from "@mui/icons-material/BookOnline";
+import AdminBookingPanel from "../components/AdminBookingPanel.jsx";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import TourIcon from "@mui/icons-material/Tour";
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
 
+/**
+ * AdminDashboard
+ * Main admin surface with a left nav and a right content panel.
+ * Panels include: create/manage tours, view users, catalogues, bookings, etc.
+ *
+ * Data:
+ * - GET /catalogues/list      -> list of catalogues (for CreateTourForm)
+ * - GET /approvals/pending-tours (auth) -> pending approvals count
+ *
+ * Notes:
+ * - Polls pending approvals every 10s (only when logged in).
+ * - Guards effects on token/user presence.
+ */
 
 export function AdminDashboard() {
-    const token = localStorage.getItem("accessToken");
+    const { token, userInfo } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState(null);
-    const [modalOpen, setModalOpen] = useState(false);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
-    const [users, setUsers] = useState([]);
     const [userListModalOpen, setUserListModalOpen] = useState(false);
-    const [usersLoading, setUsersLoading] = useState(false);
-    const [usersError, setUsersError] = useState("");
+    const [listOfCatalogues, setListOfCatalogues] = useState([]);
 
-    const fetchUserInfo = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/users/profile', {
-                method: 'GET',
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+    const [adminApprovalsList, setAdminApprovalsList] = useState([]);
+    const [adminApprovalsLoading, setAdminApprovalsLoading] = useState(true);
 
-            const responseInfo = await response.json();
-            console.log("User Info Response:", responseInfo);
-
-            if (responseInfo.code === 0) {
-                setUserInfo(responseInfo.data);
-                console.log("User Info CAMERON:", responseInfo.data);
-            }
-        } catch (error) {
-            console.error(error);
-        }
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const openMenu = (e) => setMenuAnchorEl(e.currentTarget);
+    const closeMenu = () => setMenuAnchorEl(null);
+    const go = (key) => {
+        setActivePanel(key);
+        closeMenu();
     };
+    const isAdmin = userInfo?.permission === 4 || userInfo?.permission === 5;
+
+    const [activePanel, setActivePanel] = useState("home");
+
+    const refreshCatalogues = () => {
+        getCatalogueInfo();
+    };
+
     useEffect(() => {
-        fetchUserInfo();
-        // console.log("im running");
+        getCatalogueInfo();
+        window.scrollTo(0, 0);
+    }, []);
+    useEffect(() => {
+        fetchAdminApprovals();
+        const interval = setInterval(() => {
+            fetchAdminApprovals();
+        }, 10000); // Fetch every 10 seconds for testing
+        return () => clearInterval(interval); // Cleanup on unmount
     }, []);
 
-    // Fetch users when modal opens
-    useEffect(() => {
-        if (userListModalOpen) {
-            const fetchUsers = async () => {
-                setUsersLoading(true);
-                setUsersError("");
-                try {
-                    const token = localStorage.getItem("accessToken");
-                    const response = await fetch("http://localhost:8080/users/list", {
-                        method: "GET",
-                        headers: {
-                            Authorization: token,
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                    const data = await response.json();
-                    if (data.code === 0) {
-                        setUsers(data.data);
-                    } else {
-                        setUsersError(data.msg || "Failed to fetch users.");
-                    }
-                } catch (err) {
-                    setUsersError("Network error. Please try again.");
-                } finally {
-                    setUsersLoading(false);
+    const getCatalogueInfo = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8080/catalogues/list",
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
-            };
-            fetchUsers();
+            );
+
+            const responseInfo = await response.json();
+            console.log("Catalogue Info Response:", responseInfo);
+
+            if (responseInfo.code === 0) {
+                // Handle the catalogue data if needed
+                setListOfCatalogues(responseInfo.data);
+            }
+        } catch (error) {
+            console.error("Error fetching catalogue info:", error);
         }
-    }, [userListModalOpen]);
+    };
 
-    // Only show user list modal for Manager (3) and Owner (4)
-    const canViewUserList = userInfo && (userInfo.permission === 3 || userInfo.permission === 4);
+    const fetchAdminApprovals = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8080/approvals/pending-tours",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            const responseInfo = await response.json();
+            console.log("Admin Dashboard Response:", responseInfo);
+            if (responseInfo.code === 0) {
+                // Handle the admin dashboard data if needed
+                console.log("Admin Dashboard Data:", responseInfo.data);
+                setAdminApprovalsList(responseInfo.data);
+                setAdminApprovalsLoading(false);
+            } else {
+                console.error(
+                    "Failed to fetch admin dashboard data:",
+                    responseInfo.msg
+                );
+            }
+        } catch (error) {
+            console.error("Error fetching admin dashboard:", error);
+        }
+    };
 
-    return (
-        <>
+    return isAdmin ? (
+        <Box sx={{ minHeight: "120vh", width: "100%" }}>
             {userInfo ? (
-            <>
-                <Typography sx={{ textAlign: "center", mt: 10, mb: 2, fontSize: "2rem", fontWeight: "bold", color: "purple" }}> Welcome Back {userName} </Typography>
-                <DashboardHeaderCard />
-                <Box sx={{ width: "70%", mx: "auto", mt: -4 }}>
-                    <Grid container spacing={3}>
-                        <Grid size={6}>
-                            <Box
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Typography
+                        sx={{
+                            textAlign: "center",
+                            mt: 3,
+                            mb: 6,
+                            fontSize: "2rem",
+                            fontWeight: "bold",
+                            color: "text.tertiary",
+                        }}
+                    >
+                        Welcome Back {userName}
+                    </Typography>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: "100%",
+                            flex: 1,
+                            ml: { sm: "10%", md: "10%", lg: "20%" },
+                        }}
+                    >
+                        <Grid container spacing={3}>
+                            <Grid
+                                item
+                                xs={12}
+                                md={3}
                                 sx={{
-                                    border: "2px black solid",
-                                    borderRadius: "16px",
-                                    backgroundColor: "white",
-                                    padding: 2,
-                                    mb: 3,
-                                    textAlign: "center",
+                                    borderRight: {
+                                        xs: "none",
+                                        sm: "1px solid gray",
+                                    },
+                                    height: { xs: "auto", sm: "100vh" },
                                 }}
                             >
-                                <Button fullWidth onClick={() => navigate("/members")}>Upgrade Members</Button>
-                            </Box>
+                                {isMobile ? (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={
+                                                <ArrowDropDownCircleIcon />
+                                            }
+                                            onClick={openMenu}
+                                            fullWidth
+                                            sx={{
+                                                textTransform: "none",
+                                                my: 1,
+                                                width: 300,
+                                                mx: 2,
+                                                color: "text.tertiary",
+                                            }}
+                                        >
+                                            Dashboard Menu
+                                        </Button>
 
-                            <Box
-                                sx={{
-                                    border: "2px black solid",
-                                    borderRadius: "16px",
-                                    backgroundColor: "white",
-                                    padding: 2,
-                                    mb: 3,
-                                    textAlign: "center",
-                                }}
-                            >
-                                <Button onClick={() => setModalOpen(true)}><Typography>Create Tour</Typography></Button>
-                            </Box>
-                            <CreateTourModal open={modalOpen} onClose={() => setModalOpen(false)} />
-
-                            {/* Button to open Users List Modal (only for Manager/Owner) */}
-                            {canViewUserList && (
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Button fullWidth onClick={() => setUserListModalOpen(true)}>
-                                        View Registered Users
-                                    </Button>
-                                </Box>
-                            )}
-                            {canViewUserList && (
-                                <Modal
-                                    open={userListModalOpen}
-                                    onClose={() => setUserListModalOpen(false)}
-                                >
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        top: '50%',
-                                        left: '50%',
-                                        transform: 'translate(-50%, -50%)',
-                                        width: "50%",
-                                        bgcolor: 'background.paper',
-                                        boxShadow: 24,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        p: 4,
-                                        borderRadius: 2,
-                                    }}>
-                                        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                                            Registered Users
-                                        </Typography>
-                                        <Box sx={{ maxHeight: 300, overflow: 'auto', mb: 2 }}>
-                                            {usersLoading ? (
-                                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 120 }}>
-                                                    <span>Loading...</span>
-                                                </Box>
-                                            ) : usersError ? (
-                                                <Typography color="error" sx={{ textAlign: 'center' }}>{usersError}</Typography>
-                                            ) : (
-                                                <List>
-                                                    {users.map((user) => (
-                                                        <ListItem key={user.userId}>
-                                                            <ListItemText primary={user.nickName || user.firstName || user.email || `User #${user.userId}`} secondary={user.email} />
-                                                        </ListItem>
-                                                    ))}
-                                                </List>
+                                        <Menu
+                                            anchorEl={menuAnchorEl}
+                                            open={Boolean(menuAnchorEl)}
+                                            onClose={closeMenu}
+                                            anchorOrigin={{
+                                                vertical: "bottom",
+                                                horizontal: "left",
+                                            }}
+                                            transformOrigin={{
+                                                vertical: "top",
+                                                horizontal: "left",
+                                            }}
+                                            PaperProps={{
+                                                width: {
+                                                    xs: "calc(100vw - 32px)",
+                                                    md: 360,
+                                                },
+                                                maxWidth: "100vw",
+                                                mx: { xs: 2, md: 0 },
+                                            }}
+                                        >
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "home"
+                                                }
+                                                onClick={() => go("home")}
+                                            >
+                                                <HomeIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Dashboard Home
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "createTour"
+                                                }
+                                                onClick={() => go("createTour")}
+                                            >
+                                                <AddCircleIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Create Experience
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "users"
+                                                }
+                                                onClick={() => go("users")}
+                                            >
+                                                <PeopleIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                View Registered Users
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "catalogue"
+                                                }
+                                                onClick={() => go("catalogue")}
+                                            >
+                                                <MenuBookIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Create/Delete Catalogues
+                                            </MenuItem>
+                                            {!adminApprovalsLoading && (
+                                                <MenuItem
+                                                    selected={
+                                                        activePanel ===
+                                                        "manage_tours"
+                                                    }
+                                                    onClick={() =>
+                                                        go("manage_tours")
+                                                    }
+                                                >
+                                                    <ApprovalIcon
+                                                        style={{
+                                                            marginRight: 8,
+                                                        }}
+                                                    />
+                                                    Manage Experiences
+                                                    <Badge
+                                                        sx={{ ml: 1 }}
+                                                        color="error"
+                                                        badgeContent={
+                                                            adminApprovalsList.length
+                                                        }
+                                                        invisible={
+                                                            adminApprovalsList.length ===
+                                                            0
+                                                        }
+                                                    />
+                                                </MenuItem>
                                             )}
-                                        </Box>
-                                        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                                            <Button variant="outlined" onClick={() => setUserListModalOpen(false)}>
-                                                Close
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "bookings"
+                                                }
+                                                onClick={() => go("bookings")}
+                                            >
+                                                <BookOnLineIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Your Personal Experience
+                                                Bookings
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel ===
+                                                    "admin_bookings"
+                                                }
+                                                onClick={() =>
+                                                    go("admin_bookings")
+                                                }
+                                            >
+                                                <FormatListNumberedIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                View All Bookings
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel ===
+                                                    "posted_tours"
+                                                }
+                                                onClick={() =>
+                                                    go("posted_tours")
+                                                }
+                                            >
+                                                <TourIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                View Posted Experiences Live
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    navigate("/faq");
+                                                    closeMenu();
+                                                }}
+                                            >
+                                                <LiveHelpIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Manage FAQ
+                                            </MenuItem>
+                                        </Menu>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                mt: 2,
+                                                backgroundColor:
+                                                    activePanel === "home"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("home")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <HomeIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Dashboard Home
+                                                </Typography>
                                             </Button>
                                         </Box>
-                                    </Box>
-                                </Modal>
-                            )}
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "createTour"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("createTour")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <AddCircleIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Create Experience
+                                                </Typography>
+                                            </Button>
+                                        </Box>
 
-                            <Box
-                                sx={{
-                                    border: "2px black solid",
-                                    borderRadius: "16px",
-                                    backgroundColor: "white",
-                                    padding: 2,
-                                    textAlign: "center",
-                                }}
-                            >
-                                <Typography fontWeight="bold">Profile</Typography>
-                                <Button fullWidth><Typography color="text.secondary">+ Introduce yourself</Typography></Button>
-                                <Button fullWidth><Typography color="text.secondary">+ Add a trip</Typography></Button>
-                                <Button fullWidth><Typography color="text.secondary">+ Make a review</Typography></Button>
-                            </Box>
-                        </Grid>
+                                        {/* Button to open Users List  (only for Manager/Owner) */}
+                                        <>
+                                            <Box
+                                                sx={{
+                                                    textAlign: "start",
+                                                    backgroundColor:
+                                                        activePanel === "users"
+                                                            ? "background.secondary"
+                                                            : "transparent",
+                                                }}
+                                            >
+                                                <Button
+                                                    onClick={() =>
+                                                        setActivePanel("users")
+                                                    }
+                                                    fullWidth
+                                                    sx={{
+                                                        justifyContent:
+                                                            "flex-start",
+                                                        textTransform: "none",
+                                                        py: 3,
+                                                        pl: 2,
+                                                        "&:hover": {
+                                                            backgroundColor:
+                                                                "action.hover",
+                                                        },
+                                                    }}
+                                                >
+                                                    <PeopleIcon
+                                                        style={{
+                                                            marginRight: 8,
+                                                        }}
+                                                        sx={{
+                                                            color: "text.tertiary",
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        sx={{
+                                                            color: "text.primary",
+                                                            fontWeight: "bold",
+                                                        }}
+                                                    >
+                                                        View Registered Users
+                                                    </Typography>
+                                                </Button>
+                                            </Box>
+                                            <UserListModal
+                                                open={userListModalOpen}
+                                                onClose={() =>
+                                                    setUserListModalOpen(false)
+                                                }
+                                            />
+                                        </>
+                                        <Box>
+                                            <Box
+                                                sx={{
+                                                    textAlign: "start",
+                                                    backgroundColor:
+                                                        activePanel ===
+                                                        "catalogue"
+                                                            ? "background.secondary"
+                                                            : "transparent",
+                                                }}
+                                            >
+                                                <Button
+                                                    onClick={() =>
+                                                        setActivePanel(
+                                                            "catalogue"
+                                                        )
+                                                    }
+                                                    fullWidth
+                                                    sx={{
+                                                        justifyContent:
+                                                            "flex-start",
+                                                        textTransform: "none",
+                                                        py: 3,
+                                                        pl: 2,
+                                                        pr: 3,
+                                                        "&:hover": {
+                                                            backgroundColor:
+                                                                "action.hover",
+                                                        },
+                                                    }}
+                                                >
+                                                    <MenuBookIcon
+                                                        style={{
+                                                            marginRight: 8,
+                                                        }}
+                                                        sx={{
+                                                            color: "text.tertiary",
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        sx={{
+                                                            color: "text.primary",
+                                                            fontWeight: "bold",
+                                                        }}
+                                                    >
+                                                        Create/Delete Catalogues
+                                                    </Typography>
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
-                        {/* Right Column - Next Tour Box */}
-                        <Grid size={6}>
-                            <Box
-                                sx={{
-                                    border: "2px black solid",
-                                    borderRadius: "16px",
-                                    backgroundColor: "white",
-                                    padding: 4,
-                                }}
+                                        {!adminApprovalsLoading && (
+                                            <Box
+                                                sx={{
+                                                    textAlign: "start",
+                                                    backgroundColor:
+                                                        activePanel ===
+                                                        "manage_tours"
+                                                            ? "background.secondary"
+                                                            : "transparent",
+                                                }}
+                                            >
+                                                <Button
+                                                    onClick={() =>
+                                                        setActivePanel(
+                                                            "manage_tours"
+                                                        )
+                                                    }
+                                                    fullWidth
+                                                    sx={{
+                                                        justifyContent:
+                                                            "flex-start",
+                                                        textTransform: "none",
+                                                        py: 3,
+                                                        pl: 2,
+                                                        "&:hover": {
+                                                            backgroundColor:
+                                                                "action.hover",
+                                                        },
+                                                    }}
+                                                >
+                                                    <ApprovalIcon
+                                                        style={{
+                                                            marginRight: 8,
+                                                        }}
+                                                        sx={{
+                                                            color: "text.tertiary",
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        sx={{
+                                                            color: "text.primary",
+                                                            fontWeight: "bold",
+                                                        }}
+                                                    >
+                                                        Manage Experiences
+                                                    </Typography>
+                                                    <Badge
+                                                        badgeContent={
+                                                            adminApprovalsList.length
+                                                        }
+                                                        color="error"
+                                                        invisible={
+                                                            adminApprovalsList.length ===
+                                                            0
+                                                        }
+                                                        overlap="rectangular"
+                                                        sx={{
+                                                            ml: 4,
+                                                            "& .MuiBadge-badge":
+                                                                {
+                                                                    fontSize:
+                                                                        "1rem",
+                                                                    minWidth: 24,
+                                                                    minHeight: 24,
+                                                                },
+                                                        }}
+                                                    ></Badge>
+                                                </Button>
+                                            </Box>
+                                        )}
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "bookings"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("bookings")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    pr: 3,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <BookOnLineIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Your Personal Experience
+                                                    Bookings
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel ===
+                                                    "admin_bookings"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel(
+                                                        "admin_bookings"
+                                                    )
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <FormatListNumberedIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    View All Bookings
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel ===
+                                                    "posted_tours"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel(
+                                                        "posted_tours"
+                                                    )
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <TourIcon
+                                                    sx={{
+                                                        mr: 1,
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    View Posted Experiences Live
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() => navigate("/faq")}
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <LiveHelpIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Manage FAQ
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                    </>
+                                )}
+                            </Grid>
+
+                            {/* Right Column: contents part */}
+                            <Grid
+                                item
+                                xs={12}
+                                md={9}
+                                sx={{ width: { sx: "70%", md: "50%" } }}
                             >
-                                <Typography variant="h6" fontWeight="bold" mb={2}>
-                                    Your Next Tour
-                                </Typography>
-                                {/* Placeholder image or details */}
-                                <Typography color="text.secondary">Date: </Typography>
-                                <Typography color="text.secondary">Beach: </Typography>
-                                <img
-                                    src="../src/assets/background.png"
-                                    style={{
+                                <Box
+                                    sx={{
+                                        mx: { sx: "0%", md: "10%" },
                                         width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
+                                        mb: 20,
                                     }}
-                                />
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </>
-            ) : (
-            <Box sx={{ textAlign: "center", mt: 5 }}>
-                <Typography variant="h4">Loading User Information...</Typography>
-                <CircularProgress/>
-            </Box>
-            )}
+                                >
+                                    {activePanel === "home" && (
+                                        <Box sx={{ mt: 4 }}>
+                                            This is an admin dashboard. Please
+                                            select options on the left. (Temp
+                                            Message)
+                                        </Box>
+                                    )}
+                                    {activePanel === "createTour" && (
+                                        <CreateTourForm
+                                            catalogueList={listOfCatalogues}
+                                            onClose={() =>
+                                                setActivePanel("home")
+                                            }
+                                        />
+                                    )}
+                                    {activePanel === "users" && (
+                                        <UserListForm
+                                            onClose={() =>
+                                                setActivePanel("home")
+                                            }
+                                        />
+                                    )}
 
-        </>
+                                    {activePanel === "catalogue" && (
+                                        <CreateCatalogueForm
+                                            onComplete={() => {
+                                                refreshCatalogues();
+                                                setActivePanel("home");
+                                            }}
+                                            catalogueList={listOfCatalogues}
+                                            onClose={() =>
+                                                setActivePanel("home")
+                                            }
+                                        />
+                                    )}
+
+                                    {activePanel === "admin_bookings" && (
+                                        <AdminBookingPanel />
+                                    )}
+                                    {activePanel === "manage_tours" && (
+                                        <ManageTourForm />
+                                    )}
+                                    {activePanel === "uploaded_tours" && (
+                                        <UploadedTourForm />
+                                    )}
+
+                                    {activePanel === "bookings" && (
+                                        <BookingPanel
+                                            userId={userInfo?.userId}
+                                        />
+                                    )}
+                                    {activePanel === "posted_tours" && (
+                                        <PostedToursPanel />
+                                    )}
+
+                                    {activePanel === null && (
+                                        <Box sx={{ mt: 4 }}>
+                                            This is an admin dashboard. Please
+                                            select options on the left. (Temp
+                                            Message)
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
+            ) : (
+                <Box sx={{ textAlign: "center", mt: 5 }}>
+                    <Typography variant="h4">
+                        Loading User Information...
+                    </Typography>
+                    <CircularProgress />
+                </Box>
+            )}
+        </Box>
+    ) : (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                justifyContent: "center",
+                height: "90vh",
+            }}
+        >
+            <Typography variant="h4" color="error">
+                Access Denied
+            </Typography>
+            <Typography variant="body1">
+                You do not have permission to access this page.
+            </Typography>
+        </Box>
     );
-};
+}

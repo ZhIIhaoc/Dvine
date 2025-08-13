@@ -1,167 +1,517 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../components/AuthContext.jsx";
 // import propTypes from "prop-types";
 // import axios from "axios";
 import { Header } from "../components/Header";
-import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Button,
+    Grid,
+    CircularProgress,
+    useTheme,
+    useMediaQuery,
+    Menu,
+    MenuItem,
+} from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
+import BookOnLineIcon from "@mui/icons-material/BookOnline";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import BookingPanel from "../components/BookingPanel.jsx";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import MyPayments from "../components/MyPayments.jsx";
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
 
 export function UserDashboard() {
-    console.log("UserDashboard gettoken:", localStorage.getItem("accessToken"));
-    const token = localStorage.getItem("accessToken");
+    const { userInfo, token } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState(null);
     const userName = userInfo?.nickName || userInfo?.firstName || "User";
-    const fetchUserInfo = async () => {
+    const isUser = userInfo?.permission === 0 || userInfo?.permission === 1;
+    const [activePanel, setActivePanel] = useState("home");
+    const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const openMenu = (e) => setMenuAnchorEl(e.currentTarget);
+    const closeMenu = () => setMenuAnchorEl(null);
+    const go = (key) => {
+        setActivePanel(key);
+        closeMenu();
+    };
+
+    const handleSubscriptionUpgrade = async () => {
         try {
+            // determine type
+            const type = userInfo?.permission === 0 ? "PREMIUM" : "PARTNER";
+
             const response = await fetch(
-                "http://localhost:8080/users/profile",
+                `http://localhost:8080/subscription/checkout/${type}`,
                 {
-                    method: "GET",
+                    method: "POST",
                     headers: {
-                        Authorization: `${token}`,
                         "Content-Type": "application/json",
+                        Authorization: `${token}`,
                     },
                 }
             );
 
             const responseInfo = await response.json();
-            console.log("User Info Response:", responseInfo);
 
             if (responseInfo.code === 0) {
-                setUserInfo(responseInfo.data);
-                console.log("User Info CAMERON:", responseInfo.data);
+                window.location.href = responseInfo.data.checkoutUrl;
+            } else {
+                alert(responseInfo.msg || "Subscription failed");
             }
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            console.error("Subscription error:", err);
+            alert("An error occurred while creating the subscription session.");
+        }
+    };
+    const fetchSubscriptionStatus = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8080/subscription/status",
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `${token}`,
+                    },
+                }
+            );
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                console.log("Subscription Status Response:", responseInfo);
+                setSubscriptionStatus(responseInfo.data);
+            } else {
+                console.error(
+                    "Failed to fetch subscription status:",
+                    responseInfo.msg
+                );
+            }
+        } catch (err) {
+            console.error("Error fetching subscription status:", err);
+        }
+    };
+
+    const handleUnsubscribe = async () => {
+        if (
+            !window.confirm(
+                "Are you sure you want to unsubscribe? Your benefits will last until the end of the billing period."
+            )
+        )
+            return;
+
+        try {
+            const response = await fetch(
+                "http://localhost:8080/subscription/unsubscribe",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `${token}`,
+                    },
+                }
+            );
+
+            const responseInfo = await response.json();
+
+            if (responseInfo.code === 0) {
+                console.log("Unsubscribed successfully.");
+                fetchSubscriptionStatus();
+                window.location.reload();
+            } else {
+                alert(responseInfo.msg || " Failed to unsubscribe.");
+            }
+        } catch (err) {
+            console.error("Unsubscribe error:", err);
+            alert(" An error occurred while trying to unsubscribe.");
         }
     };
     useEffect(() => {
-        fetchUserInfo();
-        console.log("im running");
+        window.scrollTo(0, 0);
+        fetchSubscriptionStatus();
     }, []);
-
-    return (
-        <>
+    return isUser ? (
+        <Box sx={{ minHeight: "120vh", width: "100%" }}>
             {userInfo ? (
-                <>
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
                     <Typography
                         sx={{
                             textAlign: "center",
-                            mt: 10,
-                            mb: 2,
+                            mt: 3,
+                            mb: 6,
                             fontSize: "2rem",
                             fontWeight: "bold",
-                            color: "purple",
+                            color: "text.tertiary",
                         }}
                     >
-                        {" "}
-                        Welcome Back {userName}{" "}
+                        Welcome Back {userName}
                     </Typography>
-                    <DashboardHeaderCard />
-                    <Box sx={{ width: "70%", mx: "auto", mt: -4 }}>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: "100%",
+                            flex: 1,
+                            ml: { sm: "10%", md: "10%", lg: "20%" },
+                        }}
+                    >
                         <Grid container spacing={3}>
-                            <Grid size={6}>
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Button
-                                        fullWidth
-                                        onClick={() => navigate("/members")}
-                                    >
-                                        Upgrade Members
-                                    </Button>
-                                </Box>
+                            {/* Left Column: navigation part */}
+                            <Grid
+                                item
+                                xs={12}
+                                md={3}
+                                sx={{
+                                    borderRight: {
+                                        xs: "none",
+                                        sm: "1px solid gray",
+                                    },
+                                    height: { xs: "auto", sm: "100vh" },
+                                }}
+                            >
+                                {isMobile ? (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={
+                                                <ArrowDropDownCircleIcon />
+                                            }
+                                            onClick={openMenu}
+                                            fullWidth
+                                            sx={{
+                                                textTransform: "none",
+                                                my: 1,
+                                                width: 300,
+                                                mx: 2,
+                                                color: "text.tertiary",
+                                            }}
+                                        >
+                                            Dashboard Menu
+                                        </Button>
 
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        mb: 3,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Typography>
-                                        Add Future Feature Here
-                                    </Typography>
-                                </Box>
-
-                                <Box
-                                    sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 2,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <Typography fontWeight="bold">
-                                        Profile
-                                    </Typography>
-                                    <Button fullWidth>
-                                        <Typography color="text.secondary">
-                                            + Introduce yourself
-                                        </Typography>
-                                    </Button>
-                                    <Button fullWidth>
-                                        <Typography color="text.secondary">
-                                            + Add a trip
-                                        </Typography>
-                                    </Button>
-                                    <Button fullWidth>
-                                        <Typography color="text.secondary">
-                                            + Make a review
-                                        </Typography>
-                                    </Button>
-                                </Box>
+                                        <Menu
+                                            anchorEl={menuAnchorEl}
+                                            open={Boolean(menuAnchorEl)}
+                                            onClose={closeMenu}
+                                            anchorOrigin={{
+                                                vertical: "bottom",
+                                                horizontal: "left",
+                                            }}
+                                            transformOrigin={{
+                                                vertical: "top",
+                                                horizontal: "left",
+                                            }}
+                                            PaperProps={{
+                                                width: {
+                                                    xs: "calc(100vw - 32px)",
+                                                    md: 360,
+                                                },
+                                                maxWidth: "100vw",
+                                                mx: { xs: 2, md: 0 },
+                                            }}
+                                        >
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "home"
+                                                }
+                                                onClick={() => go("home")}
+                                            >
+                                                <HomeIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Dashboard Home
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "bookings"
+                                                }
+                                                onClick={() => go("bookings")}
+                                            >
+                                                <BookOnLineIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Your Bookings
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "payments"
+                                                }
+                                                onClick={() => go("payments")}
+                                            >
+                                                <CreditCardIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Payment History
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    navigate("/faq");
+                                                    closeMenu();
+                                                }}
+                                            >
+                                                <LiveHelpIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                FAQ
+                                            </MenuItem>
+                                        </Menu>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                mt: 2,
+                                                backgroundColor:
+                                                    activePanel === "home"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("home")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    pr: 3,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <HomeIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Dashboard Home
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "bookings"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("bookings")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <BookOnLineIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Your Bookings
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "payments"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("payments")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <CreditCardIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Payment History
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                // backgroundColor:
+                                                //     activePanel === "createTour"
+                                                //         ? "background.secondary"
+                                                //         : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() => navigate("/faq")}
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <LiveHelpIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    FAQ
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                    </>
+                                )}
                             </Grid>
-
-                            {/* Right Column - Next Tour Box */}
-                            <Grid size={6}>
+                            {/* Right Column: contents part */}
+                            <Grid
+                                item
+                                xs={12}
+                                md={9}
+                                sx={{ width: { sx: "70%", md: "50%" } }}
+                            >
                                 <Box
                                     sx={{
-                                        border: "2px black solid",
-                                        borderRadius: "16px",
-                                        backgroundColor: "white",
-                                        padding: 4,
+                                        mx: { sx: "0%", md: "10%" },
+                                        width: "100%",
+                                        mb: 20,
                                     }}
                                 >
-                                    <Typography
-                                        variant="h6"
-                                        fontWeight="bold"
-                                        mb={2}
-                                    >
-                                        Your Next Tour
-                                    </Typography>
-                                    {/* Placeholder image or details */}
-                                    <Typography color="text.secondary">
-                                        Date:{" "}
-                                    </Typography>
-                                    <Typography color="text.secondary">
-                                        Beach:{" "}
-                                    </Typography>
-                                    <img
-                                        src="../src/assets/background.png"
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                        }}
-                                    />
+                                    {activePanel === "home" && (
+                                        <>
+                                            <Box sx={{ mt: 4 }}>
+                                                This is a user dashboard. Please
+                                                select options on the left.
+                                            </Box>
+                                            {subscriptionStatus?.currentPeriodEnd && (
+                                                <Typography sx={{ my: 2 }}>
+                                                    Subscription valid until:
+                                                    {new Date(
+                                                        subscriptionStatus.currentPeriodEnd
+                                                    ).toLocaleDateString()}
+                                                </Typography>
+                                            )}
+                                            {userInfo.permission === 0 && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    sx={{ mt: 3 }}
+                                                    startIcon={
+                                                        <CreditCardIcon />
+                                                    }
+                                                    onClick={
+                                                        handleSubscriptionUpgrade
+                                                    }
+                                                >
+                                                    Upgrade to Premium
+                                                    ($9.99/month)
+                                                </Button>
+                                            )}
+                                            {subscriptionStatus?.hasActiveSubscription && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    sx={{ mt: 3 }}
+                                                    startIcon={
+                                                        <CreditCardIcon />
+                                                    }
+                                                    onClick={handleUnsubscribe}
+                                                >
+                                                    Unsubscribe
+                                                </Button>
+                                            )}
+                                        </>
+                                    )}
+                                    {activePanel === "bookings" && (
+                                        <BookingPanel
+                                            userId={userInfo?.userId}
+                                        />
+                                    )}
+                                    {activePanel === "payments" && (
+                                        <MyPayments userId={userInfo?.userId} />
+                                    )}
                                 </Box>
                             </Grid>
                         </Grid>
                     </Box>
-                </>
+                </Box>
             ) : (
                 <Box sx={{ textAlign: "center", mt: 5 }}>
                     <Typography variant="h4">
@@ -170,6 +520,23 @@ export function UserDashboard() {
                     <CircularProgress />
                 </Box>
             )}
-        </>
+        </Box>
+    ) : (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                justifyContent: "center",
+                height: "90vh",
+            }}
+        >
+            <Typography variant="h4" color="error">
+                Access Denied
+            </Typography>
+            <Typography variant="body1">
+                You do not have permission to access this page.
+            </Typography>
+        </Box>
     );
 }

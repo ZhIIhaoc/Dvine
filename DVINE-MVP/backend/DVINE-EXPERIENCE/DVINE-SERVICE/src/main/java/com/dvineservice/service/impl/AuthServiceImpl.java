@@ -1,6 +1,8 @@
 package com.dvineservice.service.impl;
 
 import com.dvinedao.domain.PermissionLevel;
+import com.dvinedao.domain.RegisterWithVerificationRequest;
+import com.dvinedao.domain.ResetPasswordRequest;
 import com.dvinedao.domain.TokenRefreshRequest;
 import com.dvinedao.domain.TokenResponse;
 import com.dvinedao.domain.User;
@@ -8,9 +10,13 @@ import com.dvinedao.mapper.UserMapper;
 import com.dvineservice.exception.InvalidTokenException;
 import com.dvineservice.exception.LoginCredentialIncorrectException;
 import com.dvineservice.service.AuthService;
+import com.dvineservice.service.EmailVerificationService;
+import com.dvineservice.service.S3Service;
 import com.dvineservice.util.TokenUtil;
+import com.dvineservice.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,13 +36,45 @@ public class AuthServiceImpl implements AuthService {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailVerificationService emailVerificationService;
+
+    @Value("${aws.s3.default-avatar-url}")
+    private String defaultAvatarUrl;
+    
+    @Override
+    public boolean sendVerificationCode(String email) {
+        return emailVerificationService.sendVerificationCode(email);
+    }
+    
+    @Override
+    public TokenResponse registerWithEmailVerification(RegisterWithVerificationRequest request) {
+        User user = request.getUser();
+        String verificationCode = request.getVerificationCode();
+        
+        ValidationUtil.validateUserRegistration(user);
+    
+        if (!emailVerificationService.verifyCode(user.getEmail(), verificationCode)) {
+            throw new IllegalArgumentException("Invalid or expired verification code");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAvatar(defaultAvatarUrl);
+        userMapper.insertUser(user);
+        
+        emailVerificationService.removeVerificationCode(user.getEmail());
+        TokenResponse tokens = tokenUtil.generateDoubleToken(user.getUserId());
+        return tokens;
+    }
     
     @Override
     public TokenResponse register(User user) {
+        // Validate required fields are not null or whitespace-only
+        ValidationUtil.validateUserRegistration(user);
+        
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // set default permission level
-        user.setPermission(PermissionLevel.REGULAR);
+        user.setAvatar(defaultAvatarUrl);
         // Insert user
         userMapper.insertUser(user);
         // Generate double tokens
@@ -86,5 +124,49 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Tokens refreshed successfully for user ID: {}", userId);
         return tokens;
+    }
+    
+    @Override
+    public boolean sendPasswordResetCode(String email) {
+        return emailVerificationService.sendVerificationCode(email);
+    }
+    
+    @Override
+    public boolean resetPassword(ResetPasswordRequest request) {
+        String email = request.getEmail();
+        String verificationCode = request.getVerificationCode();
+        String newPassword = request.getNewPassword();
+        
+        // Validate input
+        if (!StringUtils.hasText(email) || !StringUtils.hasText(verificationCode) || !StringUtils.hasText(newPassword)) {
+            throw new IllegalArgumentException("Email, verification code, and new password are required");
+        }
+        
+        // Check if user exists
+        User user = userMapper.selectUserByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User with this email does not exist");
+        }
+        
+        // Verify the verification code
+        if (!emailVerificationService.verifyCode(email, verificationCode)) {
+            throw new IllegalArgumentException("Invalid or expired verification code");
+        }
+
+        // Check if new password is the same as the old password
+        if(passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the old password");
+        }
+        
+        // Update password
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+        userMapper.updateUser(user);
+        
+        // Remove verification code
+        emailVerificationService.removeVerificationCode(email);
+        
+        log.info("Password reset successfully for user: {}", email);
+        return true;
     }
 }

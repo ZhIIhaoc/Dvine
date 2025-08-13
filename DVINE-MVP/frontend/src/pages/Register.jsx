@@ -5,17 +5,18 @@ import Logo from "../components/Logo.jsx";
 import { useNavigate } from "react-router-dom";
 import SignUpStepOne from "../components/SignUpStepOne.jsx";
 import SignUpStepTwo from "../components/SignUpStepTwo.jsx";
+import SignUpStepThree from "../components/SignUpStepThree.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
 import SubmitRegistration from "../endpoints/SubmitRegistration.js";
+import SubmitEmailRegistration from "../endpoints/SubmitEmailRegistration.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { useContext } from "react";
 
-
-export const Register = () => {
+export const Register = ({ isDarkMode }) => {
     const [page, setPage] = React.useState(0);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const { setToken } = useContext(AuthContext);
-    const [userInfo, setUsersInfo] = React.useState({
+    const [userInfo, setUserInfo] = React.useState({
         email: "",
         password: "",
         confirmPassword: "",
@@ -24,6 +25,8 @@ export const Register = () => {
         firstName: "",
         lastName: "",
     });
+    const [role, setRole] = React.useState("user"); // Default role
+    const [verificationCode, setVerificationCode] = React.useState("");
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState("");
     const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
@@ -54,15 +57,68 @@ export const Register = () => {
     };
 
     // this tracks what process of the register process the user is on
-    const pageNext = () => setPage(1);
-    const pageBack = () => setPage(0);
+    const pageNext = () => setPage((prevPage) => prevPage + 1);
+    const pageBack = () => setPage((prevPage) => prevPage - 1);
     const changeState = (value) => (event) => {
-        setUsersInfo({
+        setUserInfo({
             ...userInfo,
             [value]: event.target.value,
         });
     };
 
+    const confirmEmail = async () => {
+        if (
+            userInfo.email === "" ||
+            userInfo.password === "" ||
+            userInfo.confirmPassword === ""
+        ) {
+            showSnackbar("Please fill in all fields", "warning");
+            return;
+        }
+        if (userInfo.password !== userInfo.confirmPassword) {
+            showSnackbar("Passwords do not match", "error");
+            return;
+        }
+        try {
+            const response = await SubmitEmailRegistration(userInfo.email);
+            const responseInfo = await response.json();
+            console.log(responseInfo, "Email confirmation response");
+
+            if (responseInfo.code === 0) {
+                // Success case
+                showSnackbar("Verification email sent", "success");
+                pageNext(); // Move to the next step
+            } else {
+                // Error case
+                showSnackbar(
+                    responseInfo.msg || "Failed to send verification email",
+                    "error"
+                );
+            }
+        } catch (error) {
+            console.error("Error sending verification email:", error);
+            showSnackbar("Network error. Please try again.", "error");
+        }
+    };
+    const resendCode = async () => {
+        try {
+            const response = await SubmitEmailRegistration(userInfo.email);
+            const responseInfo = await response.json();
+            console.log("Resend response:", responseInfo);
+
+            if (responseInfo.code === 0) {
+                showSnackbar("Verification email resent", "success");
+            } else {
+                showSnackbar(
+                    responseInfo.msg || "Failed to resend verification email",
+                    "error"
+                );
+            }
+        } catch (error) {
+            console.error("Error resending email:", error);
+            showSnackbar("Network error. Please try again.", "error");
+        }
+    };
     const registerButton = async () => {
         if (
             userInfo.email === "" ||
@@ -84,7 +140,9 @@ export const Register = () => {
                 userInfo.password,
                 userInfo.postcode,
                 userInfo.firstName,
-                userInfo.lastName
+                userInfo.lastName,
+                verificationCode,
+                role
             );
             const responseInfo = await response.json();
             console.log(responseInfo);
@@ -96,9 +154,8 @@ export const Register = () => {
                     localStorage.setItem("accessToken", accessToken);
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", userInfo.email);
-                    // props.setToken(accessToken);
+            
                     setToken(accessToken);
-                    
                     showSnackbar("Registration successful", "success");
                     navigate("/");
                 } else {
@@ -133,7 +190,7 @@ export const Register = () => {
                     }}
                 >
                     <Box sx={{ pl: { xs: 0, md: 12 } }}>
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </Box>
                     <Box
                         sx={{
@@ -144,97 +201,98 @@ export const Register = () => {
                         }}
                     >
                         {/* Multi-step registration implementation */}
-                        {page === 0 ? (
+                        {page === 0 && (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100%",
+                                }}
+                            >
+                                <Typography
+                                    variant="h5"
+                                    gutterBottom
+                                    align="center"
+                                    sx={{ mb: 8 }}
+                                >
+                                    Are you registering as a user or a partner?
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "50%",
+                                        height: "56px",
+                                        fontSize: "1rem",
+                                        mb: 4,
+                                    }}
+                                    onClick={() => {
+                                        setRole("user");
+                                        pageNext();
+                                    }}
+                                >
+                                    Register as User
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "50%",
+                                        height: "56px",
+                                        fontSize: "1rem",
+                                        backgroundColor: "#6f42c1",
+                                        "&:hover": {
+                                            backgroundColor: "#5a32a3",
+                                        },
+                                    }}
+                                    onClick={() => {
+                                        setRole("partner");
+                                        pageNext();
+                                    }}
+                                >
+                                    Register as Partner
+                                </Button>
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{ mt: 6 }}
+                                >
+                                    Already have an account?{" "}
+                                    <Link
+                                        underline="hover"
+                                        color="secondary"
+                                        sx={{ cursor: "pointer", ml: 2 }}
+                                        onClick={() => navigate("/login")}
+                                    >
+                                        Log in
+                                    </Link>
+                                </Typography>
+                            </Box>
+                        )}
+                        {page === 1 && (
                             <SignUpStepOne
                                 userInfo={userInfo}
                                 changeState={changeState}
+                                pageBack={pageBack}
                                 pageNext={pageNext}
                             />
-                        ) : (
+                        )}
+                        {page === 2 && (
                             <SignUpStepTwo
                                 userInfo={userInfo}
                                 changeState={changeState}
                                 pageBack={pageBack}
-                                registerButton={registerButton}
+                                confirmEmail={confirmEmail}
                             />
                         )}
-
-                        {/* Single Page Register Code (Commented) */}
-                        {/*
-                    <Typography variant="h4" sx={{ mb: 2 }}>
-                        Create Account
-                    </Typography>
-                    <TextField
-                        label="Email"
-                        placeholder="example@gmail.com"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userInfo.email}
-                        onChange={changeState("email")}
-                    />
-                    <TextField
-                        label="Phone"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userInfo.phone}
-                        onChange={changeState("phone")}
-                    />
-                    <TextField
-                        label="Postcode"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userInfo.postcode}
-                        onChange={changeState("postcode")}
-                    />
-                    <TextField
-                        label="First Name"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userInfo.firstName}
-                        onChange={changeState("firstName")}
-                    />
-                    <TextField
-                        label="Last Name"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userInfo.lastName}
-                        onChange={changeState("lastName")}
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userInfo.password}
-                        onChange={changeState("password")}
-                    />
-                    <TextField
-                        label="Confirm Password"
-                        type="password"
-                        fullWidth
-                        sx={{ mb: 3 }}
-                        value={userInfo.confirmPassword}
-                        onChange={changeState("confirmPassword")}
-                    />
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{ bgcolor: "#800080", mb: 2 }}
-                        onClick={registerButton}
-                    >
-                        Register
-                    </Button>
-                    <Typography variant="body2" align="center">
-                        Already have an account?{" "}
-                        <Link
-                            underline="hover"
-                            color="secondary"
-                            onClick={() => navigate("/login")}
-                        >
-                            Log in
-                        </Link>
-                    </Typography>
-                    */}
+                        {page === 3 && (
+                            <SignUpStepThree
+                                verificationCode={verificationCode}
+                                setVerificationCode={setVerificationCode}
+                                registerButton={registerButton}
+                                resendCode={resendCode} // ← pass this in
+                            />
+                        )}
                     </Box>
                 </Box>
             </Grid>

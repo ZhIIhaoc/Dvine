@@ -8,11 +8,9 @@ import MessageAlert from "../components/MessageAlert.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { useContext } from "react";
 
-
-export const Login = () => {
+export const Login = ({ isDarkMode }) => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
-    // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
     const { setToken } = useContext(AuthContext);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const navigate = useNavigate();
@@ -28,7 +26,6 @@ export const Login = () => {
 
     React.useEffect(() => {
         function handleWindowResize() {
-            // console.log(getWindowSize());
             setWindowSize(getWindowSize());
         }
 
@@ -44,9 +41,6 @@ export const Login = () => {
         return { innerWidth, innerHeight };
     }
     const loginButton = async () => {
-        // alert("Login button clicked");
-        // console.log("Login email: ", loginEmail);
-        // console.log("Login password: ", loginPassword);
         if (loginEmail === "" || loginPassword === "") {
             showSnackbar("Please enter both email and password", "warning");
             return;
@@ -64,7 +58,6 @@ export const Login = () => {
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", loginEmail);
                     setToken(accessToken);
-                    // props.setToken(accessToken);
                     showSnackbar("Login successful!", "success");
                     navigate("/");
                 } else {
@@ -84,12 +77,6 @@ export const Login = () => {
     };
 
     return (
-        // <>
-        //     <h1>Login</h1>
-        //     Email <input id="emailLogin" type="text" onChange={(event) => setLoginEmail(event.target.value)} value={loginEmail} /> <br />
-        //     Password <input id="passwordLogin" type="password" onChange={(event) => setLoginPassword(event.target.value)} value={loginPassword} /> <br />
-        //     <button id="loginButton" onClick={loginButton}>Login</button>
-        // </>
         <Grid container sx={{ minHeight: "100vh", overflow: "hidden" }}>
             {/*left side of the page*/}
             <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>
@@ -102,7 +89,7 @@ export const Login = () => {
                     }}
                 >
                     <Box sx={{ pl: { xs: 0, md: 12 } }}>
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </Box>
 
                     <Box
@@ -126,6 +113,17 @@ export const Login = () => {
                             onChange={(event) =>
                                 setLoginEmail(event.target.value)
                             }
+                            inputProps={{ 
+                                "data-testid": "email-input",
+                                "aria-label": "Email input"
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                                sx: {
+                                    color: "text.primary",
+                                    fontSize: "1.2rem",
+                                },
+                            }}
                         />
                         <TextField
                             label="Password"
@@ -134,6 +132,17 @@ export const Login = () => {
                             sx={{ mb: 6, width: "70%" }}
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
+                            inputProps={{ 
+                                "data-testid": "password-input",
+                                "aria-label": "Password input"
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                                sx: {
+                                    color: "text.primary",
+                                    fontSize: "1.2rem",
+                                },
+                            }}
                         />
 
                         <Button
@@ -145,12 +154,28 @@ export const Login = () => {
                                 height: "56px",
                             }}
                             onClick={loginButton}
+                            data-testid="login-button"
+                            aria-label="Login button"
                         >
                             Log in
                         </Button>
+                        <Typography
+                            variant="body2"
+                            align="center"
+                            sx={{ mb: 1 }}
+                        >
+                            <Link
+                                underline="hover"
+                                color="secondary"
+                                sx={{ cursor: "pointer" }}
+                                onClick={() => navigate("/password-reset")}
+                            >
+                                Forgot Password?
+                            </Link>
+                        </Typography>
 
                         <Typography variant="body2" align="center">
-                            Don't have an account?{" "}
+                            Don&apos;t have an account?{" "}
                             <Link
                                 underline="hover"
                                 color="secondary"
@@ -187,4 +212,5 @@ export const Login = () => {
 
 Login.propTypes = {
     setToken: PropTypes.func,
+    isDarkMode: PropTypes.bool,
 };
