@@ -913,7 +913,7 @@ export const DvineMoments = () => {
                                         borderColor: "divider",
                                     },
                                     "&:hover fieldset": {
-                                        borderColor: "primary.main",
+                                        borderColor: "text.tertiary",
                                     },
                                     "& input": {
                                         color: "text.primary",
@@ -944,7 +944,7 @@ export const DvineMoments = () => {
                                         borderColor: "divider",
                                     },
                                     "&:hover fieldset": {
-                                        borderColor: "primary.main",
+                                        borderColor: "text.tertiary",
                                     },
                                     "& input": {
                                         color: "text.primary",
@@ -977,7 +977,7 @@ export const DvineMoments = () => {
                                         borderColor: "divider",
                                     },
                                     "&:hover fieldset": {
-                                        borderColor: "primary.main",
+                                        borderColor: "text.tertiary",
                                     },
                                     "& textarea": {
                                         color: "text.primary",
@@ -992,7 +992,10 @@ export const DvineMoments = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 3 }}>
-                    <Button onClick={() => setCreateDialogOpen(false)}>
+                    <Button
+                        onClick={() => setCreateDialogOpen(false)}
+                        sx={{ color: "text.tertiary" }}
+                    >
                         Cancel
                     </Button>
                     <Button

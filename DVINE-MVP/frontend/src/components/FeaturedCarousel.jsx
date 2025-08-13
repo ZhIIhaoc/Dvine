@@ -221,7 +221,7 @@ export default function FeaturedCarousel({
                                                 sx={{
                                                     fontSize: 18,
                                                     mr: 1,
-                                                    color: "primary.main",
+                                                    color: "text.tertiary",
                                                 }}
                                             />
                                             <Typography

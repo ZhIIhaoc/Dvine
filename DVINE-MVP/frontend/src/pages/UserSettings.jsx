@@ -162,7 +162,7 @@ const UserSettings = () => {
                         variant="h5"
                         sx={{
                             fontWeight: 700,
-                            color: "text.tertiary",
+                            color: "text.primary",
                             mb: 1,
                             mt: 2,
                         }}
@@ -171,7 +171,7 @@ const UserSettings = () => {
                     </Typography>
                     <Typography
                         variant="subtitle2"
-                        sx={{ color: "text.tertiary", mb: 2 }}
+                        sx={{ color: "text.primary", mb: 2 }}
                     >
                         {editMode
                             ? "Edit your profile details"
