@@ -813,8 +813,7 @@ export function AdminDashboard() {
                                     {activePanel === "home" && (
                                         <Box sx={{ mt: 4 }}>
                                             This is an admin dashboard. Please
-                                            select options on the left. (Temp
-                                            Message)
+                                            select options on the left.
                                         </Box>
                                     )}
                                     {activePanel === "createTour" && (

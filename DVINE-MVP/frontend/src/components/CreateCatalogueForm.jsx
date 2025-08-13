@@ -13,13 +13,12 @@ import MessageAlert from "../components/MessageAlert.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import PropTypes from "prop-types";
 
-
 /**
  * CreateCatalogueForm component allows managers or admins to create a new catalogue or delete an existing one.
  * It includes fields for catalogue name, description, and cover image.
  * Users can also select an existing catalogue to their posts.
  *
-**/
+ **/
 
 export default function CreateCatalogueForm({
     onClose,
@@ -41,7 +40,6 @@ export default function CreateCatalogueForm({
     const [snackbarMessage, setSnackbarMessage] = React.useState("");
     const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
 
-    
     // Function to show snackbar messages
     const showSnackbar = (message, severity) => {
         setSnackbarMessage(message);
@@ -60,7 +58,6 @@ export default function CreateCatalogueForm({
         };
         reader.readAsDataURL(file);
     };
-
 
     /**
      * Handle cover image selection (validates type/size, produces base64 preview).
@@ -137,12 +134,18 @@ export default function CreateCatalogueForm({
                     value={catalogueName}
                     onChange={(e) => setCatalogueName(e.target.value)}
                     fullWidth
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
                 />
                 <TextField
                     label="Catalogue Description"
                     value={catalogueDescription}
                     onChange={(e) => setCatalogueDescription(e.target.value)}
                     fullWidth
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
                 />
 
                 <Button
@@ -200,6 +203,9 @@ export default function CreateCatalogueForm({
                             {...params}
                             label="Search Catalogues"
                             fullWidth
+                            InputLabelProps={{
+                                sx: { color: "text.primary" },
+                            }}
                         />
                     )}
                 />

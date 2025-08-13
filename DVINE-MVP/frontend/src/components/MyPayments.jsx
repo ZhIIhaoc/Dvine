@@ -7,12 +7,11 @@ import {
     Box,
 } from "@mui/material";
 import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "./AuthContext.jsx"; 
-
+import { AuthContext } from "./AuthContext.jsx";
 
 /**
  * features the current users payment history.
- * 
+ *
  */
 export default function MyPayments() {
     const { token } = useContext(AuthContext);
@@ -57,7 +56,9 @@ export default function MyPayments() {
             {loading ? (
                 <CircularProgress />
             ) : payments.length === 0 ? (
-                <Typography>No payments found for your account.</Typography>
+                <Typography sx={{ mt: 3 }}>
+                    No payments found for your account.
+                </Typography>
             ) : (
                 <List>
                     {payments.map((payment) => (
