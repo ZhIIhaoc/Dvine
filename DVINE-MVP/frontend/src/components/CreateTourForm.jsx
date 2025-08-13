@@ -242,6 +242,9 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ mb: 4, width: "100%" }}
                     value={tourTitle}
                     onChange={(event) => setTourTitle(event.target.value)}
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
                 />
 
                 <Typography variant="body1" gutterBottom>
@@ -300,16 +303,34 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     type="number"
                     sx={{ my: 6, width: "100%" }}
                     value={tourPrice}
-                    onChange={(e) => setTourPrice(e.target.value)}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "" || Number(value) >= 0) {
+                            setTourPrice(value);
+                        }
+                    }}
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
+                    InputProps={{ min: 0 }}
                 />
                 <TextField
                     label="Premium Price"
                     placeholder="Premium Price"
                     fullWidth
                     type="number"
-                    sx={{ my: 6, width: "100%" }}
+                    sx={{ mb: 6, width: "100%" }}
                     value={premiumPrice}
-                    onChange={(e) => setPremiumPrice(e.target.value)}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "" || Number(value) >= 0) {
+                            setPremiumPrice(value);
+                        }
+                    }}
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
+                    InputProps={{ min: 0 }}
                 />
                 <TextField
                     label="Experience Destination"
@@ -318,6 +339,9 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ mb: 6, width: "100%" }}
                     value={tourDestination}
                     onChange={(e) => setTourDestination(e.target.value)}
+                    InputLabelProps={{
+                        sx: { color: "text.primary" },
+                    }}
                 />
                 <Autocomplete
                     options={catalogueList}
@@ -332,7 +356,9 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                             label="Select Catalogue"
                             fullWidth
                             sx={{ mb: 3 }}
-
+                            InputLabelProps={{
+                                sx: { color: "text.primary" },
+                            }}
                         />
                     )}
                 />
