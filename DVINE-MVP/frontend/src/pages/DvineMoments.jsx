@@ -64,10 +64,8 @@ export const DvineMoments = () => {
     // comments state
     const [comments, setComments] = useState({}); // momentId -> comments array
     const [loadingComments, setLoadingComments] = useState({});
-    // 为每个moment创建独立的评论输入状态
     const [commentInputs, setCommentInputs] = useState({}); // momentId -> comment text
 
-    // 删除菜单状态
     const [deleteMenuAnchor, setDeleteMenuAnchor] = useState(null);
     const [selectedMomentId, setSelectedMomentId] = useState(null);
 
@@ -563,7 +561,7 @@ export const DvineMoments = () => {
                                 {moment.images && moment.images.length > 0 && (
                                     <Box sx={{ pb: 2 }}>
                                         {moment.images.length === 1 ? (
-                                            // 单张图片：全宽显示
+
                                             <Box sx={{ px: 2 }}>
                                                 <CardMedia
                                                     component="img"
@@ -578,7 +576,6 @@ export const DvineMoments = () => {
                                                 />
                                             </Box>
                                         ) : moment.images.length === 2 ? (
-                                            // 两张图片：并排显示
                                             <Box sx={{ px: 2 }}>
                                                 <Grid container spacing={1}>
                                                     {moment.images.map(
@@ -612,7 +609,7 @@ export const DvineMoments = () => {
                                                 </Grid>
                                             </Box>
                                         ) : (
-                                            // 多张图片：网格显示
+                                            
                                             <Box sx={{ px: 2 }}>
                                                 <Grid container spacing={1}>
                                                     {moment.images

@@ -8,6 +8,10 @@ const STRIPE_PUBLIC_KEY =
     "pk_test_51Rm729GfQkMoi85mj5PvXe7k8AmUiMPTEsV6Pnxp3CWzcXc6emlYgQUwoLLa38sjOwqdJlXzI6U7lKKGCWRK9iIq00VLMXP3Tz";
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
+
+/**
+ * BookNowButton component allows users to book a tour by creating a Stripe checkout session.
+ */
 export default function BookNowButton({
     tourId,
     quantity = 1,
@@ -42,7 +46,6 @@ export default function BookNowButton({
                 throw new Error(
                     result.msg || "Failed to create payment session"
                 );
-            //window.open(checkoutUrl, "_blank"); // Open Stripe checkout in new tab
             window.location.href = checkoutUrl; // Redirect current tab to Stripe checkout
         } catch (err) {
             alert("Payment error: " + err.message);

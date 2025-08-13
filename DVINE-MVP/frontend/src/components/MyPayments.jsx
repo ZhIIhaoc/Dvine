@@ -7,8 +7,13 @@ import {
     Box,
 } from "@mui/material";
 import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "./AuthContext.jsx"; // adjust path as needed
+import { AuthContext } from "./AuthContext.jsx"; 
 
+
+/**
+ * features the current users payment history.
+ * 
+ */
 export default function MyPayments() {
     const { token } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
@@ -27,9 +32,9 @@ export default function MyPayments() {
                         },
                     }
                 );
-                const data = await res.json();
-                if (data.code === 0) {
-                    setPayments(data.data);
+                const responseInfo = await res.json();
+                if (responseInfo.code === 0) {
+                    setPayments(responseInfo.data);
                 } else {
                     setPayments([]);
                 }

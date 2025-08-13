@@ -154,9 +154,8 @@ export const Register = ({ isDarkMode }) => {
                     localStorage.setItem("accessToken", accessToken);
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", userInfo.email);
-                    // props.setToken(accessToken);
+            
                     setToken(accessToken);
-
                     showSnackbar("Registration successful", "success");
                     navigate("/");
                 } else {

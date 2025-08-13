@@ -9,6 +9,10 @@ import {
     StepLabel,
     CircularProgress,
 } from "@mui/material";
+/**
+ * SignUpStepThree component allows users to enter the verification code
+ * as the third step in the sign up process.
+ */
 
 const SignUpStepThree = ({
     verificationCode,

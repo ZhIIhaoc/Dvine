@@ -17,24 +17,34 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import { AuthContext } from "../components/AuthContext.jsx";
+/**
+ * 
+ * AdminBookingsPanel component displays all bookings in a table format.
+ * It allows filtering by user name and booking status.
+ * It also refreshes the booking data every 5 minutes.
+ */
 
 export default function AdminBookingsPanel() {
+    // Access token from global AuthContext
     const { token } = useContext(AuthContext);
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    //filters
     const [searchName, setSearchName] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
     const isMobile = useMediaQuery("(max-width:600px)");
 
+    // Fetch all bookings on component mount and set up interval for refreshing
     useEffect(() => {
         fetchAllBookings();
         // refresh every 5 minutes
         const interval = setInterval(fetchAllBookings, 300000);
         return () => clearInterval(interval);
     }, []);
-
+    
+    // Fetch all bookings from the backend
     const fetchAllBookings = async () => {
         try {
             const response = await fetch(
@@ -66,10 +76,12 @@ export default function AdminBookingsPanel() {
         }
     };
 
+    // create a unique list of statuses for the filter dropdown
     const uniqueStatuses = [
         ...new Set(bookings.map((b) => b.status || "NO STATUS")),
     ];
 
+    // Filter bookings based on search name and status
     const filteredBookings = bookings.filter((b) => {
         const matchesName =
             searchName.trim() === "" ||
@@ -85,6 +97,7 @@ export default function AdminBookingsPanel() {
     });
     console.log("Filtered Bookings:", filteredBookings.length);
 
+    // If loading, show a spinner
     if (loading) {
         return (
             <Box sx={{ textAlign: "center", mt: 4 }}>

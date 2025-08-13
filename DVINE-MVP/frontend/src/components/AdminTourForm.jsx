@@ -19,6 +19,10 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../components/AuthContext.jsx";
 import MessageAlert from "../components/MessageAlert.jsx";
+/** 
+ * AdminTourPage component allows admin to manage tours including approving pending tours,
+ * success green, warning yellow, error red
+ */
 
 const statusColors = {
     live: "success",
@@ -30,7 +34,11 @@ const statusLabels = {
     pending: "Pending Approval by Admin",
     rejected: "Rejected contact admin for more info",
 };
-
+/**
+ * Maps backend status codes to frontend status labels.
+ * @param {number} statusCode - Backend status code
+ * @returns {string} - Frontend status label
+ */
 const mapStatus = (statusCode) => {
     switch (statusCode) {
         case 0:
@@ -43,30 +51,41 @@ const mapStatus = (statusCode) => {
             return "unknown";
     }
 };
-
+/**
+ * AdminTourPage
+ * Admin dashboard page for managing tours:
+ * - View and approve/reject pending tours
+ * - View and remove featured tours
+ * - Add tours to featured list
+ */
 export default function AdminTourPage() {
     const { token } = useContext(AuthContext);
-    // const navigate = useNavigate();
 
+    // State: Tour lists
     const [pendingTourList, setPendingTourList] = useState([]);
     const [featuredManageList, setFeaturedManageList] = useState([]);
     const [allTours, setAllTours] = useState([]);
+
+    // State: Snackbar notifications
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("info");
 
+    // Function to show snackbar notifications
     const showSnackbar = (message, severity) => {
         setSnackbarMessage(message);
         setSnackbarSeverity(severity);
         setSnackbarOpen(true);
     };
 
+    // Fetch data on component mount
     useEffect(() => {
         fetchPendingTours();
         fetchFeaturedTours();
         fetchAllTours();
     }, []);
 
+    // fetch tours pending admin approval
     const fetchPendingTours = async () => {
         try {
             const response = await fetch(
@@ -82,6 +101,7 @@ export default function AdminTourPage() {
         }
     };
 
+    // fetch featured tours for management
     const fetchFeaturedTours = async () => {
         try {
             const response = await fetch(
@@ -98,7 +118,8 @@ export default function AdminTourPage() {
             console.error("Error fetching featured tours:", err);
         }
     };
-
+    
+    // fetch a list of all tours to find the non-featured ones
     const fetchAllTours = async () => {
         try {
             const response = await fetch("http://localhost:8080/tours", {
@@ -153,6 +174,7 @@ export default function AdminTourPage() {
         }
     };
 
+    // Function to remove a featured tour
     const removeFeaturedTour = async (tourId) => {
         try {
             const response = await fetch(
@@ -172,6 +194,7 @@ export default function AdminTourPage() {
         }
     };
 
+    // Function to feature a tour
     const featureTour = async (tourId) => {
         try {
             const response = await fetch(

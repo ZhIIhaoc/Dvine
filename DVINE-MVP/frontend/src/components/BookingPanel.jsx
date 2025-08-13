@@ -13,13 +13,26 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PaymentDetailsModal from "../components/PaymentDetailsModal.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 
-export default function PartnerBookingsPanel({ userId }) {
+/**
+ * allows the user to view and manage their bookings
+ * BookingsPanel component fetches and displays the user's bookings,
+ * allows searching through bookings,
+ * and provides options to view payment details and cancel bookings.
+ */
+
+export default function BookingsPanel({ userId }) {
     const { token } = useContext(AuthContext);
+
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Search
     const [searchTerm, setSearchTerm] = useState("");
+
+    // Cancel booking
     const [cancelling, setCancelling] = useState(false);
 
+    // Payment Modal
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [paymentBookingId, setPaymentBookingId] = useState(null);
 
@@ -29,6 +42,10 @@ export default function PartnerBookingsPanel({ userId }) {
         }
     }, [userId]);
 
+
+    /**
+     * Fetches the bookings for the user from the backend.
+     */
     const fetchBookings = async () => {
         setLoading(true);
         try {
@@ -49,6 +66,9 @@ export default function PartnerBookingsPanel({ userId }) {
         }
     };
 
+    /**
+     * cancel a booking by ID
+     */
     const cancelBooking = async (bookingId) => {
         if (!window.confirm("Are you sure you want to cancel this booking?"))
             return;

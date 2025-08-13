@@ -17,6 +17,9 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import removeMarkdown from "remove-markdown";
 
+/**
+ * Checkout page when the user clicks on the book now button
+ */
 export default function Checkout() {
     const theme = useTheme();
     const { tourId } = useParams();
