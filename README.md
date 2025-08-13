@@ -347,21 +347,11 @@ Integration tests validate end-to-end functionality with real database interacti
 ### Test Execution Commands
 
 ```bash
-# Run all backend tests
+# Navigate to backend directory first
 cd DVINE-MVP/backend/DVINE-EXPERIENCE/
+
+# Run all backend tests
 ./mvnw test
-
-# Run specific test class
-./mvnw test -Dtest=AuthControllerTest
-
-# Run integration tests only
-./mvnw test -Dtest=*IntegrationTest
-
-# Generate test coverage report
-./mvnw test jacoco:report
-
-# Run tests with specific profile
-./mvnw test -Dspring.profiles.active=test
 ```
 
 ### Test Coverage Goals
