@@ -209,6 +209,177 @@ docker-compose logs frontend
 docker-compose logs stripe-cli
 ```
 
+## Backend Testing Strategy
+
+### Overview
+
+The DVINE backend employs a comprehensive testing strategy covering unit tests, integration tests, and mocked external dependencies. Our testing approach ensures code correctness, business logic validation, and robust error handling across the multi-layered architecture.
+
+### Testing Framework and Tools
+
+- **Framework:** JUnit 5 (Jupiter) with Spring Boot Test
+- **Mocking:** Mockito for service layer mocking and external dependency stubbing
+- **Web Layer Testing:** Spring MockMvc for controller testing
+- **Test Containers:** Spring Boot Test with `@SpringBootTest` for integration testing
+- **Database Testing:** `@Transactional` rollback for clean test isolation
+- **Build Tool:** Maven with Spring Boot Test Starter
+
+### Test Categories
+
+#### 1. Unit Tests
+**Location:** `src/test/java/com/dvineapi/controller/*Test.java`
+
+Unit tests focus on individual components in isolation using extensive mocking:
+
+- **Controller Layer Tests** - Test REST endpoints with mocked services
+- **Service Layer Mocking** - External dependencies and business logic are mocked
+- **Happy Path Coverage** - Valid requests with expected responses
+- **Sad Path Coverage** - Invalid inputs, authentication failures, business rule violations
+
+**Example Coverage:**
+- `AuthControllerTest` - Authentication flows with JWT token validation
+- `TourControllerTest` - Tour CRUD operations with permission validation
+- `PaymentControllerTest` - Stripe payment integration with mocked external calls
+
+#### 2. Integration Tests
+**Location:** `src/test/java/com/dvineapi/controller/*IntegrationTest.java`
+
+Integration tests validate end-to-end functionality with real database interactions:
+
+- **Full Spring Context** - `@SpringBootTest` loads complete application context
+- **Real Database Operations** - Tests interact with actual MySQL database
+- **Transaction Rollback** - `@Transactional` ensures clean state between tests
+- **Multi-Layer Validation** - API → Service → DAO → Database flow testing
+
+**Example Coverage:**
+- `AuthIntegrationTest` - Complete authentication workflow with database persistence
+- `UserIntegrationTest` - User management with real data validation
+- `CatalogueControllerIntegrationTest` - Content management with ownership validation
+
+#### 3. Mocking Strategy
+
+**External Dependencies:**
+- **Stripe API** - `@MockBean StripeUtil` for payment processing tests
+- **AWS SES** - Email service mocked for notification testing
+- **Redis** - Session management mocked for authentication tests
+
+**Internal Service Mocking:**
+- **Service Layer** - Controllers test with mocked business logic
+- **Security Context** - `MockedStatic<UserUtil>` for permission testing
+- **Database Layer** - MyBatis mappers mocked for isolated unit tests
+
+### Test Data Management
+
+#### Database Test Data
+- **Schema Initialization** - Automated from `DVINE-MVP/db/01_schema.sql`
+- **Test Data Loading** - Consistent test data from `02_user_test_data.sql`
+- **Featured Content** - Test featured tours from `03_featured_tours_test_data.sql`
+- **Transaction Isolation** - Each test runs in isolated transaction with automatic rollback
+
+#### Test User Accounts
+```java
+// Pre-configured test users with different permission levels
+"i_am_owner@example.com"    // Owner (Permission Level 4)
+"i_am_manager@example.com"  // Manager (Permission Level 3)  
+"i_am_partner@example.com"  // Partner (Permission Level 2)
+"i_am_premium@example.com"  // Premium (Permission Level 1)
+"i_am_regular@example.com"  // Regular (Permission Level 0)
+```
+
+### Business Logic Testing
+
+#### Permission-Based Access Control
+- **Hierarchical Permissions** - Tests validate access based on user permission levels
+- **Ownership Validation** - Partners can only modify their own content
+- **AOP Security Testing** - Custom annotations (`@PermissionCheck`, `@TourOwnerCheck`) 
+- **Global Exception Handling** - Error responses tested without try-catch blocks
+
+#### Approval Workflow Testing
+- **Content Submission** - Partner-created tours stored in `pending_tours` table
+- **Manager Review Process** - Approval/rejection workflow validation
+- **Database Consistency** - Dual-table updates (`tours` and `pending_tours`)
+- **Audit Trail Validation** - Submission and review timestamp tracking
+
+#### Dual-Pricing System Testing
+- **Regular vs Premium Pricing** - Both price tiers validated in all tour operations
+- **Permission-Based Display** - Frontend receives both prices, displays based on user level
+- **Business Rule Validation** - Premium price typically 10% discount from regular price
+
+### Security Testing
+
+#### Authentication & Authorization
+- **JWT Token Validation** - Access and refresh token lifecycle testing
+- **Permission Level Enforcement** - Each endpoint tested with appropriate user levels
+- **Unauthorized Access** - 401/403 responses for insufficient permissions
+- **Session Management** - Redis-based session validation with mocked external calls
+
+#### Input Validation & Sanitization
+- **Data Validation** - Empty fields, whitespace-only inputs, invalid formats
+- **SQL Injection Prevention** - MyBatis parameterized queries tested
+- **XSS Protection** - Input sanitization for user-generated content
+- **Business Rule Enforcement** - Complex validation logic tested thoroughly
+
+### Error Handling Testing
+
+#### Global Exception Handler
+- **Custom Business Exceptions** - `NotFoundException`, `PermissionDeniedException`, `TourSubmittedException`
+- **Database Constraint Violations** - Duplicate key, foreign key constraint testing
+- **External Service Failures** - Stripe API failures, AWS SES unavailability
+- **HTTP Status Code Validation** - Proper 4xx/5xx responses for different error scenarios
+
+#### Race Condition Testing
+- **Concurrent Tour Submissions** - Multiple partners submitting simultaneously
+- **Approval Race Conditions** - Manager approval conflicts
+- **Session Management** - Concurrent user authentication scenarios
+
+### Performance Testing Considerations
+
+#### Database Query Optimization
+- **N+1 Query Prevention** - MyBatis mapper efficiency testing
+- **Index Usage Validation** - Featured tour ordering and search performance
+- **Connection Pool Management** - Database connection efficiency under load
+
+#### Cache Testing
+- **Redis Session Management** - Cache hit/miss scenarios
+- **JWT Token Caching** - Authentication performance optimization
+- **Query Result Caching** - Frequently accessed data caching validation
+
+### Test Execution Commands
+
+```bash
+# Run all backend tests
+cd DVINE-MVP/backend/DVINE-EXPERIENCE/
+./mvnw test
+
+# Run specific test class
+./mvnw test -Dtest=AuthControllerTest
+
+# Run integration tests only
+./mvnw test -Dtest=*IntegrationTest
+
+# Generate test coverage report
+./mvnw test jacoco:report
+
+# Run tests with specific profile
+./mvnw test -Dspring.profiles.active=test
+```
+
+### Test Coverage Goals
+
+- **Controller Layer:** 100% endpoint coverage with happy/sad path scenarios
+- **Service Layer:** 95%+ business logic coverage including edge cases
+- **Security Components:** 100% permission validation and authentication flows
+- **Database Layer:** Complete CRUD operations with constraint validation
+- **Integration Scenarios:** End-to-end user workflows across all permission levels
+
+### Continuous Integration
+
+Tests are designed to run in automated CI/CD pipelines with:
+- **Docker Test Environment** - Consistent MySQL/Redis setup
+- **Parallel Test Execution** - Isolated transactions enable concurrent testing
+- **Fail-Fast Strategy** - Critical security and business logic failures halt deployment
+- **Test Data Consistency** - Automated database reset between test runs
+
 ## Architecture
 
 This application follows a microservice architecture:
