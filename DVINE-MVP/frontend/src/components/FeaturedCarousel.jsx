@@ -24,6 +24,9 @@ import "../components/CSS/Catalogue.css";
 import PriceDisplay from "./PriceDisplay";
 import removeMarkdown from "remove-markdown";
 
+/**
+ * featuredCarousel component displays a carousel of featured tours.
+ */
 export default function FeaturedCarousel({
     tours,
     onTourClick,

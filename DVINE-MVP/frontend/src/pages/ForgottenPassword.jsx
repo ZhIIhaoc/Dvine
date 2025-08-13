@@ -18,6 +18,12 @@ import SubmitForgottenPasswordRequest from "../endpoints/SubmitForgottenPassword
 import Logo from "../components/Logo.jsx";
 import PropTypes from "prop-types";
 
+/**
+ * ForgottenPassword component allows users to reset their password
+ * by entering their email and receiving a verification code.
+ * It has two steps: first to enter the email and receive the code,
+ * and second to enter the code and set a new password.
+ */
 const ForgottenPassword = ({ isDarkMode }) => {
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
@@ -114,7 +120,6 @@ const ForgottenPassword = ({ isDarkMode }) => {
 
     useEffect(() => {
         function handleWindowResize() {
-            // console.log(getWindowSize());
             setWindowSize(getWindowSize());
         }
         window.addEventListener("resize", handleWindowResize);

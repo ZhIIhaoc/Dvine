@@ -11,6 +11,10 @@ import {
     Stepper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+/**
+ * SignUpStepOne component allows users to enter their email, password, and confirm password
+ * one of 3 steps in the sign up process.
+ */ 
 
 const SignUpStepOne = (props) => {
     const navigate = useNavigate();

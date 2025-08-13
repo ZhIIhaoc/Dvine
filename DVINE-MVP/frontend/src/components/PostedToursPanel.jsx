@@ -8,8 +8,13 @@ import {
     TextField,
 } from "@mui/material";
 import { AuthContext } from "./AuthContext.jsx";
-import { Construction } from "@mui/icons-material";
 
+/**
+ * this lets tours the user has posted 
+ * by clicking tour it will show the people that have booked it.
+ * with a counter on the top of the modal.
+ * which shows the total bookings.
+ */
 export default function PostedToursPanel() {
     const { token, userInfo } = useContext(AuthContext);
     const [tours, setTours] = useState([]);

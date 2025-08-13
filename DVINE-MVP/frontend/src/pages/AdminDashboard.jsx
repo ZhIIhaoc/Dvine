@@ -1,6 +1,4 @@
 import { useEffect, useState, useContext } from "react";
-// import propTypes from "prop-types";
-// import axios from "axios";
 import {
     Box,
     Typography,
@@ -43,6 +41,20 @@ import AdminBookingPanel from "../components/AdminBookingPanel.jsx";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import TourIcon from "@mui/icons-material/Tour";
 import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
+
+/**
+ * AdminDashboard
+ * Main admin surface with a left nav and a right content panel.
+ * Panels include: create/manage tours, view users, catalogues, bookings, etc.
+ *
+ * Data:
+ * - GET /catalogues/list      -> list of catalogues (for CreateTourForm)
+ * - GET /approvals/pending-tours (auth) -> pending approvals count
+ *
+ * Notes:
+ * - Polls pending approvals every 10s (only when logged in).
+ * - Guards effects on token/user presence.
+ */
 
 export function AdminDashboard() {
     const { token, userInfo } = useContext(AuthContext);

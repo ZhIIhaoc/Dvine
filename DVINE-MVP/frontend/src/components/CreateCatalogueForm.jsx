@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
     Box,
     Button,
@@ -10,24 +10,39 @@ import {
 import createNewCatalogue from "../endpoints/CreateCatalogue";
 import deleteCatalogue from "../endpoints/DeleteCatalogue";
 import MessageAlert from "../components/MessageAlert.jsx";
+import { AuthContext } from "../components/AuthContext.jsx";
 import PropTypes from "prop-types";
+
+
+/**
+ * CreateCatalogueForm component allows managers or admins to create a new catalogue or delete an existing one.
+ * It includes fields for catalogue name, description, and cover image.
+ * Users can also select an existing catalogue to their posts.
+ *
+**/
 
 export default function CreateCatalogueForm({
     onClose,
     onComplete,
     catalogueList,
 }) {
-    const token = localStorage.getItem("accessToken");
+    const { token } = useContext(AuthContext);
+
     const [catalogueName, setCatalogueName] = useState("");
     const [catalogueDescription, setCatalogueDescription] = useState("");
     const [catalogueCoverImage, setCatalogueCoverImage] = useState("");
     const [imagePreview, setImagePreview] = React.useState("");
+
+    // State to manage selected catalogue for deletion
     const [selectedCatalogue, setSelectedCatalogue] = useState(null);
 
+    // Snackbar state for notifications
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState("");
     const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
 
+    
+    // Function to show snackbar messages
     const showSnackbar = (message, severity) => {
         setSnackbarMessage(message);
         setSnackbarSeverity(severity);
@@ -46,6 +61,11 @@ export default function CreateCatalogueForm({
         reader.readAsDataURL(file);
     };
 
+
+    /**
+     * Handle cover image selection (validates type/size, produces base64 preview).
+     * Note: backend expects base64 string via createNewCatalogue(token, name, desc, image).
+     */
     const handleDeleteCatalogue = async () => {
         if (!selectedCatalogue) return;
 
@@ -72,6 +92,7 @@ export default function CreateCatalogueForm({
         }
     };
 
+    /** Create catalogue with basic validation; resets form on success. */
     const createCatalogue = async () => {
         try {
             const response = await createNewCatalogue(
@@ -115,18 +136,12 @@ export default function CreateCatalogueForm({
                     label="Catalogue Name"
                     value={catalogueName}
                     onChange={(e) => setCatalogueName(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
                     fullWidth
                 />
                 <TextField
                     label="Catalogue Description"
                     value={catalogueDescription}
                     onChange={(e) => setCatalogueDescription(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
                     fullWidth
                 />
 
@@ -185,9 +200,6 @@ export default function CreateCatalogueForm({
                             {...params}
                             label="Search Catalogues"
                             fullWidth
-                            InputLabelProps={{
-                                sx: { color: "text.primary" },
-                            }}
                         />
                     )}
                 />

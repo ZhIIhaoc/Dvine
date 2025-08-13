@@ -12,6 +12,12 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * SignUpStepTwo component allows users to enter their first name, last name, phone number, and postcode
+ * as the second step in the sign up process.
+ * 
+ */
+
 const SignUpStepTwo = (props) => {
     const navigate = useNavigate();
     return (

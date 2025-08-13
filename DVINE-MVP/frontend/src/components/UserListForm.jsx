@@ -25,7 +25,14 @@ const permissionsLabels = {
     4: "Manager (Admin)",
     5: "Owner (Admin)",
 };
-
+/**
+ * UserListForm component displays a list of users and their permissions.
+ * It allows the admin to change user permissions and manage user accounts.
+ * 
+ * notes 
+ * only users with lower permission that the current user can be changed.
+ * current user is excluded from the list.
+ */
 export default function UserListForm({ onClose }) {
     const { token, userInfo } = useContext(AuthContext);
     const isOwner = userInfo?.permission === 5;

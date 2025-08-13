@@ -2,10 +2,21 @@ import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext"; // import the context
 import PropTypes from "prop-types";
 
+
+/** * AuthProvider component to manage authentication state
+ * storing token into local storage
+ * gets the user information from the backend
+ *
+*/
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() =>
         localStorage.getItem("accessToken")
     );
+
+    /**
+     * userInfo: Stores the current logged-in user's profile data
+     * - Null when not logged in
+     */
     const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
@@ -17,6 +28,11 @@ export const AuthProvider = ({ children }) => {
             setUserInfo(null);
         }
     }, [token]);
+    
+    /**
+     * Fetches the user profile from the backend
+     * and updates the userInfo state
+     */
     const fetchUserProfile = async () => {
         try {
             const response = await fetch("http://localhost:8080/users/profile");

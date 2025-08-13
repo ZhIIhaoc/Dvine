@@ -11,7 +11,6 @@ import { useContext } from "react";
 export const Login = ({ isDarkMode }) => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
-    // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
     const { setToken } = useContext(AuthContext);
     const [windowSize, setWindowSize] = React.useState(getWindowSize());
     const navigate = useNavigate();
@@ -27,7 +26,6 @@ export const Login = ({ isDarkMode }) => {
 
     React.useEffect(() => {
         function handleWindowResize() {
-            // console.log(getWindowSize());
             setWindowSize(getWindowSize());
         }
 
@@ -43,9 +41,6 @@ export const Login = ({ isDarkMode }) => {
         return { innerWidth, innerHeight };
     }
     const loginButton = async () => {
-        // alert("Login button clicked");
-        // console.log("Login email: ", loginEmail);
-        // console.log("Login password: ", loginPassword);
         if (loginEmail === "" || loginPassword === "") {
             showSnackbar("Please enter both email and password", "warning");
             return;
@@ -63,7 +58,6 @@ export const Login = ({ isDarkMode }) => {
                     localStorage.setItem("refreshToken", refreshToken);
                     localStorage.setItem("Email", loginEmail);
                     setToken(accessToken);
-                    // props.setToken(accessToken);
                     showSnackbar("Login successful!", "success");
                     navigate("/");
                 } else {
@@ -83,12 +77,6 @@ export const Login = ({ isDarkMode }) => {
     };
 
     return (
-        // <>
-        //     <h1>Login</h1>
-        //     Email <input id="emailLogin" type="text" onChange={(event) => setLoginEmail(event.target.value)} value={loginEmail} /> <br />
-        //     Password <input id="passwordLogin" type="password" onChange={(event) => setLoginPassword(event.target.value)} value={loginPassword} /> <br />
-        //     <button id="loginButton" onClick={loginButton}>Login</button>
-        // </>
         <Grid container sx={{ minHeight: "100vh", overflow: "hidden" }}>
             {/*left side of the page*/}
             <Grid size={windowSize.innerWidth < 900 ? 12 : 6}>

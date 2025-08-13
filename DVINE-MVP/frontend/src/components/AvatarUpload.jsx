@@ -16,6 +16,23 @@ import {
 import { uploadAvatar } from "../endpoints/AvatarEndpoints";
 import PropTypes from "prop-types";
 
+/**
+ * AvatarUpload
+ * 
+ * Component for displaying, uploading, previewing, and deleting a user avatar.
+ * - Supports image preview before upload
+ * - Validates file type and size (max 5MB)
+ * - Shows progress indicator while uploading
+ * - Allows removal (resets to default avatar)
+ *
+ * Props:
+ * - currentAvatarUrl (string)       : URL of the current avatar image
+ * - onAvatarUpdate (function)       : Callback fired with new avatar URL or null
+ * - size (number)                   : Avatar display size in pixels (default: 120)
+ * - showUploadButton (boolean)      : Whether to show the "edit/upload" icon (default: true)
+ * - showDeleteButton (boolean)      : Whether to show the "delete" icon (default: true)
+ */
+
 const AvatarUpload = ({
     currentAvatarUrl,
     onAvatarUpdate,

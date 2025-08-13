@@ -122,6 +122,14 @@ const mockCatalogues = [
     },
 ];
 
+
+
+/**
+ * we added dumby data for the catalogue and tours just to show on the page
+ * you are welcome remove it how it currently works is it fetches the data from the API
+ * and if there is not at least 6 minimum it will use the mock data.
+ */
+
 export function Catalogue() {
     const [catalogues, setCatalogues] = useState([]);
     const [tours, setTours] = useState([]);
@@ -214,10 +222,7 @@ export function Catalogue() {
         fetchFeaturedToursData();
         window.scrollTo(0, 0);
     }, []);
-    // useEffect(() => {
-    //     console.log("Catalogues:", catalogues);
-    //     console.log("Tours:", tours);
-    // }, [catalogues, tours]);
+    
 
     // Create new catalogue
     const handleCreateCatalogue = async () => {

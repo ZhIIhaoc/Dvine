@@ -29,7 +29,6 @@ export default function CreateTourForm({ onClose, catalogueList }) {
     const [error, setError] = React.useState("");
     const [success, setSuccess] = React.useState("");
     const [isCreating, setIsCreating] = React.useState(false);
-    const accessToken = localStorage.getItem("accessToken");
     const theme = useTheme();
 
     const handleImagesUpdate = (images) => {
@@ -243,47 +242,8 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ mb: 4, width: "100%" }}
                     value={tourTitle}
                     onChange={(event) => setTourTitle(event.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
                 />
 
-                {/* <TextField
-                    label="Tour Description"
-                    placeholder="Tour Description (Write Markdown here)"
-                    fullWidth
-                    multiline
-                    rows={4}
-                    sx={{
-                        mb: 3,
-                        width: "100%",
-                        "& .MuiInputBase-inputMultiline": {
-                            resize: "vertical",
-                        },
-                    }}
-                    value={tourDescription}
-                    onChange={(e) => setTourDescription(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
-                />
-
-                <Typography variant="body1" gutterBottom>
-                    Experience Description Preview
-                </Typography>
-                <Paper
-                    sx={{
-                        mb: 6,
-                        p: 2,
-                        height: "100%",
-                        overflowY: "auto",
-                        backgroundColor: "background.paper",
-                        border: 1,
-                        borderColor: "divider",
-                    }}
-                >
-                    <ReactMarkdown>{tourDescription}</ReactMarkdown>
-                </Paper> */}
                 <Typography variant="body1" gutterBottom>
                     Experience Description
                 </Typography>
@@ -317,7 +277,6 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                         value={tourDescription}
                         onChange={(val) => setTourDescription(val || "")}
                         preview="live"
-                        // height={300}
                         textareaProps={{
                             placeholder: "Write Markdown here…",
                             style: {
@@ -342,10 +301,6 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ my: 6, width: "100%" }}
                     value={tourPrice}
                     onChange={(e) => setTourPrice(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
-                    inputProps={{ min: 0 }}
                 />
                 <TextField
                     label="Premium Price"
@@ -355,10 +310,6 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ my: 6, width: "100%" }}
                     value={premiumPrice}
                     onChange={(e) => setPremiumPrice(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
-                    inputProps={{ min: 0 }}
                 />
                 <TextField
                     label="Experience Destination"
@@ -367,9 +318,6 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                     sx={{ mb: 6, width: "100%" }}
                     value={tourDestination}
                     onChange={(e) => setTourDestination(e.target.value)}
-                    InputLabelProps={{
-                        sx: { color: "text.primary" },
-                    }}
                 />
                 <Autocomplete
                     options={catalogueList}
@@ -384,9 +332,7 @@ export default function CreateTourForm({ onClose, catalogueList }) {
                             label="Select Catalogue"
                             fullWidth
                             sx={{ mb: 3 }}
-                            InputLabelProps={{
-                                sx: { color: "text.primary" },
-                            }}
+
                         />
                     )}
                 />
