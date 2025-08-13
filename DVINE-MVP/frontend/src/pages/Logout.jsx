@@ -18,7 +18,7 @@ const Logout = () => {
     const navigate = useNavigate();
     const { setToken } = useContext(AuthContext) || {};
     const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState("");
+    const [, setMessage] = useState("");
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -32,7 +32,7 @@ const Logout = () => {
                 setMessage(
                     "You have been logged out successfully. See you next time!"
                 );
-            } catch (error) {
+            } catch {
                 setMessage("Logout failed. Please try again.");
             } finally {
                 setLoading(false);

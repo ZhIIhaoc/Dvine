@@ -40,7 +40,7 @@ const mapStatus = (statusCode) => {
 };
 
 export const CurrentUploadedTours = () => {
-    const { token, userInfo, setToken } = useContext(AuthContext);
+    const { token, userInfo } = useContext(AuthContext);
     const [currentUserToursList, setCurrentUserToursList] = useState([]);
     const navigate = useNavigate();
     const [gottenMyTours, setGottenMyTours] = useState(false);
@@ -58,18 +58,19 @@ export const CurrentUploadedTours = () => {
 
             return () => clearInterval(interval); // Clean up on unmount
         }
-
-
     }, [userInfo, token]);
 
     const fetchAllToursByUser = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/tours?createdBy=${userInfo.userId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await fetch(
+                `http://localhost:8080/tours?createdBy=${userInfo.userId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 setGottenAllTours(true);
@@ -83,18 +84,24 @@ export const CurrentUploadedTours = () => {
     };
     const fetchCurrentUserSubmissions = async () => {
         try {
-            const response = await fetch("http://localhost:8080/approvals/my-submissions", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                "http://localhost:8080/approvals/my-submissions",
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 setCurrentUserToursList(responseInfo.data);
                 setGottenMyTours(true);
             } else {
-                console.error("Error fetching current user tours:", responseInfo.msg);
+                console.error(
+                    "Error fetching current user tours:",
+                    responseInfo.msg
+                );
             }
         } catch (error) {
             console.error("Network error fetching current user tours:", error);
@@ -110,11 +117,22 @@ export const CurrentUploadedTours = () => {
             </Box>
             {gottenMyTours && (
                 <Box sx={{ p: 4, textAlign: "center" }}>
-                    <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
+                    <Grid
+                        container
+                        spacing={4}
+                        justifyContent="center"
+                        sx={{ mt: 2 }}
+                    >
                         {currentUserToursList.map((tour) => {
                             const statusKey = mapStatus(tour.status);
                             return (
-                                <Grid item xs={12} sm={6} md={4} key={tour.pendingTourId}>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    md={4}
+                                    key={tour.pendingTourId}
+                                >
                                     <Card sx={{ boxShadow: 1 }}>
                                         <CardMedia
                                             component="img"
@@ -126,14 +144,30 @@ export const CurrentUploadedTours = () => {
                                                 objectFit: "cover",
                                                 cursor: "pointer",
                                             }}
-                                            onClick={() => navigate(`/tour/${tour.pendingTourId}`)}
+                                            onClick={() =>
+                                                navigate(
+                                                    `/tour/${tour.pendingTourId}`
+                                                )
+                                            }
                                         />
                                         <CardContent>
-                                            <Tooltip title={statusLabels[statusKey] || "Unknown status"}>
+                                            <Tooltip
+                                                title={
+                                                    statusLabels[statusKey] ||
+                                                    "Unknown status"
+                                                }
+                                            >
                                                 <Chip
                                                     label={`Admin Approval: ${statusKey}`}
-                                                    color={statusColors[statusKey] || "default"}
-                                                    sx={{ cursor: "pointer", mb: 1 }}
+                                                    color={
+                                                        statusColors[
+                                                            statusKey
+                                                        ] || "default"
+                                                    }
+                                                    sx={{
+                                                        cursor: "pointer",
+                                                        mb: 1,
+                                                    }}
                                                 />
                                             </Tooltip>
                                             <br />
@@ -151,12 +185,23 @@ export const CurrentUploadedTours = () => {
                     <Typography variant="h4" gutterBottom>
                         Your Live Tours and Experiences
                     </Typography>
-                    <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
+                    <Grid
+                        container
+                        spacing={4}
+                        justifyContent="center"
+                        sx={{ mt: 2 }}
+                    >
                         {currentUserAllToursList.map((tour) => {
                             // one to show that the tour is live
                             const statusKey = mapStatus(LIVE_STATUS_CODE);
                             return (
-                                <Grid item xs={12} sm={6} md={4} key={tour.tourId}>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    md={4}
+                                    key={tour.tourId}
+                                >
                                     <Card sx={{ boxShadow: 1 }}>
                                         <CardMedia
                                             component="img"
@@ -168,14 +213,28 @@ export const CurrentUploadedTours = () => {
                                                 objectFit: "cover",
                                                 cursor: "pointer",
                                             }}
-                                            onClick={() => navigate(`/tour/${tour.tourId}`)}
+                                            onClick={() =>
+                                                navigate(`/tour/${tour.tourId}`)
+                                            }
                                         />
                                         <CardContent>
-                                            <Tooltip title={statusLabels[statusKey] || "Unknown status"}>
+                                            <Tooltip
+                                                title={
+                                                    statusLabels[statusKey] ||
+                                                    "Unknown status"
+                                                }
+                                            >
                                                 <Chip
                                                     label={`Admin Approval: ${statusKey}`}
-                                                    color={statusColors[statusKey] || "default"}
-                                                    sx={{ cursor: "pointer", mb: 1 }}
+                                                    color={
+                                                        statusColors[
+                                                            statusKey
+                                                        ] || "default"
+                                                    }
+                                                    sx={{
+                                                        cursor: "pointer",
+                                                        mb: 1,
+                                                    }}
                                                 />
                                             </Tooltip>
                                             <br />

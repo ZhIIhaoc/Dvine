@@ -275,7 +275,7 @@ export default function TourDetails() {
             } else {
                 alert("Failed to update tour");
             }
-        } catch (error) {
+        } catch {
             alert("Error updating tour");
         }
     };
@@ -645,7 +645,7 @@ export default function TourDetails() {
                                                 color="success.main"
                                                 gutterBottom
                                             >
-                                                What's Included
+                                                What&apos;s Included
                                             </Typography>
                                             <List dense>
                                                 {tour.included?.map(
@@ -1002,8 +1002,8 @@ export default function TourDetails() {
                                 color="text.primary"
                                 sx={{ mb: 2 }}
                             >
-                                Update experience details and click "Update" to
-                                save changes.
+                                Update experience details and click
+                                &quot;Update&quot; to save changes.
                             </Typography>
                             <TextField
                                 fullWidth

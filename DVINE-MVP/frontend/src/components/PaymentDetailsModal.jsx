@@ -40,7 +40,7 @@ export default function PaymentDetailsModal({ open, handleClose, bookingId, toke
     };
 
     if (open) fetchPaymentDetails();
-  }, [open, bookingId]);
+  }, [open, bookingId, token]);
 
   return (
     <Dialog
@@ -54,23 +54,37 @@ export default function PaymentDetailsModal({ open, handleClose, bookingId, toke
       <DialogTitle>Payment Details</DialogTitle>
       <DialogContent dividers>
         {loading ? (
-          <CircularProgress />
+          <CircularProgress data-testid="loading-spinner" />
         ) : paymentData ? (
-          <>
-            <Typography><strong>Reference:</strong> {paymentData.bookingReference}</Typography>
-            <Typography><strong>Amount:</strong> ${paymentData.amount} {paymentData.currency}</Typography>
-            <Typography><strong>Status:</strong> {paymentData.status}</Typography>
-            <Typography><strong>Method:</strong> {paymentData.paymentMethod}</Typography>
-            <Typography><strong>Paid At:</strong> {paymentData.paidAt ? new Date(paymentData.paidAt).toLocaleString() : "—"}</Typography>
-            <Typography><strong>User Email:</strong> {paymentData.userEmail}</Typography>
-            <Typography><strong>Refunded:</strong> ${paymentData.refundAmount}</Typography>
-          </>
+          <div data-testid="payment-details">
+            <Typography data-testid="reference">
+              <strong>Reference:</strong> {paymentData.bookingReference}
+            </Typography>
+            <Typography data-testid="amount">
+              <strong>Amount:</strong> ${paymentData.amount} {paymentData.currency}
+            </Typography>
+            <Typography data-testid="status">
+              <strong>Status:</strong> {paymentData.status}
+            </Typography>
+            <Typography data-testid="method">
+              <strong>Method:</strong> {paymentData.paymentMethod}
+            </Typography>
+            <Typography data-testid="paid-at">
+              <strong>Paid At:</strong> {paymentData.paidAt ? new Date(paymentData.paidAt).toLocaleString() : "—"}
+            </Typography>
+            <Typography data-testid="user-email">
+              <strong>User Email:</strong> {paymentData.userEmail}
+            </Typography>
+            <Typography data-testid="refunded">
+              <strong>Refunded:</strong> ${paymentData.refundAmount}
+            </Typography>
+          </div>
         ) : (
-          <Typography>No payment found for this booking.</Typography>
+          <Typography data-testid="no-payment-message">No payment found for this booking.</Typography>
         )}
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={handleClose}>
+        <Button variant="contained" onClick={handleClose} data-testid="close-button">
           Close
         </Button>
       </DialogActions>

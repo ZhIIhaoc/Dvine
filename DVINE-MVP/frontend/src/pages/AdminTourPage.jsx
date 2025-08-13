@@ -47,7 +47,7 @@ const mapStatus = (statusCode) => {
 };
 
 export const AdminTourPage = () => {
-    const { token} = useContext(AuthContext);
+    const { token } = useContext(AuthContext);
     // const navigate = useNavigate();
 
     const [pendingTourList, setPendingTourList] = useState([]);
@@ -73,12 +73,15 @@ export const AdminTourPage = () => {
 
     const fetchPendingTours = async () => {
         try {
-            const response = await fetch("http://localhost:8080/approvals/pending-tours", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                "http://localhost:8080/approvals/pending-tours",
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) setPendingTourList(responseInfo.data);
         } catch (err) {
@@ -88,12 +91,15 @@ export const AdminTourPage = () => {
 
     const fetchFeaturedTours = async () => {
         try {
-            const response = await fetch("http://localhost:8080/featured-tours/manage", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                "http://localhost:8080/featured-tours/manage",
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 setFeaturedManageList(responseInfo.data);
@@ -120,10 +126,13 @@ export const AdminTourPage = () => {
 
     const handleApproveTour = async (tourId) => {
         try {
-            const response = await fetch(`http://localhost:8080/approvals/tours/${tourId}/approve`, {
-                method: "POST",
-                headers: { Authorization: `${token}` },
-            });
+            const response = await fetch(
+                `http://localhost:8080/approvals/tours/${tourId}/approve`,
+                {
+                    method: "POST",
+                    headers: { Authorization: `${token}` },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 showSnackbar("Tour approved successfully!", "success");
@@ -138,10 +147,13 @@ export const AdminTourPage = () => {
 
     const handleDeleteTour = async (tourId) => {
         try {
-            const response = await fetch(`http://localhost:8080/approvals/tours/${tourId}/reject`, {
-                method: "POST",
-                headers: { Authorization: `${token}` },
-            });
+            const response = await fetch(
+                `http://localhost:8080/approvals/tours/${tourId}/reject`,
+                {
+                    method: "POST",
+                    headers: { Authorization: `${token}` },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 showSnackbar("Tour rejected successfully!", "success");
@@ -156,26 +168,32 @@ export const AdminTourPage = () => {
 
     const removeFeaturedTour = async (tourId) => {
         try {
-            const response = await fetch(`http://localhost:8080/featured-tours?tourId=${tourId}`, {
-                method: "DELETE",
-                headers: { Authorization: `${token}` },
-            });
+            const response = await fetch(
+                `http://localhost:8080/featured-tours?tourId=${tourId}`,
+                {
+                    method: "DELETE",
+                    headers: { Authorization: `${token}` },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 fetchFeaturedTours();
                 showSnackbar("Removed from featured", "success");
             } else showSnackbar(responseInfo.msg, "error");
-        } catch (error) {
+        } catch {
             showSnackbar("Failed to remove", "error");
         }
     };
 
     const featureTour = async (tourId) => {
         try {
-            const response = await fetch(`http://localhost:8080/featured-tours?tourId=${tourId}`, {
-                method: "POST",
-                headers: { Authorization: `${token}` },
-            });
+            const response = await fetch(
+                `http://localhost:8080/featured-tours?tourId=${tourId}`,
+                {
+                    method: "POST",
+                    headers: { Authorization: `${token}` },
+                }
+            );
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 fetchFeaturedTours();
@@ -192,7 +210,6 @@ export const AdminTourPage = () => {
     );
 
     return (
-
         <>
             <Drawer
                 anchor="left"
@@ -206,57 +223,115 @@ export const AdminTourPage = () => {
                             mt: "96px",
                         },
                     },
-                }}>
+                }}
+            >
                 <Toolbar />
-                <Box sx={{ width: 240 }} onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+                <Box
+                    sx={{ width: 240 }}
+                    onClick={toggleDrawer(false)}
+                    onKeyDown={toggleDrawer(false)}
+                >
                     <List>
                         <ListItem>
                             <ListItemText primary="Manage Tours" />
                         </ListItem>
                     </List>
                 </Box>
-            </Drawer >
-            <Box display="flex" justifyContent="space-between" width="100%" px={2} mb={2}>
-                <IconButton
-                    onClick={toggleDrawer(true)}
-                    aria-label="menu"
-                >
+            </Drawer>
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                width="100%"
+                px={2}
+                mb={2}
+            >
+                <IconButton onClick={toggleDrawer(true)} aria-label="menu">
                     <MenuIcon />
                 </IconButton>
             </Box>
             <Box sx={{ maxWidth: 1000, width: "95%", mx: "auto", mt: 4 }}>
-
-                <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
+                <Typography
+                    variant="h4"
+                    align="center"
+                    fontWeight="bold"
+                    gutterBottom
+                >
                     Manage Tours and Experiences
                 </Typography>
 
                 {/* Pending Tours */}
                 <Box sx={{ my: 4 }}>
-                    <Typography variant="h5" gutterBottom>Pending Tours for Approval</Typography>
+                    <Typography variant="h5" gutterBottom>
+                        Pending Tours for Approval
+                    </Typography>
                     <Grid container spacing={3}>
                         {pendingTourList.map((tour) => (
-                            <Grid item xs={12} sm={6} md={4} key={tour.pendingTourId}>
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                key={tour.pendingTourId}
+                            >
                                 <Card sx={{ borderRadius: 2 }}>
                                     <CardMedia
                                         component="img"
                                         height="180"
-                                        image={tour.primaryImageUrl || "/placeholder-tour.svg"}
+                                        image={
+                                            tour.primaryImageUrl ||
+                                            "/placeholder-tour.svg"
+                                        }
                                         alt={tour.title}
                                         sx={{ objectFit: "cover" }}
                                         onError={(e) => {
-                                            e.target.src = "/placeholder-tour.svg";
+                                            e.target.src =
+                                                "/placeholder-tour.svg";
                                         }}
                                     />
                                     <CardContent>
                                         <Chip
-                                            label={statusLabels[mapStatus(tour.status)]}
-                                            color={statusColors[mapStatus(tour.status)]}
+                                            label={
+                                                statusLabels[
+                                                    mapStatus(tour.status)
+                                                ]
+                                            }
+                                            color={
+                                                statusColors[
+                                                    mapStatus(tour.status)
+                                                ]
+                                            }
                                             sx={{ mb: 1 }}
                                         />
-                                        <Typography variant="h6" gutterBottom>{tour.title}</Typography>
-                                        <Stack direction="row" spacing={1} justifyContent="center">
-                                            <Button variant="contained" color="success" onClick={() => handleApproveTour(tour.pendingTourId)}>Approve</Button>
-                                            <Button variant="outlined" color="error" onClick={() => handleDeleteTour(tour.pendingTourId)}>Reject</Button>
+                                        <Typography variant="h6" gutterBottom>
+                                            {tour.title}
+                                        </Typography>
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            justifyContent="center"
+                                        >
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                onClick={() =>
+                                                    handleApproveTour(
+                                                        tour.pendingTourId
+                                                    )
+                                                }
+                                            >
+                                                Approve
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                onClick={() =>
+                                                    handleDeleteTour(
+                                                        tour.pendingTourId
+                                                    )
+                                                }
+                                            >
+                                                Reject
+                                            </Button>
                                         </Stack>
                                     </CardContent>
                                 </Card>
@@ -267,17 +342,31 @@ export const AdminTourPage = () => {
 
                 {/* Featured Tours */}
                 <Box sx={{ my: 4 }}>
-                    <Typography variant="h5" gutterBottom>Featured Tours</Typography>
+                    <Typography variant="h5" gutterBottom>
+                        Featured Tours
+                    </Typography>
                     {featuredManageList.length === 0 ? (
-                        <Typography color="text.secondary">No featured tours found.</Typography>
+                        <Typography color="text.secondary">
+                            No featured tours found.
+                        </Typography>
                     ) : (
                         <List>
                             {featuredManageList.map((item) => (
                                 <ListItem
                                     key={item.featuredTourId}
-                                    sx={{ backgroundColor: "#897979ff", borderRadius: 2, mb: 1 }}
+                                    sx={{
+                                        backgroundColor: "#897979ff",
+                                        borderRadius: 2,
+                                        mb: 1,
+                                    }}
                                     secondaryAction={
-                                        <Button variant="outlined" color="error" onClick={() => removeFeaturedTour(item.tourId)}>
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            onClick={() =>
+                                                removeFeaturedTour(item.tourId)
+                                            }
+                                        >
                                             Remove
                                         </Button>
                                     }
@@ -294,23 +383,41 @@ export const AdminTourPage = () => {
 
                 {/* All Tours */}
                 <Box sx={{ my: 4 }}>
-                    <Typography variant="h5" gutterBottom>All Tours (Add to Featured)</Typography>
+                    <Typography variant="h5" gutterBottom>
+                        All Tours (Add to Featured)
+                    </Typography>
                     {nonFeaturedTours.length === 0 ? (
-                        <Typography color="text.secondary">All tours are already featured.</Typography>
+                        <Typography color="text.secondary">
+                            All tours are already featured.
+                        </Typography>
                     ) : (
                         <List>
                             {nonFeaturedTours.map((tour) => (
                                 <ListItem
                                     key={tour.tourId}
-                                    sx={{ backgroundColor: "#897979ff", borderRadius: 2, mb: 1 }}
+                                    sx={{
+                                        backgroundColor: "#897979ff",
+                                        borderRadius: 2,
+                                        mb: 1,
+                                    }}
                                     secondaryAction={
-                                        <Button variant="outlined" color="primary" onClick={() => featureTour(tour.tourId)}>
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={() =>
+                                                featureTour(tour.tourId)
+                                            }
+                                        >
                                             Add to Featured
                                         </Button>
                                     }
                                 >
                                     <ListItemText
-                                        primary={<Typography fontWeight="bold">{tour.title}</Typography>}
+                                        primary={
+                                            <Typography fontWeight="bold">
+                                                {tour.title}
+                                            </Typography>
+                                        }
                                         secondary={`ID: ${tour.tourId} - ${tour.destination}`}
                                     />
                                 </ListItem>

@@ -8,7 +8,7 @@ import MessageAlert from "../components/MessageAlert.jsx";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { useContext } from "react";
 
-export const Login = ({ isDarkMode, setIsDarkMode }) => {
+export const Login = ({ isDarkMode }) => {
     const [loginEmail, setLoginEmail] = React.useState("");
     const [loginPassword, setLoginPassword] = React.useState("");
     // const [isMobile, setIsMobile] = React.useState(false); // come back to this later
@@ -125,6 +125,10 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                             onChange={(event) =>
                                 setLoginEmail(event.target.value)
                             }
+                            inputProps={{ 
+                                "data-testid": "email-input",
+                                "aria-label": "Email input"
+                            }}
                             InputLabelProps={{
                                 shrink: true,
                                 sx: {
@@ -140,6 +144,10 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                             sx={{ mb: 6, width: "70%" }}
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
+                            inputProps={{ 
+                                "data-testid": "password-input",
+                                "aria-label": "Password input"
+                            }}
                             InputLabelProps={{
                                 shrink: true,
                                 sx: {
@@ -158,6 +166,8 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                                 height: "56px",
                             }}
                             onClick={loginButton}
+                            data-testid="login-button"
+                            aria-label="Login button"
                         >
                             Log in
                         </Button>
@@ -177,7 +187,7 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
                         </Typography>
 
                         <Typography variant="body2" align="center">
-                            Don't have an account?{" "}
+                            Don&apos;t have an account?{" "}
                             <Link
                                 underline="hover"
                                 color="secondary"
@@ -214,4 +224,5 @@ export const Login = ({ isDarkMode, setIsDarkMode }) => {
 
 Login.propTypes = {
     setToken: PropTypes.func,
+    isDarkMode: PropTypes.bool,
 };

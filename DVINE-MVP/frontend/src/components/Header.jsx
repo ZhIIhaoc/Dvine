@@ -120,7 +120,6 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                     {token && (
                         <Box
                             sx={{
-                                display: "flex",
                                 alignItems: "center",
                                 justifyContent: "flex-end",
                                 height: "100%",
@@ -519,7 +518,7 @@ export function Header({ isDarkMode, setIsDarkMode }) {
                                 sx={{
                                     color: "text.primary",
                                     borderBottom:
-                                        currentPath === "/user-dashboard"
+                                        currentPath === "/user/settings"
                                             ? "2px solid"
                                             : "none",
                                     borderColor: "text.tertiary",

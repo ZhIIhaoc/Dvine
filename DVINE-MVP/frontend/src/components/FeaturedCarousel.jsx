@@ -22,6 +22,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "../components/CSS/Catalogue.css";
 import PriceDisplay from "./PriceDisplay";
+import removeMarkdown from "remove-markdown";
 
 export default function FeaturedCarousel({
     tours,
@@ -35,8 +36,8 @@ export default function FeaturedCarousel({
     return (
         <Box
             sx={{
-                mb: 3,
-                py: 3,
+                mb: 2,
+                py: 1,
                 borderRadius: 3,
             }}
         >
@@ -44,7 +45,7 @@ export default function FeaturedCarousel({
                 sx={{
                     maxWidth: { xs: "100vw", md: "80vw" },
                     mx: "auto",
-                    px: { xs: 3, sm: 6, md: 8 },
+                    px: { xs: 0, sm: 6, md: 8 },
                     position: "relative",
                     overflow: "visible",
                 }}
@@ -84,14 +85,15 @@ export default function FeaturedCarousel({
                     }}
                     style={{
                         width: "100%",
-                        height: "100%",
                         paddingBottom: "60px",
+                        overflow: "visible",
                     }}
                 >
                     {tours.map((tour) => (
                         <SwiperSlide key={tour.tourId}>
                             <Card
                                 sx={{
+                                    width: "100%",
                                     height: { xs: "auto", md: 500 },
                                     display: "flex",
                                     flexDirection: { xs: "column", md: "row" },
@@ -151,10 +153,7 @@ export default function FeaturedCarousel({
                                         alignItems: "center",
                                         gap: 0.5,
                                     }}
-                                >
-                                    {/* <PriceIcon sx={{ fontSize: 18 }} />$
-                                    {tour.price} */}
-                                </Box>
+                                ></Box>
 
                                 <CardMedia
                                     component="img"
@@ -176,8 +175,8 @@ export default function FeaturedCarousel({
 
                                 <CardContent
                                     sx={{
-                                        width: { xs: "100%", md: "30%" },
-                                        p: 4,
+                                        width: { xs: "95%", md: "30%" },
+                                        p: { xs: 1, sm: 1, md: 4 },
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "space-between",
@@ -190,6 +189,14 @@ export default function FeaturedCarousel({
                                             fontWeight="bold"
                                             gutterBottom
                                             sx={{
+                                                fontSize: {
+                                                    xs: "1.1rem",
+                                                    sm: "1.25rem",
+                                                    md: "1.5rem",
+                                                },
+                                                overflowWrap: "break-word",
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
                                                 mb: 2,
                                                 lineHeight: 1.3,
                                                 minHeight: "2.5rem",
@@ -221,6 +228,16 @@ export default function FeaturedCarousel({
                                                 variant="body1"
                                                 color="text.primary"
                                                 fontWeight="medium"
+                                                sx={{
+                                                    fontSize: {
+                                                        xs: "1rem",
+                                                        sm: "1.2rem",
+                                                        md: "1.2rem",
+                                                    },
+                                                    overflowWrap: "break-word",
+                                                    wordBreak: "break-word",
+                                                    whiteSpace: "normal",
+                                                }}
                                             >
                                                 {tour.destination}
                                             </Typography>
@@ -229,16 +246,24 @@ export default function FeaturedCarousel({
                                             variant="body1"
                                             color="text.primary"
                                             sx={{
+                                                fontSize: {
+                                                    xs: "1rem",
+                                                    sm: "1rem",
+                                                    md: "1rem",
+                                                },
+                                                overflowWrap: "break-word",
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
                                                 mb: 3,
                                                 lineHeight: 1.6,
                                                 minHeight: "3rem",
                                                 display: "-webkit-box",
-                                                WebkitLineClamp: 2,
+                                                WebkitLineClamp: 3,
                                                 WebkitBoxOrient: "vertical",
                                                 overflow: "hidden",
                                             }}
                                         >
-                                            {tour.description}
+                                            {removeMarkdown(tour.description)}
                                         </Typography>
                                     </Box>
                                     <Box

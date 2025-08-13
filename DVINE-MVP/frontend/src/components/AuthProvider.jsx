@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext"; // import the context
+import PropTypes from "prop-types";
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() =>
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     }, [token]);
     const fetchUserProfile = async () => {
         try {
-            const response = await fetch('http://localhost:8080/users/profile');
+            const response = await fetch("http://localhost:8080/users/profile");
             const responseInfo = await response.json();
             if (responseInfo.code === 0) {
                 setUserInfo(responseInfo.data);
@@ -35,10 +36,15 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("accessToken");
     };
 
-
     return (
-        <AuthContext.Provider value={{ token, setToken, logout, userInfo, setUserInfo }}>
+        <AuthContext.Provider
+            value={{ token, setToken, logout, userInfo, setUserInfo }}
+        >
             {children}
         </AuthContext.Provider>
     );
+};
+
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };

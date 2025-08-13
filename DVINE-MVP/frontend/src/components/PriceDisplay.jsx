@@ -13,7 +13,6 @@ export default function PriceDisplay({
     userPermission,
 }) {
     const isPremium = userPermission === 1;
-    const isRegular = userPermission === 0;
     const showDiscount =
         typeof regularPrice === "number" &&
         typeof premiumPrice === "number" &&
@@ -51,7 +50,18 @@ export default function PriceDisplay({
             >
                 Regular Price: ${regularPrice}
             </Typography>
-            <Typography variant="h6" color="text.tertiary" fontWeight="bold">
+            <Typography
+                variant="h6"
+                color="text.tertiary"
+                fontWeight="bold"
+                sx={{
+                    fontSize: {
+                        xs: "1rem",
+                        sm: "1.25rem",
+                        md: "1.25rem",
+                    },
+                }}
+            >
                 Premium Price: ${premiumPrice}
             </Typography>
             {showDiscount && (

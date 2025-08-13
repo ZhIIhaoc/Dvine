@@ -19,7 +19,6 @@ import FeaturedCarousel from "../components/FeaturedCarousel";
 import { fetchFeaturedTours } from "../endpoints/CatalogueEndpoints";
 import { AuthContext } from "../components/AuthContext.jsx";
 
-
 const PERMISSIONS = {
     REGULAR: 0,
     PREMIUM: 1,
@@ -75,11 +74,14 @@ export const Home = () => {
 
     const fetchSubscriptionStatus = async () => {
         try {
-            const res = await fetch("http://localhost:8080/subscription/status", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const res = await fetch(
+                "http://localhost:8080/subscription/status",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
             const data = await res.json();
             if (data.code === 0) {
                 setSubscriptionInfo(data.data);
@@ -114,13 +116,16 @@ export const Home = () => {
     };
     const createCheckoutSession = async (type) => {
         try {
-            const res = await fetch(`http://localhost:8080/subscription/checkout/${type}`, {
-                method: "POST",
-                headers: {
-                    Authorization: token,
-                    "Content-Type": "application/json",
-                },
-            });
+            const res = await fetch(
+                `http://localhost:8080/subscription/checkout/${type}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: token,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const data = await res.json();
 
@@ -205,7 +210,7 @@ export const Home = () => {
                     sx={{
                         fontFamily: '"Playfair Display", serif',
                         fontSize: {
-                            xs: "1.5rem",
+                            xs: "1.6rem",
                             sm: "2.5rem",
                             md: "3.5rem",
                             lg: "4.5rem",
@@ -318,8 +323,9 @@ export const Home = () => {
                             fontWeight="bold"
                             sx={{
                                 mb: 2,
+                                pl: { xs: 3, md: 0 },
                                 fontSize: {
-                                    xs: "1.25rem",
+                                    xs: "1.1rem",
                                     sm: "1.5rem",
                                     md: "1.75rem",
                                 },
@@ -440,72 +446,22 @@ export const Home = () => {
                                 justifyContent: "center",
                             }}
                         >
-                            {/* <Card
-                                sx={{
-                                    width: {
-                                        xs: "80%",
-                                        md: "100%",
-                                    },
-                                    mx: "auto",
-                                    height: "100%",
-                                    backgroundColor: theme.palette.header.main,
-                                    backdropFilter: "blur(5px)",
-                                    WebkitBackdropFilter: "blur(5px)",
-                                    color: "text.primary",
-                                    p: 3,
-                                    borderRadius: 3,
-                                    boxShadow: 4,
-                                    textAlign: "center",
-                                    display: "flex",
-                                }}
-                            >
-                                <CardContent>
-                                    <Typography
-                                        variant="h6"
-                                        fontWeight="bold"
-                                        gutterBottom
-                                    >
-                                        Exclusive Membership
-                                    </Typography>
-                                    <Typography
-                                        variant="h4"
-                                        fontWeight="bold"
-                                        color="text.tertiary"
-                                        gutterBottom
-                                    >
-                                        $9.99/month
-                                    </Typography>
-                                    <Typography variant="body2" gutterBottom>
-                                        Cancel anytime. Enjoy premium features
-                                        instantly.
-                                    </Typography>
-                                    <Button
-                                        variant="contained"
-                                        size="large"
-                                        sx={{
-                                            mt: 3,
-                                            px: 4,
-                                            borderRadius: 8,
-                                            fontWeight: "bold",
-                                            backgroundColor: "primary.main",
-                                            "&:hover": {
-                                                backgroundColor: "primary.main",
-                                            },
-                                        }}
-                                        onClick={() => navigate("/subscribe")}
-                                    >
-                                        Subscribe Now
-                                    </Button>
-                                </CardContent>
-                            </Card> */}
                             {!token ? (
                                 <Card sx={commonCardStyles}>
                                     <CardContent>
-                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                        <Typography
+                                            variant="h6"
+                                            fontWeight="bold"
+                                            gutterBottom
+                                        >
                                             Become a Member
                                         </Typography>
-                                        <Typography variant="body2" gutterBottom>
-                                            Log in to access exclusive features and member discounts.
+                                        <Typography
+                                            variant="body2"
+                                            gutterBottom
+                                        >
+                                            Log in to access exclusive features
+                                            and member discounts.
                                         </Typography>
                                         <Button
                                             variant="contained"
@@ -520,22 +476,35 @@ export const Home = () => {
                             ) : isAlreadyElevated ? (
                                 <Card sx={commonCardStyles}>
                                     <CardContent>
-                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                        <Typography
+                                            variant="h6"
+                                            fontWeight="bold"
+                                            gutterBottom
+                                        >
                                             Enjoy Your Benefits!
                                         </Typography>
                                         <Typography variant="body2">
-                                            You already have full access with your current plan.
+                                            You already have full access with
+                                            your current plan.
                                         </Typography>
                                     </CardContent>
                                 </Card>
                             ) : isUnpaidPartner ? (
                                 <Card sx={commonCardStyles}>
                                     <CardContent>
-                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                        <Typography
+                                            variant="h6"
+                                            fontWeight="bold"
+                                            gutterBottom
+                                        >
                                             Partner Access
                                         </Typography>
-                                        <Typography variant="body2" gutterBottom>
-                                            Subscribe to unlock partner tools and begin uploading tours.
+                                        <Typography
+                                            variant="body2"
+                                            gutterBottom
+                                        >
+                                            Subscribe to unlock partner tools
+                                            and begin uploading tours.
                                         </Typography>
                                         <Typography
                                             variant="h4"
@@ -549,7 +518,9 @@ export const Home = () => {
                                             variant="contained"
                                             size="large"
                                             sx={subscribeBtnStyles}
-                                            onClick={() => createCheckoutSession("PARTNER")}
+                                            onClick={() =>
+                                                createCheckoutSession("PARTNER")
+                                            }
                                         >
                                             Subscribe as Partner
                                         </Button>
@@ -558,7 +529,11 @@ export const Home = () => {
                             ) : isRegularUser ? (
                                 <Card sx={commonCardStyles}>
                                     <CardContent>
-                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                        <Typography
+                                            variant="h6"
+                                            fontWeight="bold"
+                                            gutterBottom
+                                        >
                                             Exclusive Membership
                                         </Typography>
                                         <Typography
@@ -569,22 +544,26 @@ export const Home = () => {
                                         >
                                             $9.99/month
                                         </Typography>
-                                        <Typography variant="body2" gutterBottom>
-                                            Cancel anytime. Enjoy premium features instantly.
+                                        <Typography
+                                            variant="body2"
+                                            gutterBottom
+                                        >
+                                            Cancel anytime. Enjoy premium
+                                            features instantly.
                                         </Typography>
                                         <Button
                                             variant="contained"
                                             size="large"
                                             sx={subscribeBtnStyles}
-                                            onClick={() => createCheckoutSession("PREMIUM")}
+                                            onClick={() =>
+                                                createCheckoutSession("PREMIUM")
+                                            }
                                         >
                                             Subscribe Now
                                         </Button>
                                     </CardContent>
                                 </Card>
                             ) : null}
-
-
                         </Grid>
                     </Grid>
                 </Box>

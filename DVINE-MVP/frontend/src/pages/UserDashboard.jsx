@@ -3,7 +3,17 @@ import { AuthContext } from "../components/AuthContext.jsx";
 // import propTypes from "prop-types";
 // import axios from "axios";
 import { Header } from "../components/Header";
-import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Button,
+    Grid,
+    CircularProgress,
+    useTheme,
+    useMediaQuery,
+    Menu,
+    MenuItem,
+} from "@mui/material";
 import { DashboardHeaderCard } from "../components/DashboardHeaderCard";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
@@ -12,6 +22,7 @@ import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import BookingPanel from "../components/BookingPanel.jsx";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import MyPayments from "../components/MyPayments.jsx";
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
 
 export function UserDashboard() {
     const { userInfo, token } = useContext(AuthContext);
@@ -20,6 +31,15 @@ export function UserDashboard() {
     const isUser = userInfo?.permission === 0 || userInfo?.permission === 1;
     const [activePanel, setActivePanel] = useState("home");
     const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const openMenu = (e) => setMenuAnchorEl(e.currentTarget);
+    const closeMenu = () => setMenuAnchorEl(null);
+    const go = (key) => {
+        setActivePanel(key);
+        closeMenu();
+    };
 
     const handleSubscriptionUpgrade = async () => {
         try {
@@ -136,15 +156,14 @@ export function UserDashboard() {
                             color: "text.tertiary",
                         }}
                     >
-                        {" "}
-                        Welcome Back {userName}{" "}
+                        Welcome Back {userName}
                     </Typography>
                     <Box
                         sx={{
                             width: "100%",
                             height: "100%",
                             flex: 1,
-                            ml: "20%",
+                            ml: { sm: "10%", md: "10%", lg: "20%" },
                         }}
                     >
                         <Grid container spacing={3}>
@@ -154,170 +173,283 @@ export function UserDashboard() {
                                 xs={12}
                                 md={3}
                                 sx={{
-                                    borderRight: "1px solid gray",
-                                    height: "100vh",
+                                    borderRight: {
+                                        xs: "none",
+                                        sm: "1px solid gray",
+                                    },
+                                    height: { xs: "auto", sm: "100vh" },
                                 }}
+                            >
+                                {isMobile ? (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={
+                                                <ArrowDropDownCircleIcon />
+                                            }
+                                            onClick={openMenu}
+                                            fullWidth
+                                            sx={{
+                                                textTransform: "none",
+                                                my: 1,
+                                                width: 300,
+                                                mx: 2,
+                                                color: "text.tertiary",
+                                            }}
+                                        >
+                                            Dashboard Menu
+                                        </Button>
+
+                                        <Menu
+                                            anchorEl={menuAnchorEl}
+                                            open={Boolean(menuAnchorEl)}
+                                            onClose={closeMenu}
+                                            anchorOrigin={{
+                                                vertical: "bottom",
+                                                horizontal: "left",
+                                            }}
+                                            transformOrigin={{
+                                                vertical: "top",
+                                                horizontal: "left",
+                                            }}
+                                            PaperProps={{
+                                                width: {
+                                                    xs: "calc(100vw - 32px)",
+                                                    md: 360,
+                                                },
+                                                maxWidth: "100vw",
+                                                mx: { xs: 2, md: 0 },
+                                            }}
+                                        >
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "home"
+                                                }
+                                                onClick={() => go("home")}
+                                            >
+                                                <HomeIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Dashboard Home
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "bookings"
+                                                }
+                                                onClick={() => go("bookings")}
+                                            >
+                                                <BookOnLineIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Your Bookings
+                                            </MenuItem>
+                                            <MenuItem
+                                                selected={
+                                                    activePanel === "payments"
+                                                }
+                                                onClick={() => go("payments")}
+                                            >
+                                                <CreditCardIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                Payment History
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    navigate("/faq");
+                                                    closeMenu();
+                                                }}
+                                            >
+                                                <LiveHelpIcon
+                                                    style={{ marginRight: 8 }}
+                                                />
+                                                FAQ
+                                            </MenuItem>
+                                        </Menu>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                mt: 2,
+                                                backgroundColor:
+                                                    activePanel === "home"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("home")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    pr: 3,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <HomeIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Dashboard Home
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "bookings"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("bookings")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <BookOnLineIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Your Bookings
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                backgroundColor:
+                                                    activePanel === "payments"
+                                                        ? "background.secondary"
+                                                        : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() =>
+                                                    setActivePanel("payments")
+                                                }
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <CreditCardIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    Payment History
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                textAlign: "start",
+                                                // backgroundColor:
+                                                //     activePanel === "createTour"
+                                                //         ? "background.secondary"
+                                                //         : "transparent",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={() => navigate("/faq")}
+                                                fullWidth
+                                                sx={{
+                                                    justifyContent:
+                                                        "flex-start",
+                                                    textTransform: "none",
+                                                    py: 3,
+                                                    pl: 2,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "action.hover",
+                                                    },
+                                                }}
+                                            >
+                                                <LiveHelpIcon
+                                                    style={{ marginRight: 8 }}
+                                                    sx={{
+                                                        color: "text.tertiary",
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        color: "text.primary",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    FAQ
+                                                </Typography>
+                                            </Button>
+                                        </Box>
+                                    </>
+                                )}
+                            </Grid>
+                            {/* Right Column: contents part */}
+                            <Grid
+                                item
+                                xs={12}
+                                md={9}
+                                sx={{ width: { sx: "70%", md: "50%" } }}
                             >
                                 <Box
                                     sx={{
-                                        textAlign: "start",
-                                        mt: 2,
-                                        backgroundColor:
-                                            activePanel === "home"
-                                                ? "background.secondary"
-                                                : "transparent",
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() => setActivePanel("home")}
-                                        fullWidth
-                                        sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            pr: 3,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
-                                        }}
-                                    >
-                                        <HomeIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{
-                                                color: "text.tertiary",
-                                            }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            Dashboard Home
-                                        </Typography>
-                                    </Button>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        textAlign: "start",
-                                        backgroundColor:
-                                            activePanel === "bookings"
-                                                ? "background.secondary"
-                                                : "transparent",
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() =>
-                                            setActivePanel("bookings")
-                                        }
-                                        fullWidth
-                                        sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
-                                        }}
-                                    >
-                                        <BookOnLineIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{ color: "text.tertiary" }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            Your Bookings
-                                        </Typography>
-                                    </Button>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        textAlign: "start",
-                                        backgroundColor:
-                                            activePanel === "payments"
-                                                ? "background.secondary"
-                                                : "transparent",
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() =>
-                                            setActivePanel("payments")
-                                        }
-                                        fullWidth
-                                        sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
-                                        }}
-                                    >
-                                        <CreditCardIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{ color: "text.tertiary" }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            Payment History
-                                        </Typography>
-                                    </Button>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        textAlign: "start",
-                                        // backgroundColor:
-                                        //     activePanel === "createTour"
-                                        //         ? "background.secondary"
-                                        //         : "transparent",
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() => navigate("/faq")}
-                                        fullWidth
-                                        sx={{
-                                            justifyContent: "flex-start",
-                                            textTransform: "none",
-                                            py: 3,
-                                            pl: 2,
-                                            "&:hover": {
-                                                backgroundColor: "action.hover",
-                                            },
-                                        }}
-                                    >
-                                        <LiveHelpIcon
-                                            style={{ marginRight: 8 }}
-                                            sx={{
-                                                color: "text.tertiary",
-                                            }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: "text.primary",
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            FAQ
-                                        </Typography>
-                                    </Button>
-                                </Box>
-                            </Grid>
-                            {/* Right Column: contents part */}
-                            <Grid item xs={12} md={9} sx={{ width: "50%" }}>
-                                <Box
-                                    sx={{
-                                        mx: "10%",
+                                        mx: { sx: "0%", md: "10%" },
                                         width: "100%",
                                         mb: 20,
                                     }}
@@ -330,7 +462,7 @@ export function UserDashboard() {
                                             </Box>
                                             {subscriptionStatus?.currentPeriodEnd && (
                                                 <Typography sx={{ my: 2 }}>
-                                                    Subscription valid until:{" "}
+                                                    Subscription valid until:
                                                     {new Date(
                                                         subscriptionStatus.currentPeriodEnd
                                                     ).toLocaleDateString()}

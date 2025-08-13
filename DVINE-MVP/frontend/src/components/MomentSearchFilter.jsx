@@ -10,10 +10,10 @@ import {
     Chip,
     Paper,
     Typography,
-    IconButton,
     Collapse,
     Grid,
     useTheme,
+    Stack,
 } from "@mui/material";
 import {
     Search as SearchIcon,
@@ -24,7 +24,7 @@ import {
     Favorite as FavoriteIcon,
 } from "@mui/icons-material";
 
-const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
+const MomentSearchFilter = ({ onSearch, onClear }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("latest");
     const [showFilters, setShowFilters] = useState(false);
@@ -93,7 +93,12 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
     return (
         <Paper sx={{ p: 2, mb: 3, bgcolor: "background.paper" }}>
             {/* Search Bar */}
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
+            <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={{ xs: 2, sm: 2 }}
+                alignItems={{ xs: "stretch", sm: "center" }}
+                mb={2}
+            >
                 <TextField
                     fullWidth
                     placeholder="Search moment content, title, or location..."
@@ -173,7 +178,7 @@ const MomentSearchFilter = ({ onSearch, onFilter, onClear }) => {
                 >
                     Clear
                 </Button>
-            </Box>
+            </Stack>
 
             {/* Active Filters */}
             {activeFilters.length > 0 && (

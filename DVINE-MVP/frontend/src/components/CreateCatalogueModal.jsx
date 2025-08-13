@@ -1,5 +1,6 @@
 import { Modal, Box } from "@mui/material";
 import CreateCatalogueForm from "./CreateCatalogueForm.jsx";
+import PropTypes from "prop-types";
 
 export default function CreateCatalogueModal(props) {
     const { open, onClose, ...rest } = props;
@@ -21,3 +22,8 @@ export default function CreateCatalogueModal(props) {
         </Modal>
     );
 }
+
+CreateCatalogueModal.propTypes = {
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+};
